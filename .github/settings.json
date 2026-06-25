@@ -1,7 +1,7 @@
 {
     "repository": {
         "name": "pyrig-runtime",
-        "description": "Add your description here",
+        "description": "This package contains any code needed at runtime for pyrig projects.",
         "default_branch": "main",
         "delete_branch_on_merge": true,
         "allow_update_branch": true,

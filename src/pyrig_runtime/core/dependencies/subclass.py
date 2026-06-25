@@ -1,7 +1,6 @@
 """Abstract base for cross-package subclass discovery without explicit registration."""
 
 import json
-import logging
 from abc import ABC, abstractmethod
 from collections.abc import Iterable, Iterator
 from functools import cache
@@ -17,8 +16,6 @@ from pyrig_runtime.core.introspection.classes import (
     discard_abstract_classes,
     discard_parent_classes,
 )
-
-logger = logging.getLogger(__name__)
 
 T = TypeVar("T", bound="DependencySubclass")
 

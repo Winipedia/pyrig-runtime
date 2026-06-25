@@ -10,9 +10,15 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.version_control.ignore import (
     VersionControllerIgnoreConfigFile,
 )
+from pyrig.rig.configs.version_control.remote.workflows.deploy import (
+    DeployWorkflowConfigFile,
+)
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
+from pyrig_pypi.rig.configs.version_control.remote.workflows.deploy import (
+    DeployWorkflowConfigFile as PyPIDeployWorkflowConfigFile,
+)
 
 from pyrig_runtime import rig
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
@@ -85,3 +91,5 @@ class TestDependencySubclass:
     def test_L(self) -> None:  # noqa: N802
         """Test method."""
         assert MirrorTestConfigFile.L.L.L is MirrorTestConfigFile.L
+        assert DeployWorkflowConfigFile.L is PyPIDeployWorkflowConfigFile
+        assert CLI.L is CLI

@@ -28,6 +28,6 @@
 
 ---
 
-> Add your description here
+> This package contains any code needed at runtime for pyrig projects.
 
 ---
