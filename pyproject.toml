@@ -9,6 +9,19 @@ license = "MIT"
 license-files = [
     "LICENSE",
 ]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
+]
+keywords = [
+    "pyrig",
+]
 
 [[project.authors]]
 name = "Winipedia"
@@ -37,7 +50,9 @@ dev = [
     "pip-audit>=2.10.1",
     "prek>=0.4.5",
     "pyrig>=15.23.0",
+    "pyrig-codecov>=1.10.0",
     "pyrig-fixtures>=0.10.0",
+    "pyrig-pypi>=1.13.0",
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
     "ruff>=0.15.19",
@@ -79,7 +94,7 @@ error-on-warning = true
 testpaths = [
     "tests",
 ]
-addopts = "--cov=pyrig_runtime --cov-branch --cov-report=term-missing --cov-fail-under=90"
+addopts = "--cov=pyrig_runtime --cov-branch --cov-report=term-missing --cov-fail-under=100 --cov-report=xml"
 
 [tool.bandit.assert_used]
 skips = [

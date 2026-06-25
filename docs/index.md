@@ -4,7 +4,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig-runtime/health_check.yml?label=CI&logo=github)](https://github.com/Winipedia/pyrig-runtime/actions/workflows/health_check.yml)
 [![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig-runtime/deploy.yml?label=CD&logo=github)](https://github.com/Winipedia/pyrig-runtime/actions/workflows/deploy.yml)
 <!-- testing -->
-[![CoverageTester](https://img.shields.io/badge/coverage->=90%25-hsl(108,80%25,45%25)?logo=codecov&logoColor=white)](https://github.com/pytest-dev/pytest-cov)
+[![CoverageTester](https://codecov.io/gh/Winipedia/pyrig-runtime/branch/main/graph/badge.svg)](https://codecov.io/gh/Winipedia/pyrig-runtime)
 [![ProjectTester](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org)
 <!-- code-quality -->
 [![DependencyAuditor](https://img.shields.io/badge/security-pip--audit-blue?logo=python)](https://github.com/pypa/pip-audit)
@@ -22,7 +22,8 @@
 [![VersionController](https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white)](https://git-scm.com)
 <!-- project-info -->
 [![DocsBuilder](https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white)](https://Winipedia.github.io/pyrig-runtime)
-[![ProgrammingLanguage](https://img.shields.io/badge/Language-Python-3776AB?logo=python&logoColor=white)](https://www.python.org)
+[![PackageIndex](https://img.shields.io/pypi/v/pyrig-runtime?logo=pypi&logoColor=white)](https://pypi.org/project/pyrig-runtime)
+[![ProgrammingLanguage](https://img.shields.io/pypi/pyversions/pyrig-runtime)](https://www.python.org)
 [![License](https://img.shields.io/github/license/Winipedia/pyrig-runtime)](https://github.com/Winipedia/pyrig-runtime/blob/main/LICENSE)
 
 ---

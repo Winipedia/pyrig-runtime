@@ -49,3 +49,21 @@ jobs:
     - name: Deploy Documentation
       id: deploy-documentation
       uses: actions/deploy-pages@main
+  package:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      id: checkout-repository
+      uses: actions/checkout@main
+    - name: Setup Package Manager
+      id: setup-package-manager
+      uses: astral-sh/setup-uv@main
+      with:
+        python-version: '3.14'
+    - name: Build Package
+      id: build-package
+      run: uv build
+    - name: Publish Package
+      id: publish-package
+      run: uv publish --token ${{ secrets.PYPI_TOKEN }}
