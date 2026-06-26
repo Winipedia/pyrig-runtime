@@ -28,6 +28,6 @@
 
 ---
 
-> This package contains any code needed at runtime for pyrig projects.
+> Runtime dependency and library for projects built with pyrig.
 
 ---
