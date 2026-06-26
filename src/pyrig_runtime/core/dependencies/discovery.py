@@ -23,23 +23,16 @@ def discover_subclasses_across_dependencies[T](
     cls: type[T],
     package: ModuleType,
 ) -> Iterator[type[T]]:
-    """Yield subclasses of `cls` found in `package` and in every dependent of its root.
-
-    Searches `package` itself first, then each installed package that depends on
-    `package`'s root package. In each dependent, the module path equivalent to
-    `package` is located (e.g., `pyrig.rig` becomes `<dep>.rig`), and every
-    subclass of `cls` defined there is collected.
+    """Yield subclasses of `cls` found across all packages depending on root.
 
     Args:
         cls: Base class whose subclasses should be discovered.
-        package: Module whose dotted path is replicated in each dependent package
-            to locate the modules to search. The root of this module determines
-            which installed packages are searched. For example, passing
-            `pyrig.rig` would search `<dep>.rig` in each dependent of `pyrig`.
+        package: Package to search first, also used to determine which root
+            package to scan for dependents.
 
     Yields:
-        Subclass types of `cls` found across `package` and all dependent
-        packages, in dependency order (base package first, then dependents).
+        Subclass types of `cls` found in `package` first, then in each
+        dependent package's equivalent package module in dependency order.
     """
     logger.debug(
         "Discovering subclasses of %s from modules in packages depending on %s",
@@ -63,26 +56,20 @@ def discover_subclasses_across_dependencies[T](
 def discover_equivalent_modules_across_dependents(
     module: ModuleType,
 ) -> Iterator[ModuleType]:
-    """Yield the equivalent module from every package that depends on `module`'s root.
+    """Yield the equivalent module from every dependent of `module`'s root package.
 
-    Given a module (e.g., `pyrig.rig.configs`), infers the root package
-    (e.g., `pyrig`), then constructs the equivalent dotted path in each package
-    that depends on that root (e.g., `myapp.rig.configs`), imports it if it
-    exists, and yields it.
-
-    The root package itself is not included in results — only its dependents are
-    iterated. The path transformation replaces the first occurrence of the root
-    package name in `module.__name__` with each dependent package's name, so a
-    consistent directory structure across the ecosystem is assumed.
+    For each installed package that depends on the root of `module`, locates
+    the module at the same sub-path within that dependent and yields it if
+    it can be imported. The root package itself is excluded from results.
 
     Args:
-        module: Template module whose path pattern is replicated in each dependent
-            package (e.g., `pyrig.core` → `<pkg>.core` for every dependent).
-            The root of this module is used to discover dependent packages.
+        module: Module whose root determines which dependents to search and
+            whose sub-path within that root is used to locate the corresponding
+            module in each dependent.
 
     Yields:
-        Successfully imported module objects in dependency order. Packages whose
-        equivalent module path cannot be imported are silently skipped.
+        Successfully imported module objects in dependency order. Dependents
+        that have no module at the equivalent sub-path are silently skipped.
     """
     dependency = root_module(module)
     logger.debug(
@@ -102,18 +89,17 @@ def discover_equivalent_modules_across_dependents(
 
 @cache
 def deps_depending_on_dep(dependency: ModuleType) -> tuple[ModuleType, ...]:
-    """Return all installed packages that depend on `dependency`, as module objects.
+    """Return every installed package that depends on `dependency`.
 
-    Find every installed package that depends on `dependency` (directly or
-    transitively), import them, and return the result as a tuple in dependency
-    order. The result is cached per unique `dependency` argument.
+    The result is cached per unique `dependency` argument.
 
     Args:
-        dependency: The package whose dependents should be discovered.
+        dependency: Package whose dependents should be discovered.
 
     Returns:
-        Tuple of imported module objects for all packages that depend on
-        `dependency`. Does not include `dependency` itself.
+        Tuple of imported module objects for every package that depends on
+        `dependency` directly or transitively, in dependency order.
+        Does not include `dependency` itself.
     """
     return tuple(
         import_modules(

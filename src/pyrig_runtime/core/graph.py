@@ -10,9 +10,9 @@ from typing import Any, Self
 class DiGraph(ABC):
     """Abstract directed graph with forward and reverse adjacency tracking.
 
-    Subclasses implement `build` to populate nodes and edges. At construction,
-    `build` is called first; if a `root` node is given, the graph is then pruned
-    to retain only that node and every node that transitively points to it.
+    Subclasses implement `build` to populate nodes and edges. When a `root`
+    node is given, the graph is pruned to contain only that node and every node
+    that transitively points to it.
 
     Attributes:
         root: The root node passed at construction, or `None` if none was given.
@@ -39,7 +39,7 @@ class DiGraph(ABC):
         return cls(*args, **kwargs)
 
     def __init__(self, root: str | None = None) -> None:
-        """Build the graph, then prune it to `root` if one is given."""
+        """Initialize the directed graph, optionally pruned to the given root."""
         self.root = root
         self.nodes: set[str] = set()
         self.edges: dict[str, set[str]] = {}  # node -> outgoing neighbors
@@ -52,7 +52,6 @@ class DiGraph(ABC):
     def build(self) -> None:
         """Populate the graph with nodes and edges.
 
-        Called automatically during construction before any optional pruning.
         Implementations use `add_node` and `add_edge` to define the graph
         structure.
         """
@@ -117,7 +116,6 @@ class DiGraph(ABC):
     def ancestors(self, target: str) -> set[str]:
         """Find all nodes that have a directed path to the target node.
 
-        Collects every node that reaches the target directly or transitively.
         The target itself is excluded from the result.
 
         Args:

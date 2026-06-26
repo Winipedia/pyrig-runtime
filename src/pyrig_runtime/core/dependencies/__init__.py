@@ -1,6 +1,7 @@
-"""Introspection primitives for class, module, and package discovery.
+"""Cross-package subclass discovery driven by the installed package dependency graph.
 
-Provides the low-level building blocks that power pyrig's cross-package subclass
-discovery: walking package hierarchies, dynamically importing modules, filtering
-class collections, and locating equivalent module paths across dependent packages.
+Provides the machinery for locating subclass implementations across every
+installed package that depends on a given root, without requiring explicit
+registration. Plugin hierarchies declare their scope once and the package
+resolves all implementations automatically across the dependency graph.
 """

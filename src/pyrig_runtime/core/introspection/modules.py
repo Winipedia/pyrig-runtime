@@ -1,4 +1,4 @@
-"""Python module utilities."""
+"""Helpers for importing, resolving, and iterating Python modules."""
 
 import logging
 from collections.abc import Iterable, Iterator
@@ -58,9 +58,7 @@ def replace_root_module_name(module: ModuleType, root_module_name: str) -> str:
     """Replace the root package segment in a module's fully qualified name.
 
     Only the first segment is replaced; later segments are left untouched even
-    if they happen to share the old root's name. Useful for mapping modules
-    between parallel package hierarchies (e.g., source modules to their test
-    equivalents).
+    if they happen to share the old root's name.
 
     Args:
         module: Module whose name to transform.
@@ -71,9 +69,9 @@ def replace_root_module_name(module: ModuleType, root_module_name: str) -> str:
 
     Example:
         >>> from types import ModuleType
-        >>> mod = ModuleType("pyrig.rig.configs.base")
+        >>> mod = ModuleType("some_package.sub.module")
         >>> replace_root_module_name(mod, "my_project")
-        'my_project.rig.configs.base'
+        'my_project.sub.module'
     """
     module_current_start = module.__name__.split(".")[0]
     return module.__name__.replace(module_current_start, root_module_name, 1)
@@ -108,9 +106,9 @@ def iter_modules(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
         `is_package` is `True` when the child is itself a sub-package.
 
     Note:
-        Importing each child is a deliberate side effect — it causes subclasses
-        defined in those modules to register with the interpreter, enabling
-        class-discovery mechanisms that rely on `__subclasses__()`.
+        Importing each child is a deliberate side effect — any module-level
+        code in those children executes, including class definitions that
+        become visible to `__subclasses__()`.
     """
     for _finder, name, is_package in pkgutil_iter_modules(
         package.__path__, prefix=package.__name__ + "."

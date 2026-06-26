@@ -31,21 +31,20 @@ def obj_members(
 
 
 def obj_module(obj: Any, default: ModuleType | None = None) -> ModuleType:
-    """Return the module where a method-like object is defined.
+    """Return the module defining the underlying object.
 
-    Unwraps the object first, so decorated functions, properties, classmethods,
-    and staticmethods all resolve to their defining module. Useful for
-    distinguishing objects defined in a module from those merely imported into
-    it.
+    Resolves through any decorator or descriptor layers, so the returned module
+    reflects where the underlying object is defined rather than where any
+    outer wrapper may originate.
 
     Args:
-        obj: Method-like object (function, method, property, staticmethod,
-            classmethod, or decorated callable).
-        default: Module to return when the origin cannot be determined. When
-            `None` and the module cannot be determined, `LookupError` is raised.
+        obj: Python object whose defining module to locate.
+        default: Module to return when the defining module cannot be determined.
+            When `None` and the module cannot be determined, `LookupError` is
+            raised.
 
     Returns:
-        The module where `obj` is defined.
+        The module where the underlying `obj` is defined.
 
     Raises:
         LookupError: If the defining module cannot be determined and `default`
@@ -59,19 +58,19 @@ def obj_module(obj: Any, default: ModuleType | None = None) -> ModuleType:
 
 
 def unwrap_obj(obj: Any) -> Any:
-    """Unwrap a method-like object to its underlying function.
+    """Unwrap a Python object to its innermost underlying object.
 
-    Strips every layer until no more can be removed: the bound-method,
-    classmethod, and staticmethod descriptors (`__func__`), the property getter
-    (`fget`), and `functools.wraps`-style decorator chains. For a property, the
-    getter function is returned.
+    Strips property getters, bound-method and descriptor wrappers, and
+    `functools.wraps`-style decorator chains until no further unwrapping is
+    possible.
 
     Args:
-        obj: Callable that may be wrapped (bound method, property,
-            staticmethod, classmethod, or any decorated function).
+        obj: Python object that may be wrapped, including bound
+            methods, properties, classmethods, staticmethods, and decorated
+            functions.
 
     Returns:
-        The underlying unwrapped function object.
+        The innermost Python object after all wrapping layers have been removed.
     """
     prev = None
     while prev is not obj:

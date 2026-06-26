@@ -45,9 +45,10 @@ class DependencyGraph(DiGraph):
     ) -> tuple[str, Iterator[str]]:
         """Extract the package name and dependencies from a distribution.
 
-        Both the package name and every dependency name are normalized to
-        snake_case. The dependency iterator is exhausted once consumed; it
-        yields nothing when the distribution declares no dependencies.
+        Both the package name and every dependency name are normalized with
+        hyphens converted to underscores. The dependency iterator is exhausted
+        once consumed; it yields nothing when the distribution declares no
+        dependencies.
 
         Args:
             dist: Distribution to extract metadata from.

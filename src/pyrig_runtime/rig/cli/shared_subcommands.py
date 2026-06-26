@@ -1,7 +1,7 @@
-"""CLI commands shared across all pyrig-based projects.
+"""CLI commands shared across all pyrig-runtime-based projects.
 
-Commands defined here are available in every project that depends on pyrig,
-adapting their behavior to the invoking project at runtime.
+Commands in this module are available in every pyrig-runtime-based project and
+reflect the context of the project that invoked them.
 """
 
 
@@ -9,9 +9,8 @@ def version() -> None:
     """Print the installed version of the invoking project.
 
     Reports the version of whichever project's CLI entry point was used to
-    invoke this command, not pyrig's own version. The project must be
-    installed (an editable install is sufficient) for the metadata lookup
-    to succeed.
+    invoke this command, not pyrig-runtime's own version. The project must be
+    installed; an editable install is sufficient.
 
     Example:
         ```

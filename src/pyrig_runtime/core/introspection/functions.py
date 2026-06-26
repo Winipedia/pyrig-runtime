@@ -1,4 +1,4 @@
-"""Utilities for function-like objects."""
+"""Detecting and enumerating function-like objects."""
 
 import inspect
 from collections.abc import Callable, Iterator
@@ -17,8 +17,6 @@ def module_functions(
 ) -> Iterator[Callable[..., Any]]:
     """Yield all funclike objects defined directly in a module, excluding imports.
 
-    A funclike object is included only when its defining module matches
-    `module`, which filters out any names that were imported from other modules.
     See `is_funclike` for what counts as funclike.
 
     Args:

@@ -22,33 +22,20 @@ from pyrig_runtime.rig.cli import cli, shared_subcommands, subcommands
 
 
 class CLI(DependencySubclass):
-    """Typer application builder with cross-package command discovery.
+    """Typer application builder for pyrig-runtime-based projects.
 
-    Assembles the command-line application for pyrig and any pyrig-based project:
-    creates the Typer app, attaches the verbosity callback, and registers both
-    project-specific subcommands and shared subcommands discovered across the
-    dependency chain.
-
-    A dependent project may subclass `CLI` to override any step of the build
-    without to fit its needs. The single leaf subclass is resolved at runtime.
+    Builds and runs the command-line application for any project that depends on
+    pyrig-runtime. A dependent project may subclass `CLI` to override any step of
+    the build to fit its needs.
     """
 
     @classmethod
     def dependency_package(cls) -> ModuleType:
-        """Return the `pyrig_runtime.rig.cli.cli` package.
-
-        Returns:
-            The `pyrig_runtime.rig.cli.cli` package module.
-        """
+        """Return the `pyrig_runtime.rig.cli.cli` package module."""
         return cli
 
     def run(self) -> None:
-        """Build the Typer application and invoke it.
-
-        Constructs a fully configured app and calls it, which parses `sys.argv`
-        and dispatches the requested command. This is the entry point invoked by
-        the console-script.
-        """
+        """Build and invoke the Typer application."""
         self.app()()
 
     def app(self) -> typer.Typer:
@@ -72,9 +59,6 @@ class CLI(DependencySubclass):
 
     def build_app(self, app: typer.Typer) -> typer.Typer:
         """Register the callback and all commands onto the given app.
-
-        Attaches the verbosity callback, then registers project-specific
-        subcommands and shared subcommands.
 
         Args:
             app: The Typer app to populate.
@@ -156,13 +140,7 @@ class CLI(DependencySubclass):
     def register_subcommands(self, app: typer.Typer) -> None:
         """Discover and register project-specific commands from the calling package.
 
-        Derives the calling package from `sys.argv[0]`, locates the module
-        `<package>.rig.cli.subcommands`, and registers every function defined
-        there as a flat Typer command. Module-level `typer.Typer` instances are
-        also registered as named command groups, with the group name derived
-        from the kebab-case form of the attribute name.
-
-        Any pyrig-based project can define its own CLI commands by adding
+        Any dependent project can define its own CLI commands by adding
         functions or `typer.Typer` groups to `<package>.rig.cli.subcommands`.
 
         Args:
@@ -187,18 +165,16 @@ class CLI(DependencySubclass):
     def register_shared_subcommands(self, app: typer.Typer) -> None:
         """Discover and register shared commands from the full dependency chain.
 
-        Searches pyrig itself and every package that depends on pyrig for a
-        `<package>.rig.cli.shared_subcommands` module and registers both its
-        top-level command functions and its `typer.Typer` command groups. Shared
-        commands are available in every pyrig-based project.
+        Shared commands are available in every dependent project.
 
         Args:
             app: The Typer app to register the commands onto.
 
         Note:
-            Commands are registered in dependency order (pyrig first, then all
-            dependent packages in topological order). When two packages define a
-            command with the same name, the last registration takes precedence.
+            Commands are registered in dependency order (pyrig-runtime first,
+            then all dependent packages in topological order). When two packages
+            define a command with the same name, the last registration takes
+            precedence.
         """
         for shared_subcommands_module in chain(
             (shared_subcommands,),
@@ -258,8 +234,6 @@ class CLI(DependencySubclass):
     def package_name(self) -> str:
         """Return the snake_case package name of the invoking project.
 
-        Derives the package name from the project name (the basename of
-        `sys.argv[0]`) by converting it from kebab-case to snake_case.
         For example, if the project is invoked as `uv run my-project`, the
         package name is `my_project`.
 

@@ -1,6 +1,7 @@
 """Project-specific CLI commands.
 
-All functions in this module are automatically discovered and registered
-as CLI commands for this project. Module-level `typer.Typer` instances are
-registered as command groups named after their variable.
+Functions defined directly in this module are registered as top-level CLI
+commands. Module-level `typer.Typer` instances are registered as command
+groups, with each group's name derived from the kebab-case form of the
+variable name.
 """

@@ -39,22 +39,19 @@ class DependencySubclass(ABC):
         """Return the sub-package that scopes subclass discovery for this hierarchy.
 
         Every concrete subclass must override this to return the sub-package
-        where its own implementations are defined. The returned module's root
-        package determines which installed packages are searched.
+        where its own implementations are defined. The returned module is used
+        to determine which packages are searched when discovering subclasses.
 
-        The base implementation returns `pyrig_runtime.rig`, making it callable
-        via `super()` as a fallback or when calling `subclasses()` directly on
-        `DependencySubclass` itself.
+        The base implementation returns `pyrig_runtime.rig`.
 
         Returns:
-            Package module whose path pattern is replicated across dependent
-            packages to locate the modules to search.
+            The sub-package module that defines this hierarchy's implementations.
         """
         return rig
 
     @classmethod
     def sort_key(cls) -> Any:
-        """Return a stable sort key used by `subclasses_sorted()` to order subclasses.
+        """Return a stable sort key for ordering this subclass among its siblings.
 
         Override to sort by priority, numeric position, or any other criterion.
         The default returns the class name, giving alphabetical ordering.
@@ -70,7 +67,7 @@ class DependencySubclass(ABC):
         """Return a cached instance of the leaf subclass.
 
         The instance is created once per class and reused on every subsequent
-        access. Equivalent to instantiating the result of `cls.L`.
+        access.
 
         Returns:
             An instance of the leaf subclass.
@@ -85,8 +82,7 @@ class DependencySubclass(ABC):
     def L(cls) -> type[Self]:  # noqa: N802, N805
         """Return the cached leaf subclass type.
 
-        Equivalent to `leaf()`, but the result is cached so repeated accesses
-        do not re-run discovery.
+        The result is cached per class and reused on every subsequent access.
 
         Returns:
             The single leaf subclass type. May be abstract.
@@ -100,9 +96,7 @@ class DependencySubclass(ABC):
     def leaf(cls) -> type[Self]:
         """Return the single leaf subclass found across dependent packages.
 
-        Calls `subclasses()` and tolerates at most one result. If no subclasses
-        are found, the class itself is returned. Defining more than one leaf
-        subclass across dependent packages is ambiguous and raises `RuntimeError`.
+        If no subclasses are found, the class itself is returned.
 
         Returns:
             The sole leaf subclass type. May be abstract.
@@ -130,8 +124,6 @@ Found subclasses:
     def concrete_subclasses(cls) -> Iterator[type[Self]]:
         """Yield all non-abstract subclasses discovered across dependent packages.
 
-        Equivalent to `subclasses()` with abstract classes removed.
-
         Yields:
             Non-abstract subclass types.
         """
@@ -139,14 +131,13 @@ Found subclasses:
 
     @classmethod
     def subclasses(cls) -> Iterator[type[Self]]:
-        """Yield all subclasses discovered across the package ecosystem.
+        """Yield all subclasses discovered across installed dependent packages.
 
-        Searches every installed package that depends on the root package of
-        `dependency_package()`. Intermediate parent classes are discarded,
-        leaving only the outermost leaf-level subclasses.
+        Only leaf-level subclasses are yielded; any intermediate parent classes
+        that also appear in the result set are omitted.
 
         Yields:
-            Subclass types with intermediate parent classes removed.
+            Leaf subclass types.
         """
         return discard_parent_classes(
             discover_subclasses_across_dependencies(
@@ -159,8 +150,8 @@ Found subclasses:
     def subclasses_sorted(cls, subclasses: Iterable[type[Self]]) -> list[type[Self]]:
         """Sort the given subclasses using each subclass's `sort_key()`.
 
-        Does not perform any discovery. Pass any iterable of subclass types
-        to produce a deterministically ordered list.
+        Does not perform any discovery. Accepts any iterable of subclass types
+        and returns a deterministically ordered list.
 
         Args:
             subclasses: Subclass types to sort.

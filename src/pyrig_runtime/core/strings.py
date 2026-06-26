@@ -1,4 +1,4 @@
-"""String utilities."""
+"""String conversion utilities for Python package naming conventions."""
 
 import re
 
@@ -32,21 +32,10 @@ def dependency_requirement_as_package_name(dep_req: str) -> str:
 
 
 def dependency_requirement_split_pattern() -> re.Pattern[str]:
-    """Return a compiled regex pattern that matches non-package-name characters.
+    """Return a compiled regex pattern matching characters outside a package name.
 
     The pattern matches any character that is not alphanumeric, an underscore,
-    a hyphen, or a period. When used with `re.Pattern.split`, the first
-    element of the result is the bare package name, stripped of version
-    specifiers and any extras notation.
-
-    For example, calling `pattern.split("requests>=2.0,<3.0", maxsplit=1)`
-    yields `["requests", "=2.0,<3.0"]`, so `result[0]` is `"requests"`.
-    Calling `pattern.split("requests[security]>=2.0", maxsplit=1)`
-    yields `["requests", "security]>=2.0"]`, so extras are stripped from
-    `result[0]`.
-
-    Returns:
-        Compiled regex pattern matching characters outside a valid package name.
+    a hyphen, or a period.
     """
     # re.compile is already internally cached by Python
     return re.compile(r"[^a-zA-Z0-9_.-]")
