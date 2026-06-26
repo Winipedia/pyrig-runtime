@@ -1,4 +1,4 @@
-"""Subclass discovery and module-import utilities scoped to a package."""
+"""Subclass discovery scoped to a package's full module hierarchy."""
 
 from collections.abc import Iterator
 from functools import cache
@@ -14,11 +14,10 @@ def discover_subclasses_across_package[T](
 ) -> set[type[T]]:
     """Discover all subclasses of `cls` defined within a package.
 
-    All modules within `package` are guaranteed to have been imported before
-    the result is returned, ensuring subclasses from previously unimported
-    modules are included. Only subclasses defined in a proper sub-module of
-    `package` are returned; classes defined in the root package module itself
-    are excluded.
+    Covers subclasses from every module in the package hierarchy, including
+    those not yet imported at the time of the call. Only subclasses whose
+    defining module is a proper sub-module of `package` are returned; any
+    class defined directly in the root package module is excluded.
 
     Args:
         cls: Base class whose subclasses should be discovered.
@@ -40,7 +39,7 @@ def discover_subclasses_across_package[T](
 
 @cache
 def register_package_modules(package: ModuleType) -> None:
-    """Import all modules in a package hierarchy to trigger their side effects.
+    """Ensure all modules in a package hierarchy are imported.
 
     Args:
         package: Root package whose entire module hierarchy will be imported.

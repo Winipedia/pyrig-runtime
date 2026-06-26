@@ -1,1 +1,1 @@
-"""Foundational primitives for cross-package dependency and subclass discovery."""
+"""Infrastructure for cross-package dependency and subclass discovery."""

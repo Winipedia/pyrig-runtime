@@ -1,12 +1,14 @@
-"""CLI commands shared across all pyrig-runtime-based projects.
+"""Shared CLI commands for all dependent packages.
 
-Commands in this module are available in every pyrig-runtime-based project and
-reflect the context of the project that invoked them.
+In every installed pyrig-runtime based package functions defined directly in this
+module are registered as top-level CLI commands and module-level `typer.Typer` instances
+are registered as command groups, with each group's name derived from the kebab-case
+form of the variable name.
 """
 
 
 def version() -> None:
-    """Print the installed version of the invoking project.
+    """Print the installed version.
 
     Reports the version of whichever project's CLI entry point was used to
     invoke this command, not pyrig-runtime's own version. The project must be

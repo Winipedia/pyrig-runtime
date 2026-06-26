@@ -1,4 +1,4 @@
-"""Typer app assembly with cross-package command discovery for projects."""
+"""Typer CLI application builder with cross-package command discovery."""
 
 import logging
 import sys
@@ -39,12 +39,7 @@ class CLI(DependencySubclass):
         self.app()()
 
     def app(self) -> typer.Typer:
-        """Build a fully configured Typer application.
-
-        Returns:
-            A Typer app with the verbosity callback and every project-specific
-            and shared command registered.
-        """
+        """Build a fully configured Typer application."""
         app = self.base_app()
         return self.build_app(app)
 
@@ -138,7 +133,7 @@ class CLI(DependencySubclass):
         logging.basicConfig(level=level, format=fmt, force=True)
 
     def register_subcommands(self, app: typer.Typer) -> None:
-        """Discover and register project-specific commands from the calling package.
+        """Discover and register project-specific commands for the invoking project.
 
         Any dependent project can define its own CLI commands by adding
         functions or `typer.Typer` groups to `<package>.rig.cli.subcommands`.
@@ -147,9 +142,8 @@ class CLI(DependencySubclass):
             app: The Typer app to register the commands onto.
 
         Note:
-            Only functions defined directly in the subcommands module are
-            registered; imported functions are excluded. If the module cannot be
-            imported, registration is silently skipped.
+            If the invoking project's subcommands module cannot be imported,
+            registration is silently skipped.
         """
         subcommands_module_name = replace_root_module_name(
             subcommands, root_module_name=self.package_name()
@@ -163,16 +157,14 @@ class CLI(DependencySubclass):
         self.register_subcommand_groups(app=app, module=subcommands_module)
 
     def register_shared_subcommands(self, app: typer.Typer) -> None:
-        """Discover and register shared commands from the full dependency chain.
-
-        Shared commands are available in every dependent project.
+        """Discover and register shared commands from pyrig-runtime and its dependents.
 
         Args:
             app: The Typer app to register the commands onto.
 
         Note:
             Commands are registered in dependency order (pyrig-runtime first,
-            then all dependent packages in topological order). When two packages
+            then dependent packages in topological order). When two packages
             define a command with the same name, the last registration takes
             precedence.
         """
@@ -236,9 +228,6 @@ class CLI(DependencySubclass):
 
         For example, if the project is invoked as `uv run my-project`, the
         package name is `my_project`.
-
-        Returns:
-            Python-importable package name of the invoking project.
         """
         return kebab_to_snake_case(self.project_name())
 
@@ -248,8 +237,5 @@ class CLI(DependencySubclass):
         When a project is invoked through a registered console-script entry point
         (e.g. `uv run my-project`), `sys.argv[0]` is the path to that script, so
         its basename is the project name as it was registered.
-
-        Returns:
-            The basename of `sys.argv[0]`.
         """
         return Path(sys.argv[0]).name

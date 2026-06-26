@@ -1,1 +1,1 @@
-"""Introspection utilities for Python objects."""
+"""Runtime introspection primitives for classes, callables, modules, and packages."""

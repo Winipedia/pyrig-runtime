@@ -1,1 +1,1 @@
-"""Convention-based framework layer that dependent projects extend by mirroring."""
+"""Convention-based namespace that dependent projects mirror to extend behavior."""

@@ -52,19 +52,19 @@ class DiGraph(ABC):
     def build(self) -> None:
         """Populate the graph with nodes and edges.
 
-        Implementations use `add_node` and `add_edge` to define the graph
-        structure.
+        Called during construction before any pruning occurs. Subclasses
+        must add all nodes and edges that belong to the graph.
         """
 
     def prune(self, root: str) -> None:
-        """Remove all nodes that are neither root nor an ancestor of root.
+        """Retain only the given root and its ancestors, removing all other nodes.
 
         Keeps `root` and all its ancestors (nodes with a directed path to
         `root`). All other nodes and their associated edges are removed.
 
         Args:
-            root: The node to retain as the graph's root; only this node and its
-                ancestors survive the pruning.
+            root: The node to keep, along with all nodes that have a directed
+                path to it.
         """
         keep = self.ancestors(root) | {root}
         self.nodes = keep
@@ -94,18 +94,19 @@ class DiGraph(ABC):
             self.reverse_edges[node] = set()
 
     def sorted_ancestors(self, target: str) -> list[str]:
-        """Return all ancestors of the target node sorted in topological order.
+        """Return all ancestors of the target node in topological order.
 
-        Ancestors are nodes that have a directed path to the target (i.e., nodes
-        that depend on it directly or transitively). The result is sorted so that
-        dependencies appear before their dependents.
+        Ancestors are nodes that have a directed path to the target. The
+        result is ordered so that each ancestor appears after all ancestors
+        it has outgoing edges to.
 
         Args:
             target: Node to find ancestors of.
 
         Returns:
-            List of ancestor node identifiers, with dependencies first.
-            Returns an empty list if the target is not in the graph.
+            List of ancestor node identifiers in topological order.
+            Returns an empty list if the target has no ancestors or is not
+            in the graph.
 
         Raises:
             RuntimeError: If the ancestor subgraph contains a cycle, making
@@ -142,9 +143,10 @@ class DiGraph(ABC):
     def topological_sort_subgraph(self, nodes: set[str]) -> list[str]:
         """Sort a subset of nodes in topological order.
 
-        An edge A → B means "A depends on B", so B appears before A in the
-        output. The ordering is deterministic: when multiple nodes are ready to
-        be emitted at the same step, they are emitted in ascending order.
+        If there is an edge from A to B, B appears before A in the result.
+        The ordering is deterministic: when multiple nodes are eligible to be
+        emitted at the same step, they are emitted in ascending lexicographic
+        order.
 
         Only edges whose both endpoints are in `nodes` are considered; edges
         to or from nodes outside the subset are ignored.
@@ -153,8 +155,8 @@ class DiGraph(ABC):
             nodes: The subset of nodes to sort.
 
         Returns:
-            List of nodes in topological order, with each node's dependencies
-            appearing before the node itself.
+            List of nodes in topological order, with each node appearing
+            after all nodes it has outgoing edges to.
 
         Raises:
             RuntimeError: If the subgraph contains a cycle, making topological

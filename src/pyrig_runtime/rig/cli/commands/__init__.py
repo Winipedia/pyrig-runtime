@@ -1,1 +1,1 @@
-"""Concrete implementations of individual CLI command actions."""
+"""Implementations of CLI command actions for pyrig-runtime-based projects."""

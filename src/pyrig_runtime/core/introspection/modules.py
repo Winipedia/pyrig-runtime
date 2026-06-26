@@ -107,8 +107,7 @@ def iter_modules(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
 
     Note:
         Importing each child is a deliberate side effect — any module-level
-        code in those children executes, including class definitions that
-        become visible to `__subclasses__()`.
+        code in those children executes on demand as the iterator is consumed.
     """
     for _finder, name, is_package in pkgutil_iter_modules(
         package.__path__, prefix=package.__name__ + "."

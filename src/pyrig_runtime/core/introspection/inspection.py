@@ -31,11 +31,10 @@ def obj_members(
 
 
 def obj_module(obj: Any, default: ModuleType | None = None) -> ModuleType:
-    """Return the module defining the underlying object.
+    """Return the module where `obj` is defined.
 
-    Resolves through any decorator or descriptor layers, so the returned module
-    reflects where the underlying object is defined rather than where any
-    outer wrapper may originate.
+    When `obj` is wrapped, the module of the innermost unwrapped object is
+    returned, not the module of the outermost wrapper.
 
     Args:
         obj: Python object whose defining module to locate.
@@ -44,7 +43,7 @@ def obj_module(obj: Any, default: ModuleType | None = None) -> ModuleType:
             raised.
 
     Returns:
-        The module where the underlying `obj` is defined.
+        The module where `obj` is defined.
 
     Raises:
         LookupError: If the defining module cannot be determined and `default`
@@ -60,14 +59,12 @@ def obj_module(obj: Any, default: ModuleType | None = None) -> ModuleType:
 def unwrap_obj(obj: Any) -> Any:
     """Unwrap a Python object to its innermost underlying object.
 
-    Strips property getters, bound-method and descriptor wrappers, and
-    `functools.wraps`-style decorator chains until no further unwrapping is
-    possible.
+    Recognizes properties, bound methods, classmethods, staticmethods, and
+    `functools.wraps`-style decorator chains. All layers are removed, not just
+    the outermost one.
 
     Args:
-        obj: Python object that may be wrapped, including bound
-            methods, properties, classmethods, staticmethods, and decorated
-            functions.
+        obj: Python object to unwrap.
 
     Returns:
         The innermost Python object after all wrapping layers have been removed.

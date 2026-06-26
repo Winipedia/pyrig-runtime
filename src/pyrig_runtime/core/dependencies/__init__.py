@@ -1,7 +1,6 @@
 """Cross-package subclass discovery driven by the installed package dependency graph.
 
-Provides the machinery for locating subclass implementations across every
-installed package that depends on a given root, without requiring explicit
-registration. Plugin hierarchies declare their scope once and the package
-resolves all implementations automatically across the dependency graph.
+Supports plugin hierarchies in dependent projects by automatically locating all
+subclass implementations defined across the installed dependency graph, without
+requiring explicit registration.
 """

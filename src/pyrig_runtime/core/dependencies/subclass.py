@@ -36,28 +36,30 @@ class DependencySubclass(ABC):
     @classmethod
     @abstractmethod
     def dependency_package(cls) -> ModuleType:
-        """Return the sub-package that scopes subclass discovery for this hierarchy.
+        """Return the sub-package where this class's implementations are defined.
 
         Every concrete subclass must override this to return the sub-package
-        where its own implementations are defined. The returned module is used
-        to determine which packages are searched when discovering subclasses.
+        module that contains its own implementation classes. The base class uses
+        the returned module to scope cross-package subclass discovery.
 
         The base implementation returns `pyrig_runtime.rig`.
 
         Returns:
-            The sub-package module that defines this hierarchy's implementations.
+            The sub-package module to search for concrete implementations of
+            this class.
         """
         return rig
 
     @classmethod
     def sort_key(cls) -> Any:
-        """Return a stable sort key for ordering this subclass among its siblings.
+        """Return the sort key used to order this class relative to peer subclasses.
 
         Override to sort by priority, numeric position, or any other criterion.
         The default returns the class name, giving alphabetical ordering.
 
         Returns:
-            A value that can be compared with other sort keys using `<`.
+            A value comparable with `<` against the sort keys of other
+            subclasses.
         """
         return cls.__name__
 
@@ -70,7 +72,8 @@ class DependencySubclass(ABC):
         access.
 
         Returns:
-            An instance of the leaf subclass.
+            An instance of the leaf subclass, or of the class itself if no
+            subclasses exist.
 
         Raises:
             RuntimeError: If more than one leaf subclass is found.
@@ -85,7 +88,8 @@ class DependencySubclass(ABC):
         The result is cached per class and reused on every subsequent access.
 
         Returns:
-            The single leaf subclass type. May be abstract.
+            The single leaf subclass type, or the class itself if no
+            subclasses exist. May be abstract.
 
         Raises:
             RuntimeError: If more than one leaf subclass is found.
@@ -99,7 +103,8 @@ class DependencySubclass(ABC):
         If no subclasses are found, the class itself is returned.
 
         Returns:
-            The sole leaf subclass type. May be abstract.
+            The single leaf subclass type, or the class itself if no
+            subclasses are found. May be abstract.
 
         Raises:
             RuntimeError: If more than one subclass is discovered across
@@ -122,10 +127,10 @@ Found subclasses:
 
     @classmethod
     def concrete_subclasses(cls) -> Iterator[type[Self]]:
-        """Yield all non-abstract subclasses discovered across dependent packages.
+        """Yield all concrete leaf subclasses discovered across dependent packages.
 
         Yields:
-            Non-abstract subclass types.
+            Non-abstract leaf subclass types.
         """
         return discard_abstract_classes(cls.subclasses())
 
@@ -150,8 +155,7 @@ Found subclasses:
     def subclasses_sorted(cls, subclasses: Iterable[type[Self]]) -> list[type[Self]]:
         """Sort the given subclasses using each subclass's `sort_key()`.
 
-        Does not perform any discovery. Accepts any iterable of subclass types
-        and returns a deterministically ordered list.
+        Does not perform any discovery.
 
         Args:
             subclasses: Subclass types to sort.

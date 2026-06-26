@@ -15,15 +15,15 @@ from pyrig_runtime.core.introspection.inspection import (
 def module_functions(
     module: ModuleType,
 ) -> Iterator[Callable[..., Any]]:
-    """Yield all funclike objects defined directly in a module, excluding imports.
+    """Yield all functions defined directly in a module.
 
-    See `is_funclike` for what counts as funclike.
+    Excludes objects imported from other modules.
 
     Args:
-        module: Module to extract funclike objects from.
+        module: Module to inspect.
 
     Yields:
-        Each funclike object defined in `module`, in member-name order.
+        Each function defined in `module`.
     """
     return (
         func
@@ -46,10 +46,6 @@ def is_funclike(obj: Any) -> bool:
 
     Args:
         obj: Object to test.
-
-    Returns:
-        `True` if the object is a function or any method-like descriptor,
-        `False` otherwise.
     """
     return is_func_or_method(unwrap_obj(obj))
 
@@ -58,13 +54,9 @@ def is_func_or_method(obj: Any) -> bool:
     """Return `True` if an object is a plain function or a bound method.
 
     Does not detect `staticmethod`, `classmethod`, or `property` descriptors
-    when accessed through a class `__dict__`; use `is_funclike` for those.
+    when accessed through a class `__dict__`.
 
     Args:
         obj: Object to test.
-
-    Returns:
-        `True` if `obj` is a plain function or a bound method, `False`
-        otherwise.
     """
     return inspect.isfunction(obj) or inspect.ismethod(obj)

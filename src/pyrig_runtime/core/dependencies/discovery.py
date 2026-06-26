@@ -23,7 +23,7 @@ def discover_subclasses_across_dependencies[T](
     cls: type[T],
     package: ModuleType,
 ) -> Iterator[type[T]]:
-    """Yield subclasses of `cls` found across all packages depending on root.
+    """Yield subclasses of `cls` found in `package` and in dependent packages.
 
     Args:
         cls: Base class whose subclasses should be discovered.
@@ -31,8 +31,8 @@ def discover_subclasses_across_dependencies[T](
             package to scan for dependents.
 
     Yields:
-        Subclass types of `cls` found in `package` first, then in each
-        dependent package's equivalent package module in dependency order.
+        Subclass types of `cls`, with `package` searched first, then
+        dependent packages in dependency order.
     """
     logger.debug(
         "Discovering subclasses of %s from modules in packages depending on %s",

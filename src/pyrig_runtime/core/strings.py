@@ -34,8 +34,9 @@ def dependency_requirement_as_package_name(dep_req: str) -> str:
 def dependency_requirement_split_pattern() -> re.Pattern[str]:
     """Return a compiled regex pattern matching characters outside a package name.
 
-    The pattern matches any character that is not alphanumeric, an underscore,
-    a hyphen, or a period.
+    Returns:
+        A pattern matching any character that is not alphanumeric, an
+        underscore, a hyphen, or a period.
     """
     # re.compile is already internally cached by Python
     return re.compile(r"[^a-zA-Z0-9_.-]")
