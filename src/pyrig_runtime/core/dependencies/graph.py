@@ -24,8 +24,6 @@ class DependencyGraph(DiGraph):
     def __init__(self, root: str | None = None) -> None:
         """Initialize the dependency graph rooted at the given package.
 
-        Only `root` and packages that depend on it transitively are retained.
-
         Args:
             root: Name of the root package. Accepts either the installed name
                 (`some-package`) or the import name (`some_package`).

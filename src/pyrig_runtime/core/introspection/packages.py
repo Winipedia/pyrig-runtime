@@ -1,4 +1,4 @@
-"""Utilities for creating, importing, and traversing Python packages."""
+"""Python package utilities."""
 
 from collections.abc import Iterator
 from functools import cache
@@ -14,22 +14,18 @@ def discover_subclasses_across_package[T](
 ) -> set[type[T]]:
     """Discover all subclasses of `cls` defined within a package.
 
-    Addresses the limitation of `__subclasses__()`, which only sees classes
-    already imported into the interpreter. Walks `package` first (importing
-    every module within it) to trigger class registration, then collects all
-    subclasses of `cls` and filters them to those defined inside `package`.
+    All modules in `package` are imported before subclass collection so that
+    classes in unimported modules are included. Only subclasses that are
+    defined in a proper sub-module of `package` are returned; classes defined
+    in the root package module itself are excluded.
 
     Args:
         cls: Base class whose subclasses should be discovered.
-        package: Package to walk before discovery. All modules within it are
-            imported so their classes register as subclasses of `cls`. Only
-            subclasses whose `__module__` starts with
-            `package.__name__ + "."` are returned (the root package module
-            itself is excluded).
+        package: Package to scope discovery to.
 
     Returns:
-        Set of all subclass types of `cls` defined within `package`. Does not
-        include `cls` itself.
+        Set of all transitive subclass types of `cls` defined within
+        `package`, excluding `cls` itself.
     """
     register_package_modules(package)
     subclasses = discover_subclasses(cls)

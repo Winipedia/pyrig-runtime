@@ -4,19 +4,18 @@ import re
 
 
 def kebab_to_snake_case(value: str) -> str:
-    """Convert kebab-case string to snake_case by replacing hyphens with underscores."""
+    """Convert a kebab-case string to snake_case, replacing hyphens with underscores."""
     return value.replace("-", "_")
 
 
 def snake_to_kebab_case(value: str) -> str:
-    """Convert snake_case string to kebab-case by replacing underscores with hyphens."""
+    """Convert a snake_case string to kebab-case, replacing underscores with hyphens."""
     return value.replace("_", "-")
 
 
 def dependency_requirement_as_package_name(dep_req: str) -> str:
-    """Extract the bare package name from a dependency requirement string..
+    """Extract the bare package name from a dependency requirement string.
 
-    The name is normalized to snake_case.
     Version specifiers, extras notation, and any other non-name characters are
     stripped. Hyphens in the package name are normalized to underscores.
 

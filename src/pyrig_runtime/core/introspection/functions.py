@@ -19,7 +19,7 @@ def module_functions(
 
     A funclike object is included only when its defining module matches
     `module`, which filters out any names that were imported from other modules.
-    See [is_funclike][] for what counts as funclike.
+    See `is_funclike` for what counts as funclike.
 
     Args:
         module: Module to extract funclike objects from.
@@ -43,7 +43,7 @@ def is_funclike(obj: Any) -> bool:
 
     - Plain functions and bound methods
     - `staticmethod` and `classmethod` descriptors
-    - `property` descriptors (and custom descriptor subclasses)
+    - `property` descriptors
     - Functions wrapped with `functools.wraps` or similar decorators
 
     Args:

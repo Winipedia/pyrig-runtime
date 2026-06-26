@@ -5,16 +5,16 @@ from collections.abc import Callable, Iterable, Iterator
 
 
 def discover_subclasses[T](cls: type[T]) -> set[type[T]]:
-    """Recursively discover all subclasses of a class already loaded in memory.
+    """Discover all transitive subclasses of `cls` currently loaded in memory.
 
-    Discovers subclasses without triggering any imports. Only subclasses
-    whose modules are already loaded will appear in the result.
+    Does not trigger any imports, so only subclasses from already-imported
+    modules are included in the result.
 
     Args:
         cls: Base class to find subclasses of.
 
     Returns:
-        Set of all discovered subclass types, excluding `cls` itself.
+        Set of all transitive subclass types, excluding `cls` itself.
     """
     subclasses = set(cls.__subclasses__())
     for subclass in cls.__subclasses__():
@@ -27,12 +27,8 @@ def discard_parent_classes[T](
 ) -> Iterator[type[T]]:
     """Yield only leaf classes, removing any ancestors present in the collection.
 
-    A class is kept only when no other class in the collection is a strict subclass
-    of it. This effectively yields "leaf" classes — those with no descendants
-    in the collection — and is useful when derived classes should take precedence
-    over their base classes.
-
-    The original iterable is not modified.
+    A class is kept only when no other class in the collection is a strict
+    subclass of it. The original iterable is not modified.
 
     Args:
         classes: Iterable of class types to filter.

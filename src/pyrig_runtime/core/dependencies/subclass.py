@@ -21,16 +21,12 @@ T = TypeVar("T", bound="DependencySubclass")
 
 
 class DependencySubclass(ABC):
-    """Base class that enables the plugin-style extensibility across installed packages.
+    """Abstract base enabling plugin-style subclass discovery across installed packages.
 
-    Subclasses declare a sub-package scope via `dependency_package()`, and
-    the discovery machinery automatically finds all concrete implementations
-    defined in that sub-package across every installed package that depends
-    on the root package. No explicit registration is required.
-
-    The `sort_key()` hook controls ordering when `subclasses_sorted()` is
-    used. The `L` classproperty provides a cached shortcut to the leaf
-    subclass type, and `I` provides a cached instance of it.
+    Subclasses declare a sub-package scope by overriding the discovery hook,
+    and the base class automatically finds all subclass implementations defined
+    in that sub-package across every installed package that depends on the root
+    package. No explicit registration is required.
     """
 
     def __str__(self) -> str:
@@ -46,8 +42,8 @@ class DependencySubclass(ABC):
         where its own implementations are defined. The returned module's root
         package determines which installed packages are searched.
 
-        The base implementation returns `pyrig.rig`, making it callable via
-        `super()` as a fallback or when calling `subclasses()` directly on
+        The base implementation returns `pyrig_runtime.rig`, making it callable
+        via `super()` as a fallback or when calling `subclasses()` directly on
         `DependencySubclass` itself.
 
         Returns:
@@ -64,7 +60,7 @@ class DependencySubclass(ABC):
         The default returns the class name, giving alphabetical ordering.
 
         Returns:
-            A value comparable by `sorted()`.
+            A value that can be compared with other sort keys using `<`.
         """
         return cls.__name__
 
@@ -104,10 +100,9 @@ class DependencySubclass(ABC):
     def leaf(cls) -> type[Self]:
         """Return the single leaf subclass found across dependent packages.
 
-        Calls `subclasses()` and expects at most one result. If no subclasses
-        are found, the class itself is returned. Raises `RuntimeError` if
-        multiple subclasses are found, because a leaf must be unambiguous:
-        exactly one active implementation is allowed.
+        Calls `subclasses()` and tolerates at most one result. If no subclasses
+        are found, the class itself is returned. Defining more than one leaf
+        subclass across dependent packages is ambiguous and raises `RuntimeError`.
 
         Returns:
             The sole leaf subclass type. May be abstract.

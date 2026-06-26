@@ -13,6 +13,12 @@ class DiGraph(ABC):
     Subclasses implement `build` to populate nodes and edges. At construction,
     `build` is called first; if a `root` node is given, the graph is then pruned
     to retain only that node and every node that transitively points to it.
+
+    Attributes:
+        root: The root node passed at construction, or `None` if none was given.
+        nodes: Set of all node identifiers currently in the graph.
+        edges: Forward adjacency map from each node to its outgoing neighbors.
+        reverse_edges: Reverse adjacency map from each node to its incoming neighbors.
     """
 
     @classmethod
@@ -58,7 +64,8 @@ class DiGraph(ABC):
         `root`). All other nodes and their associated edges are removed.
 
         Args:
-            root: The root node to prune around.
+            root: The node to retain as the graph's root; only this node and its
+                ancestors survive the pruning.
         """
         keep = self.ancestors(root) | {root}
         self.nodes = keep
@@ -80,11 +87,7 @@ class DiGraph(ABC):
         self.reverse_edges[target].add(source)
 
     def add_node(self, node: str) -> None:
-        """Add a node to the graph. No-op if the node already exists.
-
-        Args:
-            node: Node identifier to add.
-        """
+        """Add a node to the graph. No-op if the node already exists."""
         self.nodes.add(node)
         if node not in self.edges:
             self.edges[node] = set()

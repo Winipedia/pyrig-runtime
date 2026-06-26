@@ -1,10 +1,4 @@
-"""Utilities for dynamically importing, introspecting, and traversing Python modules.
-
-Covers importing by name or file path with fallback strategies, reading module
-source, resolving callable import paths, and iterating direct package children.
-Includes support for modules not discoverable via standard import mechanisms,
-such as those absent from `sys.path` or not installed as distributions.
-"""
+"""Python module utilities."""
 
 import logging
 from collections.abc import Iterable, Iterator
@@ -35,10 +29,11 @@ def root_module(module: ModuleType) -> ModuleType:
 def import_module_with_default(
     module_name: str, default: Any = None
 ) -> ModuleType | Any:
-    """Import a module by name, returning a default value if import fails.
+    """Import a module by name, returning a default value on failure.
 
-    Catches every exception, not just `ImportError`, and logs a debug message
-    including the caught exception before falling back to the default.
+    Any `Exception` raised during import — not just `ImportError` — triggers
+    the fallback, so errors at module level (e.g., `ValueError` raised on
+    import) are also caught.
 
     Args:
         module_name: Dotted module name (e.g., `"package.subpackage.module"`).
@@ -104,11 +99,6 @@ def iter_modules(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
     Only the immediate children are visited; nested sub-packages are not
     recursed into.
 
-    Note:
-        Importing each child is a deliberate side effect — it causes subclasses
-        defined in those modules to register with the interpreter, enabling
-        class-discovery mechanisms that rely on `__subclasses__()`.
-
     Args:
         package: Package to iterate. Must have a `__path__` attribute
             (i.e., must be a package, not a plain module).
@@ -116,6 +106,11 @@ def iter_modules(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
     Yields:
         `(module, is_package)` pairs where `module` is the imported child and
         `is_package` is `True` when the child is itself a sub-package.
+
+    Note:
+        Importing each child is a deliberate side effect — it causes subclasses
+        defined in those modules to register with the interpreter, enabling
+        class-discovery mechanisms that rely on `__subclasses__()`.
     """
     for _finder, name, is_package in pkgutil_iter_modules(
         package.__path__, prefix=package.__name__ + "."

@@ -1,4 +1,4 @@
-"""Typer app assembly with cross-package command discovery for pyrig-based projects."""
+"""Typer app assembly with cross-package command discovery for projects."""
 
 import logging
 import sys
@@ -29,17 +29,16 @@ class CLI(DependencySubclass):
     project-specific subcommands and shared subcommands discovered across the
     dependency chain.
 
-    A single leaf subclass is resolved at runtime (accessed via `CLI.I`), so a
-    dependent project may subclass `CLI` to override any step of the build without
-    modifying pyrig.
+    A dependent project may subclass `CLI` to override any step of the build
+    without to fit its needs. The single leaf subclass is resolved at runtime.
     """
 
     @classmethod
     def dependency_package(cls) -> ModuleType:
-        """Return the `pyrig.rig.cli.cli` package.
+        """Return the `pyrig_runtime.rig.cli.cli` package.
 
         Returns:
-            The `pyrig.rig.cli.cli` package module.
+            The `pyrig_runtime.rig.cli.cli` package module.
         """
         return cli
 
@@ -55,12 +54,9 @@ class CLI(DependencySubclass):
     def app(self) -> typer.Typer:
         """Build a fully configured Typer application.
 
-        Creates a base app and populates it with the verbosity callback and all
-        discovered commands.
-
         Returns:
-            A Typer app with the callback and every project-specific and shared
-            command registered.
+            A Typer app with the verbosity callback and every project-specific
+            and shared command registered.
         """
         app = self.base_app()
         return self.build_app(app)
@@ -77,8 +73,8 @@ class CLI(DependencySubclass):
     def build_app(self, app: typer.Typer) -> typer.Typer:
         """Register the callback and all commands onto the given app.
 
-        Attaches the verbosity callback, then registers project-specific and
-        shared subcommands in dependency order.
+        Attaches the verbosity callback, then registers project-specific
+        subcommands and shared subcommands.
 
         Args:
             app: The Typer app to populate.
@@ -93,9 +89,6 @@ class CLI(DependencySubclass):
 
     def register_callback(self, app: typer.Typer) -> None:
         """Attach the verbosity callback to the given app.
-
-        Registers `self.callback` as the app's Typer callback so that the
-        `--verbose` and `--quiet` options are parsed before any command runs.
 
         Args:
             app: The Typer app to attach the callback to.
@@ -125,16 +118,16 @@ class CLI(DependencySubclass):
         self.configure_logging(verbose, quiet)
 
     def configure_logging(self, verbose: int, quiet: int) -> None:
-        """Configure logging based on verbosity and quietness levels.
+        """Configure the logging level and format for the current invocation.
 
-        The logging level is determined by the difference between `verbose` and `quiet`
-        counts, with `verbose` decreasing the level (more verbose) and `quiet`
-        increasing it (less verbose). The log format also adapts to the verbosity level,
-        showing more contextual information at higher verbosity.
+        Each increment of `verbose` lowers the log level by one step (toward
+        DEBUG); each increment of `quiet` raises it by one step (toward
+        CRITICAL). The format also expands at higher verbosity, adding module
+        names at two increments and timestamps at three.
 
         Args:
-            verbose: The count of `--verbose` flags, increasing verbosity.
-            quiet: The count of `--quiet` flags, decreasing verbosity.
+            verbose: Number of times verbosity was increased (e.g. via `-v`).
+            quiet: Number of times verbosity was decreased (e.g. via `-q`).
 
         Note:
             Uses `logging.basicConfig` with `force=True` to ensure that the
@@ -163,16 +156,14 @@ class CLI(DependencySubclass):
     def register_subcommands(self, app: typer.Typer) -> None:
         """Discover and register project-specific commands from the calling package.
 
-        Derives the calling package from `sys.argv[0]`, constructs the module
-        name `<package>.rig.cli.subcommands`, and registers every function
-        defined in that module as a Typer command. Module-level `typer.Typer`
-        instances in that module are registered as command groups named after
-        their variable (e.g. an `mk` group exposing `pyrig mk <command>`); their
-        sub-commands are defined in their own module and imported only for the
-        group object, so they are not picked up as top-level commands.
+        Derives the calling package from `sys.argv[0]`, locates the module
+        `<package>.rig.cli.subcommands`, and registers every function defined
+        there as a flat Typer command. Module-level `typer.Typer` instances are
+        also registered as named command groups, with the group name derived
+        from the kebab-case form of the attribute name.
 
-        This allows any pyrig-based project to define its own CLI commands simply
-        by adding functions to `<package>.rig.cli.subcommands`.
+        Any pyrig-based project can define its own CLI commands by adding
+        functions or `typer.Typer` groups to `<package>.rig.cli.subcommands`.
 
         Args:
             app: The Typer app to register the commands onto.
@@ -198,12 +189,8 @@ class CLI(DependencySubclass):
 
         Searches pyrig itself and every package that depends on pyrig for a
         `<package>.rig.cli.shared_subcommands` module and registers both its
-        top-level command functions and its `typer.Typer` command groups. These
-        commands are available in every pyrig-based project and can adapt their
-        behavior to the calling project at runtime.
-
-        For example, a `version` command defined once in pyrig automatically
-        reports the version of whichever project invokes it.
+        top-level command functions and its `typer.Typer` command groups. Shared
+        commands are available in every pyrig-based project.
 
         Args:
             app: The Typer app to register the commands onto.
@@ -226,8 +213,7 @@ class CLI(DependencySubclass):
         """Register every function defined in a module as a top-level command.
 
         Adds each function found directly in `module` to `app` as a flat Typer
-        command. Imported functions are excluded; module-level `typer.Typer` group
-        instances are registered separately by `register_subcommand_groups`.
+        command. Imported functions are excluded.
 
         Args:
             app: The Typer app to register the commands onto.
@@ -239,9 +225,8 @@ class CLI(DependencySubclass):
     def register_subcommand_groups(self, app: typer.Typer, module: ModuleType) -> None:
         """Register every `typer.Typer` instance in a module as a named command group.
 
-        Attaches each `typer.Typer` found in the module's namespace to `app`
-        under its attribute name (e.g. an `mk` variable becomes the `mk` command
-        group, exposing `pyrig mk <command>`).
+        Attaches each `typer.Typer` found in the module's namespace to `app`,
+        using the kebab-case form of the attribute name as the group name.
 
         Args:
             app: The Typer app to register the command groups onto.
@@ -251,17 +236,18 @@ class CLI(DependencySubclass):
             app.add_typer(group, name=name)
 
     def module_subcommand_groups(self, module: ModuleType) -> dict[str, typer.Typer]:
-        """Return the Typer command groups defined in a subcommands module.
+        """Return the Typer command groups found in a subcommands module.
 
-        Scans the module's namespace for `typer.Typer` instances and maps each
-        to the attribute name it is bound to. Imported instances are included
-        as long as they are bound to a module-level name.
+        Scans the module's namespace for `typer.Typer` instances. Both natively
+        defined and imported instances are included. The key for each entry is
+        the kebab-case form of the attribute name it is bound to.
 
         Args:
             module: The subcommands module to scan.
 
         Returns:
-            Mapping of attribute name to the `typer.Typer` group bound to it.
+            Mapping of kebab-case attribute name to the `typer.Typer` instance
+            bound to it.
         """
         return {
             snake_to_kebab_case(name): obj
