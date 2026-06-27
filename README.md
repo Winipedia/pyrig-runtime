@@ -31,3 +31,24 @@
 > Runtime dependency and library for projects built with pyrig.
 
 ---
+
+## Overview
+
+`pyrig-runtime` is the runtime layer that projects built with
+[pyrig](https://github.com/Winipedia/pyrig) depend on. It is a standalone
+library — its only dependency is Typer, and nothing here requires pyrig itself
+to be installed. pyrig is the build- and development-time toolkit; pyrig-runtime
+is the piece that ships with the projects pyrig creates.
+
+## Features
+
+- **Plugin discovery via classes** — define a base class and its subclasses are
+  discovered automatically across every installed package that depends on it without
+  the need for registration. [Learn more](https://Winipedia.github.io/pyrig-runtime/plugins).
+- **Automatic CLI** — every project gets a working command-line interface,
+  assembled from commands across its dependencies.
+  [Learn more](https://Winipedia.github.io/pyrig-runtime/cli).
+
+## Documentation
+
+For anything beyond this overview, see the [Documentation](https://Winipedia.github.io/pyrig-runtime).

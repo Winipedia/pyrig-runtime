@@ -14,10 +14,12 @@ def discover_subclasses_across_package[T](
 ) -> set[type[T]]:
     """Discover all subclasses of `cls` defined within a package.
 
-    Covers subclasses from every module in the package hierarchy, including
-    those not yet imported at the time of the call. Only subclasses whose
-    defining module is a proper sub-module of `package` are returned; any
-    class defined directly in the root package module is excluded.
+    The package is scanned recursively, so subclasses are found in its
+    sub-modules at any nesting depth, including ones not yet imported when this
+    is called. Only subclasses whose defining module is a proper sub-module of
+    `package` are returned; a class defined directly in the package's own
+    `__init__` module is not discovered, so implementations belong in
+    sub-modules rather than the package `__init__`.
 
     Args:
         cls: Base class whose subclasses should be discovered.
@@ -29,7 +31,6 @@ def discover_subclasses_across_package[T](
     """
     register_package_modules(package)
     subclasses = discover_subclasses(cls)
-    # remove all not in the package
     return {
         subclass
         for subclass in subclasses
