@@ -1,4 +1,4 @@
-"""Helpers for importing, resolving, and iterating Python modules."""
+"""Utilities for Python modules."""
 
 import logging
 from collections.abc import Iterable, Iterator
@@ -6,6 +6,9 @@ from importlib import import_module
 from pkgutil import iter_modules as pkgutil_iter_modules
 from types import ModuleType
 from typing import Any
+
+from pyrig_runtime.core.constants import MISSING
+from pyrig_runtime.core.wrappers import safe_call
 
 logger = logging.getLogger(__name__)
 
@@ -26,32 +29,27 @@ def root_module(module: ModuleType) -> ModuleType:
     return import_module(module.__name__.split(".")[0])
 
 
-def import_module_with_default(
-    module_name: str, default: Any = None
+def safe_import_module(
+    module_name: str, *args: Any, default: Any = MISSING, **kwargs: Any
 ) -> ModuleType | Any:
-    """Import a module by name, returning a default value on failure.
+    """Import a module by name, with an optional fallback on failure.
 
-    Any `Exception` raised during import — not just `ImportError` — triggers
-    the fallback, so errors at module level (e.g., `ValueError` raised on
-    import) are also caught.
+    Any `Exception` raised during import — not just `ImportError` — is
+    handled, so errors at module level (e.g., `ValueError` raised on
+    import) are also covered.
 
     Args:
         module_name: Dotted module name (e.g., `"package.subpackage.module"`).
-        default: Value to return if the import raises. Defaults to `None`.
+        *args: Positional arguments forwarded to `import_module`.
+        default: Value to return if the import raises. If not provided,
+            the exception propagates unchanged.
+        **kwargs: Keyword arguments forwarded to `import_module`.
 
     Returns:
-        The imported module, or `default` if any exception is raised.
+        The imported module, or `default` if an exception is raised and
+        `default` was provided.
     """
-    try:
-        return import_module(module_name)
-    except Exception as e:  # noqa: BLE001
-        logger.debug(
-            "Could not import module %s, returning default value %s. Exception: %s",
-            module_name,
-            default,
-            e,
-        )
-        return default
+    return safe_call(import_module, module_name, *args, **kwargs, default=default)
 
 
 def replace_root_module_name(module: ModuleType, root_module_name: str) -> str:

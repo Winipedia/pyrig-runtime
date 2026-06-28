@@ -14,8 +14,8 @@ from pyrig_runtime.core.dependencies.discovery import (
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.core.introspection.functions import module_functions
 from pyrig_runtime.core.introspection.modules import (
-    import_module_with_default,
     replace_root_module_name,
+    safe_import_module,
 )
 from pyrig_runtime.core.strings import kebab_to_snake_case, snake_to_kebab_case
 from pyrig_runtime.rig.cli import cli, shared_subcommands, subcommands
@@ -148,7 +148,7 @@ class CLI(DependencySubclass):
         subcommands_module_name = replace_root_module_name(
             subcommands, root_module_name=self.package_name()
         )
-        subcommands_module = import_module_with_default(subcommands_module_name)
+        subcommands_module = safe_import_module(subcommands_module_name, default=None)
 
         if subcommands_module is None:
             return

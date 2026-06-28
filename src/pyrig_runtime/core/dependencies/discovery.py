@@ -8,9 +8,9 @@ from types import ModuleType
 
 from pyrig_runtime.core.dependencies.graph import DependencyGraph
 from pyrig_runtime.core.introspection.modules import (
-    import_module_with_default,
     import_modules,
     root_module,
+    safe_import_module,
 )
 from pyrig_runtime.core.introspection.packages import (
     discover_subclasses_across_package,
@@ -82,7 +82,7 @@ def discover_equivalent_modules_across_dependents(
         package_module_name = module.__name__.replace(
             dependency.__name__, package.__name__, 1
         )
-        package_module = import_module_with_default(package_module_name)
+        package_module = safe_import_module(package_module_name, default=None)
         if package_module is not None:
             yield package_module
 

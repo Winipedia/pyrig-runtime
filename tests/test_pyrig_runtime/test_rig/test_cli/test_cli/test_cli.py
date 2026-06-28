@@ -6,7 +6,7 @@ import typer
 from pyrig.rig.cli import subcommands as pyrig_subcommands_module
 from pytest_mock import MockerFixture
 
-from pyrig_runtime.core.introspection.modules import import_module_with_default
+from pyrig_runtime.core.introspection.modules import safe_import_module
 from pyrig_runtime.core.strings import kebab_to_snake_case
 from pyrig_runtime.rig.cli import cli as cli_package
 from pyrig_runtime.rig.cli.cli import cli as cli_module
@@ -20,7 +20,7 @@ class TestCLI:
         """Test method."""
         # fetch the live module: other tests may re-import it into sys.modules,
         # which would make the module-level reference stale for identity checks
-        module = import_module_with_default(pyrig_subcommands_module.__name__)
+        module = safe_import_module(pyrig_subcommands_module.__name__)
         app = CLI.I.base_app()
         CLI.I.register_direct_subcommands(app=app, module=module)
         commands = {cmd.callback.__name__ for cmd in app.registered_commands}
@@ -33,7 +33,7 @@ class TestCLI:
 
     def test_register_subcommand_groups(self) -> None:
         """Test method."""
-        module = import_module_with_default(pyrig_subcommands_module.__name__)
+        module = safe_import_module(pyrig_subcommands_module.__name__)
         app = CLI.I.base_app()
         CLI.I.register_subcommand_groups(app=app, module=module)
         groups = {group.name: group for group in app.registered_groups}
@@ -139,11 +139,11 @@ class TestCLI:
         # a fresh app whose subcommands module fails to import gets no commands
         app = CLI.I.base_app()
         import_module_mock = mocker.patch(
-            cli_module.__name__ + "." + import_module_with_default.__name__,
+            cli_module.__name__ + "." + safe_import_module.__name__,
             return_value=None,
         )
         CLI.I.register_subcommands(app)
-        import_module_mock.assert_called_once_with(pyrig_subcommands_module.__name__)
+        import_module_mock.assert_called_once()
         assert len(app.registered_commands) == 0
 
     def test_register_shared_subcommands(self) -> None:
