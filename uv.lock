@@ -903,21 +903,20 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "15.45.0"
+version = "15.48.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "inquirerpy" },
     { name = "packaging" },
     { name = "pyrig-runtime" },
     { name = "pyyaml" },
-    { name = "requests" },
     { name = "spdx-matcher" },
     { name = "tomlkit" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bf/fb/5362f4ae600ba0920b1c0ff7c57ef76c7f0a45c7fa6bedb400c8abb0bef3/pyrig-15.45.0.tar.gz", hash = "sha256:d753957096f266e30889fbf5b8ea8ba07d0d58bd753a6937cc7f456149030797", size = 100247, upload-time = "2026-06-28T19:21:53.017Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/01/fc/b6aacb155ea6c9169fc5a93fa41da2ed8e61aa9f00177a2be123c80d8852/pyrig-15.48.0.tar.gz", hash = "sha256:cd9411d019dbba3e35f973421e41e98d4a06a598c8f6c03e02d28a1370d22e57", size = 99443, upload-time = "2026-06-28T23:08:34.622Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1d/2b/59412413a5a09cfba2ae755262ca4216c9e0ed4dbb26748c476e801b0cd7/pyrig-15.45.0-py3-none-any.whl", hash = "sha256:7cb4bf32be54c01e74ff3c357e40827d58ad2b0d47d4ae4aa369607a8cd5ea28", size = 149252, upload-time = "2026-06-28T19:21:50.971Z" },
+    { url = "https://files.pythonhosted.org/packages/cf/df/9ddde51ecde471ebb85cc631df8810e66df4f0897d41837cb313a138b150/pyrig-15.48.0-py3-none-any.whl", hash = "sha256:2037030f73744754e64a3a44e94d2b359a363e93a5d3c353d467f185d5336d94", size = 148029, upload-time = "2026-06-28T23:08:33.09Z" },
 ]
 
 [[package]]
@@ -964,7 +963,7 @@ wheels = [
 
 [[package]]
 name = "pyrig-runtime"
-version = "0.16.0"
+version = "0.17.0"
 source = { editable = "." }
 dependencies = [
     { name = "typer" },
