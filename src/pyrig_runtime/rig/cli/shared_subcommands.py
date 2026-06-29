@@ -8,7 +8,7 @@ form of the variable name.
 
 
 def version() -> None:
-    """Print the installed version.
+    """Print the name and installed version.
 
     Reports the version of whichever project's CLI entry point was used to
     invoke this command, not pyrig-runtime's own version. The project must be

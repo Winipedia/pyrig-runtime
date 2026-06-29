@@ -41,7 +41,7 @@ def is_funclike(obj: Any) -> bool:
 
     - Plain functions and bound methods
     - `staticmethod` and `classmethod` descriptors
-    - `property` descriptors
+    - `property` descriptors that have a getter (`fget`)
     - Functions wrapped with `functools.wraps` or similar decorators
 
     Args:
