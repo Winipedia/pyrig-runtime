@@ -30,7 +30,11 @@ def root_module(module: ModuleType) -> ModuleType:
 
 
 def safe_import_module(
-    module_name: str, *args: Any, default: Any = MISSING, **kwargs: Any
+    module_name: str,
+    *args: Any,
+    default: Any = MISSING,
+    exceptions: tuple[type[BaseException], ...] = (Exception,),
+    **kwargs: Any,
 ) -> ModuleType | Any:
     """Import a module by name, with an optional fallback on failure.
 
@@ -43,13 +47,21 @@ def safe_import_module(
         *args: Positional arguments forwarded to `import_module`.
         default: Value to return if the import raises. If not provided,
             the exception propagates unchanged.
+        exceptions: Tuple of exception types to catch. Defaults to `(Exception,)`.
         **kwargs: Keyword arguments forwarded to `import_module`.
 
     Returns:
         The imported module, or `default` if an exception is raised and
         `default` was provided.
     """
-    return safe_call(import_module, module_name, *args, **kwargs, default=default)
+    return safe_call(
+        import_module,
+        module_name,
+        *args,
+        **kwargs,
+        default=default,
+        exceptions=exceptions,
+    )
 
 
 def replace_root_module_name(module: ModuleType, root_module_name: str) -> str:

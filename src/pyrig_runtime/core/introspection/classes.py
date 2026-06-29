@@ -16,8 +16,9 @@ def discover_subclasses[T](cls: type[T]) -> set[type[T]]:
     Returns:
         Set of all transitive subclass types, excluding `cls` itself.
     """
-    subclasses = set(cls.__subclasses__())
-    for subclass in cls.__subclasses__():
+    direct = cls.__subclasses__()
+    subclasses = set(direct)
+    for subclass in direct:
         subclasses.update(discover_subclasses(subclass))
     return subclasses
 

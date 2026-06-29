@@ -16,6 +16,7 @@ from pyrig_runtime.core.introspection.classes import (
     discard_abstract_classes,
     discard_parent_classes,
 )
+from pyrig_runtime.core.strings import fully_qualified_name
 
 T = TypeVar("T", bound="DependencySubclass")
 
@@ -31,7 +32,7 @@ class DependencySubclass(ABC):
 
     def __str__(self) -> str:
         """Return the fully qualified class name of this instance."""
-        return f"{self.__module__}.{self.__class__.__name__}"
+        return fully_qualified_name(self.__class__)
 
     @classmethod
     @abstractmethod
@@ -116,13 +117,17 @@ class DependencySubclass(ABC):
         if second is None:
             return leaf
 
+        subclasses_dump = json.dumps(
+            [fully_qualified_name(subcls) for subcls in (leaf, second, *subclasses)],
+            indent=4,
+        )
         msg = f"""Multiple leaf subclasses found for {cls}.
 Defining multiple leaf subclasses is ambiguous.
 This can happen if more than one leaf subclass is defined
 across all the dependent packages.
 
 Found subclasses:
-{json.dumps([str(subcls) for subcls in (leaf, second, *subclasses)], indent=4)}"""
+{subclasses_dump}"""
         raise RuntimeError(msg)
 
     @classmethod

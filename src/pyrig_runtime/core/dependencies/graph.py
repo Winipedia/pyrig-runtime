@@ -5,7 +5,7 @@ from collections.abc import Iterator
 
 from pyrig_runtime.core.graph import DiGraph
 from pyrig_runtime.core.strings import (
-    dependency_requirement_as_package_name,
+    dependency_requirement_as_module_name,
 )
 
 
@@ -29,7 +29,7 @@ class DependencyGraph(DiGraph):
                 (`some-package`) or the import name (`some_package`).
         """
         super().__init__(
-            root=dependency_requirement_as_package_name(root) if root else None
+            root=dependency_requirement_as_module_name(root) if root else None
         )
 
     def build(self) -> None:
@@ -45,11 +45,12 @@ class DependencyGraph(DiGraph):
     ) -> tuple[str, Iterator[str]]:
         """Extract the package name and dependencies from a distribution.
 
-        Both the package name and every dependency name are normalized to a
-        bare snake_case package name; version specifiers and extras in
-        requirement strings are stripped. The dependency iterator is exhausted
-        once consumed; it yields nothing when the distribution declares no
-        dependencies.
+        Both the package name and every dependency name are normalized to an
+        importable module name; version specifiers and extras in requirement
+        strings are stripped. Dots are preserved for namespace packages
+        (e.g. ``zope.interface`` remains ``zope.interface``). The dependency
+        iterator is exhausted once consumed; it yields nothing when the
+        distribution declares no dependencies.
 
         Args:
             dist: Distribution to extract metadata from.
@@ -59,6 +60,6 @@ class DependencyGraph(DiGraph):
             name and `deps` is an iterator over the normalized name of each
             declared dependency.
         """
-        return dependency_requirement_as_package_name(dist.name), (
-            dependency_requirement_as_package_name(req) for req in (dist.requires or [])
+        return dependency_requirement_as_module_name(dist.name), (
+            dependency_requirement_as_module_name(req) for req in (dist.requires or [])
         )

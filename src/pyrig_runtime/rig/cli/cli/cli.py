@@ -104,6 +104,9 @@ class CLI(DependencySubclass):
         CRITICAL). The format also expands at higher verbosity, adding module
         names at two increments and timestamps at three.
 
+        The log level is intentionally unclamped to potentially support
+        custom log levels.
+
         Args:
             verbose: Number of times verbosity was increased (e.g. via `-v`).
             quiet: Number of times verbosity was decreased (e.g. via `-q`).
