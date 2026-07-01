@@ -34,7 +34,7 @@ def discover_subclasses_across_package[T](
     return {
         subclass
         for subclass in subclasses
-        if subclass.__module__.startswith(package.__name__ + ".")
+        if subclass.__module__.startswith(f"{package.__name__}.")
     }
 
 
