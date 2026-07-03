@@ -2,7 +2,6 @@
 
 import inspect
 from collections.abc import Callable, Iterator
-from types import ModuleType
 from typing import Any
 
 
@@ -28,32 +27,6 @@ def obj_members(
         for member, value in inspect.getmembers_static(obj, predicate=predicate)
         if member not in {"__annotate__", "__annotate_func__"}
     )
-
-
-def obj_module(obj: Any, default: ModuleType | None = None) -> ModuleType:
-    """Return the module where `obj` is defined.
-
-    When `obj` is wrapped, the module of the innermost unwrapped object is
-    returned, not the module of the outermost wrapper.
-
-    Args:
-        obj: Python object whose defining module to locate.
-        default: Module to return when the defining module cannot be determined.
-            When `None` and the module cannot be determined, `LookupError` is
-            raised.
-
-    Returns:
-        The module where `obj` is defined.
-
-    Raises:
-        LookupError: If the defining module cannot be determined and `default`
-            is `None`.
-    """
-    module = inspect.getmodule(unwrap_obj(obj)) or default
-    if module is None:
-        msg = f"Could not determine module of {obj}"
-        raise LookupError(msg)
-    return module
 
 
 def unwrap_obj(obj: Any) -> Any:

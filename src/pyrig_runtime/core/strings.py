@@ -1,8 +1,7 @@
 """String conversion utilities for Python package naming conventions."""
 
 import re
-from collections.abc import Callable
-from typing import Any
+from types import FunctionType, MethodType
 
 
 def kebab_to_snake_case(value: str) -> str:
@@ -49,7 +48,7 @@ def dependency_requirement_split_pattern() -> re.Pattern[str]:
     return re.compile(r"[^a-zA-Z0-9_.-]")
 
 
-def fully_qualified_name(obj: Callable[..., Any]) -> str:
+def fully_qualified_name(obj: MethodType | FunctionType | type) -> str:
     """Return the fully qualified name of a callable.
 
     The returned name consists of the callable's module and qualified name,
@@ -63,4 +62,4 @@ def fully_qualified_name(obj: Callable[..., Any]) -> str:
     Returns:
         The callable's fully qualified name.
     """
-    return f"{obj.__module__}.{obj.__qualname__}"  # ty:ignore[unresolved-attribute]
+    return f"{obj.__module__}.{obj.__qualname__}"
