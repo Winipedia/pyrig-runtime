@@ -1,4 +1,4 @@
-"""Detecting and enumerating function-like objects."""
+"""Utilities for Python functions."""
 
 import inspect
 from collections.abc import Callable, Iterator
