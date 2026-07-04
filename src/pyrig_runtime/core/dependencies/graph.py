@@ -38,7 +38,7 @@ class DependencyGraph(DiGraph):
             name, deps = self.parse_name_and_deps(dist)
             self.add_node(name)
             for dep in deps:
-                self.add_edge(name, dep)  # package → dependency
+                self.add_edge(name, dep)
 
     def parse_name_and_deps(
         self, dist: importlib.metadata.Distribution

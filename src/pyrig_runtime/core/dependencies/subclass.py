@@ -65,7 +65,7 @@ class DependencySubclass(ABC):
         return cls.__name__
 
     @classproperty
-    @cache  # noqa: B019  # false warning bc of custom classproperty decorator
+    @cache  # noqa: B019
     def I(cls) -> Self:  # noqa: E743, N802, N805
         """Return a cached instance of the leaf subclass.
 
@@ -82,7 +82,7 @@ class DependencySubclass(ABC):
         return cls.L()
 
     @classproperty
-    @cache  # noqa: B019  # false warning bc of custom classproperty decorator
+    @cache  # noqa: B019
     def L(cls) -> type[Self]:  # noqa: N802, N805
         """Return the cached leaf subclass type.
 

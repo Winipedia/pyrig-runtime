@@ -5,6 +5,7 @@ import sys
 from itertools import chain
 from pathlib import Path
 from types import ModuleType
+from typing import Any
 
 import typer
 
@@ -17,7 +18,11 @@ from pyrig_runtime.core.introspection.modules import (
     replace_root_module_name,
     safe_import_module,
 )
-from pyrig_runtime.core.strings import kebab_to_snake_case, snake_to_kebab_case
+from pyrig_runtime.core.strings import (
+    distribution_summary,
+    kebab_to_snake_case,
+    snake_to_kebab_case,
+)
 from pyrig_runtime.rig.cli import cli, shared_subcommands, subcommands
 
 
@@ -50,7 +55,22 @@ class CLI(DependencySubclass):
             A new Typer app configured to show help when invoked without
             arguments.
         """
-        return typer.Typer(no_args_is_help=True)
+        return typer.Typer(**self.base_app_kwargs())
+
+    def base_app_kwargs(self) -> dict[str, Any]:
+        """Return keyword arguments for creating the base Typer application.
+
+        This base configuration makes sure that calling the CLI without
+        any arguments will display the help message, and that the help text
+        is the same as the description of the invoking project.
+
+        Returns:
+            A dictionary of keyword arguments to pass to `typer.Typer`.
+        """
+        return {
+            "no_args_is_help": True,
+            "help": distribution_summary(self.project_name()),
+        }
 
     def build_app(self, app: typer.Typer) -> typer.Typer:
         """Register the callback and all commands onto the given app.
@@ -91,9 +111,12 @@ class CLI(DependencySubclass):
             help="Decrease verbosity: -q (WARNING), -qq (ERROR), -qqq (CRITICAL)",
         ),
     ) -> None:
-        # cli is inherited by dependent projects, so the callback docstring is
-        # intentionally left blank to avoid confusion in help messages
-        """"""  # noqa: D419
+        """Apply the verbosity options for the current invocation.
+
+        Args:
+            verbose: Number of times verbosity was increased (e.g. via `-v`).
+            quiet: Number of times verbosity was decreased (e.g. via `-q`).
+        """
         self.configure_logging(verbose, quiet)
 
     def configure_logging(self, verbose: int, quiet: int) -> None:

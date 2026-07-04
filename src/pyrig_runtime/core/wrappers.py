@@ -1,18 +1,37 @@
 """Wrapper utilities."""
 
 from collections.abc import Callable
-from typing import Any
+from typing import Any, overload
 
 from pyrig_runtime.core.constants import MISSING
 
 
+@overload
+def safe_call[T, D](
+    func: Callable[..., T],
+    *args: Any,
+    default: D,
+    exceptions: tuple[type[BaseException], ...] = ...,
+    **kwargs: Any,
+) -> T | D: ...
+
+
+@overload
 def safe_call[T](
     func: Callable[..., T],
     *args: Any,
-    default: T = MISSING,  # ty:ignore[invalid-parameter-default]
+    exceptions: tuple[type[BaseException], ...] = ...,
+    **kwargs: Any,
+) -> T: ...
+
+
+def safe_call(
+    func: Callable[..., Any],
+    *args: Any,
+    default: Any = MISSING,
     exceptions: tuple[type[BaseException], ...] = (Exception,),
     **kwargs: Any,
-) -> T:
+) -> Any:
     """Call `func`, returning `default` on failure or re-raising if none is given.
 
     Args:

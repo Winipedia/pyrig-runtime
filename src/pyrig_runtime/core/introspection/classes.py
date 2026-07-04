@@ -37,12 +37,12 @@ def discard_parent_classes[T](
     Yields:
         Classes that have no subclasses present in the same collection.
     """
-    classes = set(classes)  # ensure we have a set for O(1) lookups
+    classes = set(classes)
     return (
         cls
         for cls in classes
         if not any(
-            candidate is not cls and issubclass(candidate, cls) for candidate in classes
+            issubclass(candidate, cls) for candidate in classes if candidate is not cls
         )
     )
 

@@ -1,6 +1,7 @@
 """String conversion utilities for Python package naming conventions."""
 
 import re
+from importlib.metadata import metadata
 from types import FunctionType, MethodType
 
 
@@ -44,7 +45,6 @@ def dependency_requirement_split_pattern() -> re.Pattern[str]:
         A pattern matching any character that is not alphanumeric, an
         underscore, a hyphen, or a period.
     """
-    # re.compile is already internally cached by Python
     return re.compile(r"[^a-zA-Z0-9_.-]")
 
 
@@ -63,3 +63,15 @@ def fully_qualified_name(obj: MethodType | FunctionType | type) -> str:
         The callable's fully qualified name.
     """
     return f"{obj.__module__}.{obj.__qualname__}"
+
+
+def distribution_summary(name: str) -> str:
+    """Return the summary recorded in an installed distribution's metadata.
+
+    Args:
+        name: Name of an installed distribution (e.g. `"requests"`).
+
+    Returns:
+        The distribution's summary description.
+    """
+    return metadata(name)["Summary"]

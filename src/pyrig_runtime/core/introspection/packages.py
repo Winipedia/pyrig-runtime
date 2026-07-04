@@ -49,7 +49,6 @@ def register_package_modules(package: ModuleType) -> None:
         Cached per package — subsequent calls with the same package do
         nothing.
     """
-    # exhaust the generator to trigger imports, but ignore the output
     _ = tuple(walk_package(package))
 
 

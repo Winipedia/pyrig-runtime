@@ -42,8 +42,8 @@ class DiGraph(ABC):
         """Initialize the directed graph, optionally pruned to the given root."""
         self.root = root
         self.nodes: set[str] = set()
-        self.edges: dict[str, set[str]] = {}  # node -> outgoing neighbors
-        self.reverse_edges: dict[str, set[str]] = {}  # node -> incoming neighbors
+        self.edges: dict[str, set[str]] = {}
+        self.reverse_edges: dict[str, set[str]] = {}
         self.build()
         if self.root is not None:
             self.prune(self.root)
@@ -133,7 +133,6 @@ class DiGraph(ABC):
             node = queue.popleft()
             if node not in visited:
                 visited.add(node)
-                # Iterate directly to avoid creating intermediate set
                 for neighbor in self.reverse_edges.get(node, set()):
                     if neighbor not in visited:
                         queue.append(neighbor)
@@ -162,8 +161,6 @@ class DiGraph(ABC):
             RuntimeError: If the subgraph contains a cycle, making topological
                 sorting impossible.
         """
-        # Count outgoing edges (dependencies) for each node in the subgraph
-        # Nodes with 0 outgoing edges have no dependencies
         out_degree: dict[str, int] = dict.fromkeys(nodes, 0)
 
         for node in nodes:
@@ -171,8 +168,6 @@ class DiGraph(ABC):
                 if dependency in nodes:
                     out_degree[node] += 1
 
-        # Use heapq for O(log n) insertion maintaining sorted order
-        # This replaces O(n log n) sort() + O(n) pop(0) with O(log n) heappop()
         heap: list[str] = [node for node in nodes if out_degree[node] == 0]
         heapq.heapify(heap)
         result: list[str] = []
@@ -181,14 +176,12 @@ class DiGraph(ABC):
             node = heapq.heappop(heap)
             result.append(node)
 
-            # For each package that depends on this node (reverse edges)
             for dependent in self.reverse_edges.get(node, set()):
                 if dependent in nodes:
                     out_degree[dependent] -= 1
                     if out_degree[dependent] == 0:
                         heapq.heappush(heap, dependent)
 
-        # Check for cycles
         if len(result) != len(nodes):
             msg = (
                 "Graph contains a cycle; topological sort not possible. "

@@ -4,6 +4,7 @@ import logging
 
 import typer
 from pyrig.rig.cli import subcommands as pyrig_subcommands_module
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pytest_mock import MockerFixture
 
 from pyrig_runtime.core.introspection.modules import safe_import_module
@@ -15,6 +16,18 @@ from pyrig_runtime.rig.cli.cli.cli import CLI
 
 class TestCLI:
     """Test class."""
+
+    def test_base_app_kwargs(self, mocker: MockerFixture) -> None:
+        """Test method."""
+        project_name_mock = mocker.patch.object(
+            CLI.I, CLI.project_name.__name__, return_value="pyrig-runtime"
+        )
+        kwargs = CLI.I.base_app_kwargs()
+        project_name_mock.assert_called()
+        assert kwargs == {
+            "no_args_is_help": True,
+            "help": PyprojectConfigFile().project_description(),
+        }
 
     def test_register_direct_subcommands(self) -> None:
         """Test method."""
@@ -121,7 +134,7 @@ class TestCLI:
         )
         app = CLI.I.base_app()
         CLI.I.register_subcommands(app)
-        project_name_mock.assert_called_once()
+        project_name_mock.assert_called()
         # flat commands are registered at the top level
         commands = {cmd.callback.__name__ for cmd in app.registered_commands}
         assert {"sync"}.issubset(commands)

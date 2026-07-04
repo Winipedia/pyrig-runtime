@@ -2,10 +2,13 @@
 
 import re
 
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
+
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.core.strings import (
     dependency_requirement_as_module_name,
     dependency_requirement_split_pattern,
+    distribution_summary,
     fully_qualified_name,
     kebab_to_snake_case,
     snake_to_kebab_case,
@@ -76,4 +79,12 @@ def test_fully_qualified_name() -> None:
 
     assert fully_qualified_name(DependencySubclass.dependency_package) == (
         "pyrig_runtime.core.dependencies.subclass.DependencySubclass.dependency_package"
+    )
+
+
+def test_distribution_summary() -> None:
+    """Test function."""
+    assert (
+        distribution_summary("pyrig-runtime")
+        == PyprojectConfigFile().project_description()
     )
