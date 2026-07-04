@@ -2,6 +2,7 @@
 
 import inspect
 from collections.abc import Callable, Iterable, Iterator
+from typing import Any
 
 
 def discover_subclasses[T](cls: type[T]) -> set[type[T]]:
@@ -62,7 +63,7 @@ def discard_abstract_classes[T](classes: Iterable[type[T]]) -> Iterator[type[T]]
     return (cls for cls in classes if not inspect.isabstract(cls))
 
 
-class classproperty[T]:  # noqa: N801
+class classproperty[T, R]:  # noqa: N801
     """Descriptor that exposes a property computed from the class, not an instance.
 
     Unlike `@property`, which requires an instance, `@classproperty` can be
@@ -84,11 +85,11 @@ class classproperty[T]:  # noqa: N801
 
     __slots__ = ("fget",)
 
-    def __init__(self, fget: Callable[..., T]) -> None:
+    def __init__(self, fget: Callable[[Any], R]) -> None:
         """Wrap `fget` as a class-level property descriptor."""
         self.fget = fget
 
-    def __get__(self, obj: object, owner: type) -> T:
+    def __get__(self, obj: T, owner: type[T]) -> R:
         """Invoke the getter with the owner class and return the result.
 
         Args:
