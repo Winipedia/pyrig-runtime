@@ -1,7 +1,7 @@
 """module."""
 
 from collections.abc import Callable
-from typing import Any
+from types import FunctionType
 
 from pyrig_runtime.rig.cli import shared_subcommands
 from pyrig_runtime.rig.cli.commands.version import project_version
@@ -9,12 +9,12 @@ from pyrig_runtime.rig.cli.shared_subcommands import version
 
 
 def test_version(
-    command_works: Callable[[Callable[..., Any]], None],
-    command_calls_function: Callable[[Callable[..., Any], Callable[..., Any]], None],
+    command_works: Callable[[FunctionType], bool],
+    command_calls_function: Callable[[FunctionType, FunctionType], bool],
 ) -> None:
     """Test function."""
-    command_works(version)
-    command_calls_function(version, project_version)
+    assert command_works(version)
+    assert command_calls_function(version, project_version)
 
 
 def test_docstring() -> None:
