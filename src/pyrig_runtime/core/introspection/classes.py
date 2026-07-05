@@ -1,8 +1,7 @@
 """Utilities for introspecting and filtering Python classes."""
 
 import inspect
-from collections.abc import Callable, Iterable, Iterator
-from typing import Any
+from collections.abc import Iterable, Iterator
 
 
 def discover_subclasses[T](cls: type[T]) -> set[type[T]]:
@@ -61,43 +60,3 @@ def discard_abstract_classes[T](classes: Iterable[type[T]]) -> Iterator[type[T]]
         Concrete (non-abstract) classes from the input.
     """
     return (cls for cls in classes if not inspect.isabstract(cls))
-
-
-class classproperty[T, R]:  # noqa: N801
-    """Descriptor that exposes a property computed from the class, not an instance.
-
-    Unlike `@property`, which requires an instance, `@classproperty` can be
-    accessed directly on the class and also works correctly when accessed from
-    an instance.
-
-    Combine with `@functools.cache` on the underlying method to cache the
-    computed value per class.
-
-    Example:
-        >>> class MyClass:
-        ...     @classproperty
-        ...     def cls_name(cls) -> str:
-        ...         return cls.__name__.lower()
-        ...
-        >>> MyClass.cls_name
-        'myclass'
-    """
-
-    __slots__ = ("fget",)
-
-    def __init__(self, fget: Callable[[Any], R]) -> None:
-        """Wrap `fget` as a class-level property descriptor."""
-        self.fget = fget
-
-    def __get__(self, obj: T, owner: type[T]) -> R:
-        """Invoke the getter with the owner class and return the result.
-
-        Args:
-            obj: The instance the attribute was accessed from, or `None`
-                when accessed directly on the class. Not used.
-            owner: The class through which the attribute is accessed.
-
-        Returns:
-            The value returned by `fget` when called with `owner`.
-        """
-        return self.fget(owner)

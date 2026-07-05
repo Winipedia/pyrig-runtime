@@ -7,9 +7,7 @@ from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.configs.version_control.ignore import (
-    VersionControllerIgnoreConfigFile,
-)
+from pyrig.rig.configs.readme import ReadmeConfigFile
 from pyrig.rig.configs.version_control.remote.workflows.deploy import (
     DeployWorkflowConfigFile,
 )
@@ -28,6 +26,21 @@ from pyrig_runtime.rig.cli.cli.cli import CLI
 class TestDependencySubclass:
     """Test class."""
 
+    def test___str__(self) -> None:
+        """Test method."""
+        assert isinstance(str(CLI.I), str)
+        assert str(CLI.I) == str(CLI) == str(CLI.L)
+
+    def test_dependency_package(self) -> None:
+        """Test method."""
+        assert issubclass(ConfigFile, DependencySubclass)
+        assert ConfigFile.dependency_package() == configs
+        assert DependencySubclass.dependency_package() is rig
+
+    def test_sort_key(self) -> None:
+        """Test method."""
+        assert DependencySubclass.sort_key() == DependencySubclass.__name__
+
     def test_leaf(self) -> None:
         """Test method."""
         leaf = ProgrammingLanguage.leaf()
@@ -39,10 +52,6 @@ class TestDependencySubclass:
         ):
             _ = Tool.leaf()
 
-    def test___str__(self) -> None:
-        """Test method."""
-        assert isinstance(str(CLI.I), str)
-
     def test_concrete_subclasses(self) -> None:
         """Test method."""
         result = tuple(ConfigFile.concrete_subclasses())
@@ -50,9 +59,16 @@ class TestDependencySubclass:
         assert all(issubclass(subclass, ConfigFile) for subclass in result)
         assert all(not inspect.isabstract(subclass) for subclass in result)
 
+    def test_subclasses(self) -> None:
+        """Test method."""
+        subclasses = tuple(ConfigFile.subclasses())
+        assert len(subclasses) > 0
+        assert all(issubclass(subclass, ConfigFile) for subclass in subclasses)
+
     def test_subclasses_sorted(self) -> None:
         """Test method."""
         subclasses = (
+            ReadmeConfigFile,
             PyprojectConfigFile,
             LicenseConfigFile,
         )
@@ -60,33 +76,27 @@ class TestDependencySubclass:
         assert result == [
             LicenseConfigFile,
             PyprojectConfigFile,
+            ReadmeConfigFile,
         ]
+
+
+class TestDependencySubclassMeta:
+    """Test class."""
+
+    def test___str__(self) -> None:
+        """Test method."""
+        assert (
+            str(DependencySubclass)
+            == DependencySubclass.__module__ + "." + DependencySubclass.__name__
+        )
 
     def test_I(self) -> None:  # noqa: N802
         """Test method."""
-        result = VersionControllerIgnoreConfigFile.I
-        assert isinstance(result, VersionControllerIgnoreConfigFile)
-        assert result is VersionControllerIgnoreConfigFile.I.I
+        with pytest.raises(TypeError):
+            _ = DependencySubclass()
 
-    def test_dependency_package(self) -> None:
-        """Test method."""
-        result = ConfigFile.dependency_package()
-        assert issubclass(ConfigFile, DependencySubclass)
-        assert result == configs
-        assert DependencySubclass.dependency_package() is rig
-
-    def test_sort_key(self) -> None:
-        """Test method."""
-        result = PyprojectConfigFile.sort_key()
-        assert isinstance(result, (float, int))
-
-        assert DependencySubclass.sort_key() == DependencySubclass.__name__
-
-    def test_subclasses(self) -> None:
-        """Test method."""
-        result = tuple(ConfigFile.subclasses())
-        assert len(result) > 0
-        assert all(issubclass(subclass, ConfigFile) for subclass in result)
+        assert CLI.I is CLI.I
+        assert isinstance(CLI.I, CLI)
 
     def test_L(self) -> None:  # noqa: N802
         """Test method."""

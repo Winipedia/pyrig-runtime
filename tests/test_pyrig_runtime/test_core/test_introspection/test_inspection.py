@@ -2,9 +2,8 @@
 
 import inspect
 from collections.abc import Callable
-from functools import wraps
+from functools import cached_property, wraps
 
-from pyrig_runtime.core.introspection.classes import classproperty
 from pyrig_runtime.core.introspection.inspection import (
     obj_members,
     unwrap_obj,
@@ -56,9 +55,21 @@ class _TestDeeplyNestedClassMethod:
     def deeply_nested_class_method(cls) -> str:
         return "deeply_nested"
 
-    @classproperty
-    def class_property(cls) -> str:  # noqa: N805
-        return "class_property"
+    @property
+    def some_property(self) -> str:
+        return "property_value"
+
+    @staticmethod
+    def some_static_method() -> str:
+        return "static_value"
+
+    @classmethod
+    def some_class_method(cls) -> str:
+        return "class_value"
+
+    @cached_property
+    def some_cached_property(self) -> str:
+        return "cached_value"
 
 
 def test_unwrap_obj() -> None:
@@ -75,9 +86,16 @@ def test_unwrap_obj() -> None:
         f"Expected 'deeply_nested_class_method', got {unwrapped_method.__name__}"
     )
 
-    uncalled_property = inspect.getattr_static(
-        _TestDeeplyNestedClassMethod, "class_property"
+    uncalled = inspect.getattr_static(_TestDeeplyNestedClassMethod, "some_property")
+    unwrapped_property = unwrap_obj(uncalled)
+    assert unwrapped_property.__name__ == "some_property"
+
+    unwrapped_static_method = unwrap_obj(
+        inspect.getattr_static(_TestDeeplyNestedClassMethod, "some_static_method")
     )
-    unwrapped_property = unwrap_obj(uncalled_property)
-    assert unwrapped_property.__name__ == "class_property"
-    assert unwrapped_property(_TestDeeplyNestedClassMethod) == "class_property"
+    assert unwrapped_static_method.__name__ == "some_static_method"
+
+    unwrapped_class_method = unwrap_obj(
+        inspect.getattr_static(_TestDeeplyNestedClassMethod, "some_class_method")
+    )
+    assert unwrapped_class_method.__name__ == "some_class_method"

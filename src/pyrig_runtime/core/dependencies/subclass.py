@@ -1,27 +1,66 @@
 """Abstract base for cross-package subclass discovery without explicit registration."""
 
 import json
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from collections.abc import Iterable, Iterator
-from functools import cache
 from types import ModuleType
-from typing import Any, Self, TypeVar
+from typing import Any, Self
 
 from pyrig_runtime import rig
 from pyrig_runtime.core.dependencies.discovery import (
     discover_subclasses_across_dependencies,
 )
 from pyrig_runtime.core.introspection.classes import (
-    classproperty,
     discard_abstract_classes,
     discard_parent_classes,
 )
 from pyrig_runtime.core.strings import fully_qualified_name
 
-T = TypeVar("T", bound="DependencySubclass")
+
+class DependencySubclassMeta(ABCMeta):
+    """Metaclass backing `DependencySubclass` with the cached `I`/`L` properties."""
+
+    def __str__(cls) -> str:
+        """Return the fully qualified name of this class."""
+        return fully_qualified_name(cls)
+
+    @property
+    def I[C: DependencySubclass](cls: type[C]) -> C:  # noqa: E743, N802
+        """Return a cached instance of the leaf subclass.
+
+        The instance is created once per class and reused on every subsequent
+        access.
+
+        Returns:
+            An instance of the leaf subclass, or of the class itself if no
+            subclasses exist.
+
+        Raises:
+            RuntimeError: If more than one leaf subclass is found.
+        """
+        if "_instance" not in cls.__dict__:
+            cls._instance = cls.L()
+        return cls._instance
+
+    @property
+    def L[C: DependencySubclass](cls: type[C]) -> type[C]:  # noqa: N802
+        """Return the cached leaf subclass type.
+
+        The result is cached per class and reused on every subsequent access.
+
+        Returns:
+            The single leaf subclass type, or the class itself if no
+            subclasses exist. May be abstract.
+
+        Raises:
+            RuntimeError: If more than one leaf subclass is found.
+        """
+        if "_leaf" not in cls.__dict__:
+            cls._leaf = cls.leaf()
+        return cls._leaf
 
 
-class DependencySubclass(ABC):
+class DependencySubclass(metaclass=DependencySubclassMeta):
     """Abstract base enabling plugin-style subclass discovery across installed packages.
 
     Subclasses declare a sub-package scope by overriding the discovery hook,
@@ -32,7 +71,7 @@ class DependencySubclass(ABC):
 
     def __str__(self) -> str:
         """Return the fully qualified class name of this instance."""
-        return fully_qualified_name(self.__class__)
+        return str(self.__class__)
 
     @classmethod
     @abstractmethod
@@ -63,39 +102,6 @@ class DependencySubclass(ABC):
             subclasses.
         """
         return cls.__name__
-
-    @classproperty
-    @cache  # noqa: B019
-    def I(cls) -> Self:  # noqa: E743, N802, N805
-        """Return a cached instance of the leaf subclass.
-
-        The instance is created once per class and reused on every subsequent
-        access.
-
-        Returns:
-            An instance of the leaf subclass, or of the class itself if no
-            subclasses exist.
-
-        Raises:
-            RuntimeError: If more than one leaf subclass is found.
-        """
-        return cls.L()
-
-    @classproperty
-    @cache  # noqa: B019
-    def L(cls) -> type[Self]:  # noqa: N802, N805
-        """Return the cached leaf subclass type.
-
-        The result is cached per class and reused on every subsequent access.
-
-        Returns:
-            The single leaf subclass type, or the class itself if no
-            subclasses exist. May be abstract.
-
-        Raises:
-            RuntimeError: If more than one leaf subclass is found.
-        """
-        return cls.leaf()
 
     @classmethod
     def leaf(cls) -> type[Self]:

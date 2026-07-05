@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from typing import ClassVar
 
 from pyrig_runtime.core.introspection.classes import (
-    classproperty,
     discard_abstract_classes,
     discard_parent_classes,
     discover_subclasses,
@@ -141,29 +140,3 @@ def test_discard_abstract_classes() -> None:
         f"Expected AnotherAbstractChild not in {classes}"
     )
     assert ConcreteChild in classes, f"Expected ConcreteChild in {classes}"
-
-
-class Testclassproperty:
-    """Test class."""
-
-    def test___init__(self) -> None:
-        """Test that classproperty stores the function."""
-
-        def func(cls: type) -> str:
-            return cls.__name__
-
-        prop = classproperty(func)
-        assert prop.fget is func
-
-    def test___get__(self) -> None:
-        """Test that classproperty returns value from class."""
-
-        class MyClass:
-            @classproperty
-            def name(cls: type) -> str:  # noqa: N805
-                return cls.__name__.lower()
-
-        # Access via class
-        assert MyClass.name == "myclass"
-        # Access via instance
-        assert MyClass().name == "myclass"

@@ -36,7 +36,11 @@ class TestCLI:
         module = safe_import_module(pyrig_subcommands_module.__name__)
         app = CLI.I.base_app()
         CLI.I.register_direct_subcommands(app=app, module=module)
-        commands = {cmd.callback.__name__ for cmd in app.registered_commands}
+        commands = {
+            getattr(cmd.callback, "__name__")  # noqa: B009
+            for cmd in app.registered_commands
+            if cmd.callback is not None
+        }
         # functions defined directly in the module become top-level commands
         assert {"sync"}.issubset(commands)
         # grouped commands are not registered as flat commands
@@ -136,16 +140,23 @@ class TestCLI:
         CLI.I.register_subcommands(app)
         project_name_mock.assert_called()
         # flat commands are registered at the top level
-        commands = {cmd.callback.__name__ for cmd in app.registered_commands}
+        commands = {
+            getattr(cmd.callback, "__name__")  # noqa: B009
+            for cmd in app.registered_commands
+            if cmd.callback is not None
+        }
         assert {"sync"}.issubset(commands)
         # grouped commands are not registered at the top level
         assert {"cmd", "subcls"}.isdisjoint(commands)
         # the mk group is registered with its scaffold commands
         groups = {group.name: group for group in app.registered_groups}
         assert "mk" in groups
+        mk_typer = groups["mk"].typer_instance
+        assert mk_typer is not None
         mk_commands = {
-            command.callback.__name__
-            for command in groups["mk"].typer_instance.registered_commands
+            getattr(command.callback, "__name__")  # noqa: B009
+            for command in mk_typer.registered_commands
+            if command.callback is not None
         }
         assert {"cmd", "subcls"}.issubset(mk_commands)
 
@@ -164,7 +175,11 @@ class TestCLI:
         app = CLI.I.base_app()
         CLI.I.register_shared_subcommands(app)
         # check that version is in the app commands
-        commands = {cmd.callback.__name__ for cmd in app.registered_commands}
+        commands = {
+            getattr(cmd.callback, "__name__")  # noqa: B009
+            for cmd in app.registered_commands
+            if cmd.callback is not None
+        }
         assert {"version"}.issubset(commands)
 
     def test_module_subcommand_groups(self) -> None:
