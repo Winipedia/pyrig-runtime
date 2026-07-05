@@ -19,7 +19,7 @@ def obj_members(
         predicate: Optional filter. When given, only members for which it
             returns `True` are included.
 
-    Yields:
+    Returns:
         `(name, value)` pairs for the matching members of `obj`.
     """
     return (
