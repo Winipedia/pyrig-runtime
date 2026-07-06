@@ -257,10 +257,10 @@ class CLI(DependencySubclass):
         return kebab_to_snake_case(self.project_name())
 
     def project_name(self) -> str:
-        """Return the basename of `sys.argv[0]` as the invoking project name.
+        """Return the stem of `sys.argv[0]` as the invoking project name.
 
         When a project is invoked through a registered console-script entry point
         (e.g. `uv run my-project`), `sys.argv[0]` is the path to that script, so
-        its basename is the project name as it was registered.
+        its stem is the project name as it was registered.
         """
         return Path(sys.argv[0]).stem
