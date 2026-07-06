@@ -263,4 +263,4 @@ class CLI(DependencySubclass):
         (e.g. `uv run my-project`), `sys.argv[0]` is the path to that script, so
         its basename is the project name as it was registered.
         """
-        return Path(sys.argv[0]).name
+        return Path(sys.argv[0]).stem

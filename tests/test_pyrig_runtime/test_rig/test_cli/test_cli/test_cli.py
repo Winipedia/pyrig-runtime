@@ -1,6 +1,7 @@
 """Test module."""
 
 import logging
+import sys
 
 import typer
 from pyrig.rig.cli import subcommands as pyrig_subcommands_module
@@ -94,11 +95,15 @@ class TestCLI:
         # check that the callback is registered
         assert app.registered_callback is not None
 
-    def test_project_name(self) -> None:
+    def test_project_name(self, mocker: MockerFixture) -> None:
         """Test method."""
         project_name = CLI.I.project_name()
         assert isinstance(project_name, str)
         assert len(project_name) > 0
+
+        mocker.patch.object(sys, "argv", ["/path/to/my-project.exe"])
+        project_name = CLI.I.project_name()
+        assert project_name == "my-project"
 
     def test_callback(self, mocker: MockerFixture) -> None:
         """Test method."""
