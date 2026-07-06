@@ -4,17 +4,20 @@ import os
 import sys
 from contextlib import chdir
 from pathlib import Path
-from types import ModuleType
 
+import pyrig
+from pyrig import core as pyrig_core
 from pyrig.core.introspection.packages import import_package_with_dir_fallback
-from pytest_mock import MockerFixture
 
 import pyrig_runtime
+from pyrig_runtime import core
 from pyrig_runtime.core.introspection.modules import (
     import_modules,
     iter_modules,
+    replace_root_module,
     replace_root_module_name,
     root_module,
+    root_module_name,
     safe_import_module,
 )
 from pyrig_runtime.rig.cli import subcommands
@@ -36,13 +39,18 @@ def test_safe_import_module() -> None:
     assert result == "default", f"Expected default, got {result}"
 
 
-def test_replace_root_module_name(mocker: MockerFixture) -> None:
+def test_replace_root_module() -> None:
     """Test function."""
-    mock_module = mocker.MagicMock(spec=ModuleType)
-    mock_module.__name__ = "some.module.name"
-    new_name = replace_root_module_name(mock_module, "new")
-    expected_new_name = "new.module.name"
-    assert new_name == expected_new_name
+    result = replace_root_module(pyrig_runtime, "sys", default=None)
+    assert result is sys
+
+    assert (
+        replace_root_module(pyrig_runtime, "nonexistent", default="default")
+        == "default"
+    )
+    assert replace_root_module(pyrig_runtime, "nonexistent", default=None) is None
+
+    assert replace_root_module(core, pyrig.__name__) is pyrig_core
 
 
 def test_import_modules() -> None:
@@ -72,3 +80,18 @@ def test_iter_modules(tmp_path: Path) -> None:
         assert modules_names == [package.__name__ + ".test_module"], (
             f"Expected [package.test_module], got {modules}"
         )
+
+
+def test_replace_root_module_name() -> None:
+    """Test function."""
+    assert replace_root_module_name(core, pyrig.__name__) == "pyrig.core"
+    assert replace_root_module_name(pyrig_runtime, "sys") == "sys"
+
+
+def test_root_module_name() -> None:
+    """Test function."""
+    assert root_module_name(pyrig_runtime) == "pyrig_runtime"
+    assert root_module_name(core) == "pyrig_runtime"
+    assert root_module_name(sys) == "sys"
+    assert root_module_name(core) == "pyrig_runtime"
+    assert root_module_name(pyrig_core) == "pyrig"

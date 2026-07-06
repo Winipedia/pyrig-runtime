@@ -14,8 +14,6 @@ def safe_call[T, D](
     exceptions: tuple[type[BaseException], ...] = ...,
     **kwargs: Any,
 ) -> T | D: ...
-
-
 @overload
 def safe_call[T](
     func: Callable[..., T],
@@ -23,8 +21,6 @@ def safe_call[T](
     exceptions: tuple[type[BaseException], ...] = ...,
     **kwargs: Any,
 ) -> T: ...
-
-
 def safe_call(
     func: Callable[..., Any],
     *args: Any,

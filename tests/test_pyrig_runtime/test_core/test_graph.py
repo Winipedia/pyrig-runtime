@@ -167,7 +167,8 @@ class TestDiGraph:
         assert graph.ancestors("a") == set()
 
         # Ancestors of non-existent node
-        assert graph.ancestors("x") == set()
+        with pytest.raises(KeyError):
+            graph.ancestors("x")
 
     def test_ancestors_with_duplicate_queue_entries(self) -> None:
         """Test ancestors when a node is queued twice before being visited."""

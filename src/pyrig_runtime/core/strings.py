@@ -68,6 +68,9 @@ def fully_qualified_name(obj: MethodType | FunctionType | type) -> str:
 def distribution_summary(name: str) -> str:
     """Return the summary recorded in an installed distribution's metadata.
 
+    This function assumes that the package is installed and its
+    metadata has a "Summary" field.
+
     Args:
         name: Name of an installed distribution (e.g. `"requests"`).
 

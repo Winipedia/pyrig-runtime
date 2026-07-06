@@ -105,10 +105,10 @@ class DiGraph(ABC):
 
         Returns:
             List of ancestor node identifiers in topological order.
-            Returns an empty list if the target has no ancestors or is not
-            in the graph.
+            Returns an empty list if the target has no ancestors.
 
         Raises:
+            KeyError: If the target node is not in the graph.
             RuntimeError: If the ancestor subgraph contains a cycle, making
                 topological sorting impossible.
         """
@@ -124,16 +124,19 @@ class DiGraph(ABC):
 
         Returns:
             Set of all nodes with a directed path to the target, excluding the
-            target itself. Returns an empty set if the target is not in the graph.
+            target itself.
+
+        Raises:
+            KeyError: If the target node is not in the graph.
         """
         visited: set[str] = set()
-        queue: deque[str] = deque(self.reverse_edges.get(target, set()))
+        queue: deque[str] = deque(self.reverse_edges[target])
 
         while queue:
             node = queue.popleft()
             if node not in visited:
                 visited.add(node)
-                for neighbor in self.reverse_edges.get(node, set()):
+                for neighbor in self.reverse_edges[node]:
                     if neighbor not in visited:
                         queue.append(neighbor)
 
@@ -164,7 +167,7 @@ class DiGraph(ABC):
         out_degree: dict[str, int] = dict.fromkeys(nodes, 0)
 
         for node in nodes:
-            for dependency in self.edges.get(node, set()):
+            for dependency in self.edges[node]:
                 if dependency in nodes:
                     out_degree[node] += 1
 
@@ -176,7 +179,7 @@ class DiGraph(ABC):
             node = heapq.heappop(heap)
             result.append(node)
 
-            for dependent in self.reverse_edges.get(node, set()):
+            for dependent in self.reverse_edges[node]:
                 if dependent in nodes:
                     out_degree[dependent] -= 1
                     if out_degree[dependent] == 0:

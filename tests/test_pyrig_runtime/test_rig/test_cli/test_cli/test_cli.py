@@ -10,7 +10,6 @@ from pytest_mock import MockerFixture
 from pyrig_runtime.core.introspection.modules import safe_import_module
 from pyrig_runtime.core.strings import kebab_to_snake_case
 from pyrig_runtime.rig.cli import cli as cli_package
-from pyrig_runtime.rig.cli.cli import cli as cli_module
 from pyrig_runtime.rig.cli.cli.cli import CLI
 
 
@@ -163,7 +162,7 @@ class TestCLI:
         # a fresh app whose subcommands module fails to import gets no commands
         app = CLI.I.base_app()
         import_module_mock = mocker.patch(
-            cli_module.__name__ + "." + safe_import_module.__name__,
+            safe_import_module.__module__ + "." + safe_import_module.__name__,
             return_value=None,
         )
         CLI.I.register_subcommands(app)

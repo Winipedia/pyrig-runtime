@@ -15,8 +15,7 @@ from pyrig_runtime.core.dependencies.discovery import (
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.core.introspection.functions import module_functions
 from pyrig_runtime.core.introspection.modules import (
-    replace_root_module_name,
-    safe_import_module,
+    replace_root_module,
 )
 from pyrig_runtime.core.strings import (
     distribution_summary,
@@ -144,14 +143,15 @@ class CLI(DependencySubclass):
         level -= step * verbose
         level += step * quiet
 
-        verbose_timestamps = 3
-        verbose_modules = 2
+        verbose_names = 1
+        verbose_modules = verbose_names + 1
+        verbose_timestamps = verbose_modules + 1
 
         if verbose >= verbose_timestamps:
             fmt = "%(asctime)s %(levelname)s [%(name)s] %(message)s"
         elif verbose == verbose_modules:
             fmt = "%(levelname)s [%(name)s] %(message)s"
-        elif verbose == 1:
+        elif verbose == verbose_names:
             fmt = "%(levelname)s: %(message)s"
         else:
             fmt = "%(message)s"
@@ -171,10 +171,9 @@ class CLI(DependencySubclass):
             If the invoking project's subcommands module cannot be imported,
             registration is silently skipped.
         """
-        subcommands_module_name = replace_root_module_name(
-            subcommands, root_module_name=self.package_name()
+        subcommands_module = replace_root_module(
+            subcommands, root=self.package_name(), default=None
         )
-        subcommands_module = safe_import_module(subcommands_module_name, default=None)
 
         if subcommands_module is None:
             return

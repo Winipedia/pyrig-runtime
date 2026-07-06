@@ -5,12 +5,67 @@ from collections.abc import Iterable, Iterator
 from importlib import import_module
 from pkgutil import iter_modules as pkgutil_iter_modules
 from types import ModuleType
-from typing import Any
+from typing import Any, overload
 
 from pyrig_runtime.core.constants import MISSING
 from pyrig_runtime.core.wrappers import safe_call
 
 logger = logging.getLogger(__name__)
+
+
+@overload
+def replace_root_module(module: ModuleType, root: str) -> ModuleType: ...
+@overload
+def replace_root_module[T](
+    module: ModuleType, root: str, default: T
+) -> ModuleType | T: ...
+def replace_root_module(
+    module: ModuleType, root: str, default: Any = MISSING
+) -> ModuleType | Any:
+    """Import the equivalent module under a different root package.
+
+    Replaces the first dotted segment of `module`'s name with `root` and
+    attempts to import the resulting module name. Later segments are left
+    untouched even if they happen to share the old root's name.
+
+    Args:
+        module: Module whose root segment should be swapped.
+        root: Root package name to substitute in.
+        default: Value to return if the import fails. If not provided,
+            the exception propagates unchanged.
+
+    Returns:
+        The imported module at the equivalent sub-path under `root`, or
+        `default` if the import fails and `default` was provided.
+
+    Example:
+        >>> from some_package.subpackage import module
+        >>> replace_root_module(module, "other_package")
+        <module 'other_package.subpackage.module'
+         from '/path/to/other_package/subpackage/module.py'>
+    """
+    return safe_import_module(replace_root_module_name(module, root), default=default)
+
+
+def replace_root_module_name(module: ModuleType, root: str) -> str:
+    """Return the equivalent module name under a different root package.
+
+    Replaces the first dotted segment of `module.__name__` with `root`. Later
+    segments are left untouched even if they happen to share the old root's
+    name.
+
+    Args:
+        module: Module whose root segment should be swapped.
+        root: Root package name to substitute in.
+
+    Returns:
+        The equivalent dotted module name under `root`.
+
+    Example:
+        >>> replace_root_module_name(module, "other_package")
+        'other_package.subpackage.module'
+    """
+    return module.__name__.replace(root_module_name(module), root, 1)
 
 
 def root_module(module: ModuleType) -> ModuleType:
@@ -25,16 +80,57 @@ def root_module(module: ModuleType) -> ModuleType:
 
     Returns:
         The module corresponding to the first segment of the dotted name.
+
+    Example:
+        >>> from some_package.subpackage import module
+        >>> root_module(module)
+        <module 'some_package' from '/path/to/some_package/__init__.py'>
     """
-    return import_module(module.__name__.split(".")[0])
+    return import_module(root_module_name(module))
 
 
+def root_module_name(module: ModuleType) -> str:
+    """Return the name of the top-level package of the given module.
+
+    For a module named `"package.subpackage.module"`, the string `"package"`
+    is returned. For a top-level module with no dots in its name, that same
+    name is returned.
+
+    Args:
+        module: Module to resolve the root package name for.
+
+    Returns:
+        The first segment of the dotted module name.
+
+    Example:
+        >>> from some_package.subpackage import module
+        >>> root_module_name(module)
+        'some_package'
+    """
+    return module.__name__.split(".", 1)[0]
+
+
+@overload
 def safe_import_module(
     module_name: str,
-    *args: Any,
+    package: str | None = ...,
+    *,
+    exceptions: tuple[type[BaseException], ...] = ...,
+) -> ModuleType: ...
+@overload
+def safe_import_module[T](
+    module_name: str,
+    package: str | None = ...,
+    *,
+    default: T,
+    exceptions: tuple[type[BaseException], ...] = ...,
+) -> ModuleType | T: ...
+def safe_import_module(
+    module_name: str,
+    package: str | None = None,
+    *,
     default: Any = MISSING,
     exceptions: tuple[type[BaseException], ...] = (Exception,),
-    **kwargs: Any,
 ) -> ModuleType | Any:
     """Import a module by name, with an optional fallback on failure.
 
@@ -44,11 +140,10 @@ def safe_import_module(
 
     Args:
         module_name: Dotted module name (e.g., `"package.subpackage.module"`).
-        *args: Positional arguments forwarded to `import_module`.
+        package: Anchor package for relative imports, forwarded to `import_module`.
         default: Value to return if the import raises. If not provided,
             the exception propagates unchanged.
         exceptions: Tuple of exception types to catch. Defaults to `(Exception,)`.
-        **kwargs: Keyword arguments forwarded to `import_module`.
 
     Returns:
         The imported module, or `default` if an exception is raised and
@@ -57,34 +152,10 @@ def safe_import_module(
     return safe_call(
         import_module,
         module_name,
-        *args,
-        **kwargs,
+        package,
         default=default,
         exceptions=exceptions,
     )
-
-
-def replace_root_module_name(module: ModuleType, root_module_name: str) -> str:
-    """Replace the root package segment in a module's fully qualified name.
-
-    Only the first segment is replaced; later segments are left untouched even
-    if they happen to share the old root's name.
-
-    Args:
-        module: Module whose name to transform.
-        root_module_name: Root package name to substitute in.
-
-    Returns:
-        The module name with its first dotted segment replaced.
-
-    Example:
-        >>> from types import ModuleType
-        >>> mod = ModuleType("some_package.sub.module")
-        >>> replace_root_module_name(mod, "my_project")
-        'my_project.sub.module'
-    """
-    module_current_start = module.__name__.split(".")[0]
-    return module.__name__.replace(module_current_start, root_module_name, 1)
 
 
 def import_modules(module_names: Iterable[str]) -> Iterator[ModuleType]:

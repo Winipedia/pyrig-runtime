@@ -24,7 +24,10 @@ def module_functions(
     Yields:
         Each function defined in `module`.
     """
-    for _name, function in obj_members(module):
-        func = unwrap_obj(function)
-        if inspect.isfunction(func) and inspect.getmodule(func) is module:
+    for _name, func in obj_members(module):
+        unwrapped_func = unwrap_obj(func)
+        if (
+            inspect.isfunction(unwrapped_func)
+            and inspect.getmodule(unwrapped_func) is module
+        ):
             yield func
