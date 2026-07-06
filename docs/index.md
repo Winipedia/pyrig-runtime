@@ -62,8 +62,8 @@ pyrig-runtime provides two main capabilities. Each has its own page with more
 detail:
 
 - **[Plugin discovery](plugins.md)** — define a base class and its
-  subclasses are discovered automatically across every installed package, with
-  no registration step.
+  subclasses are discovered automatically across every installed package that
+  depends on it, with no registration step..
 - **[Automatic CLI](cli.md)** — every project gets a working
   command-line interface.
 
