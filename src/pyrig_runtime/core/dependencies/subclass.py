@@ -114,7 +114,7 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
             subclasses are found. May be abstract.
 
         Raises:
-            RuntimeError: If more than one subclass is discovered across
+            RuntimeError: If more than one leaf subclass is discovered across
                 the dependent packages.
         """
         subclasses = cls.subclasses()
