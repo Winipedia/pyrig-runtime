@@ -186,11 +186,7 @@ class DiGraph(ABC):
                         heapq.heappush(heap, dependent)
 
         if len(result) != len(nodes):
-            msg = (
-                "Graph contains a cycle; topological sort not possible. "
-                "This indicates a circular dependency among the following nodes: "
-                f"{set(nodes) - set(result)}"
-            )
+            msg = f"graph contains a cycle among: {set(nodes) - set(result)}"
             raise RuntimeError(msg)
 
         return result

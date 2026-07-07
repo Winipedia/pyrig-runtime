@@ -47,9 +47,7 @@ class TestDependencySubclass:
         assert issubclass(leaf, ProgrammingLanguage)
         assert ProgrammingLanguage.leaf() is ProgrammingLanguage.leaf().leaf()
 
-        with pytest.raises(
-            RuntimeError, match=r"Multiple leaf subclasses found for .*."
-        ):
+        with pytest.raises(RuntimeError, match=r"multiple leaf subclasses found:.*"):
             _ = Tool.leaf()
 
     def test_concrete_subclasses(self) -> None:

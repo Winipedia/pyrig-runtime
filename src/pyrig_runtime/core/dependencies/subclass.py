@@ -118,7 +118,8 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
 
         Raises:
             RuntimeError: If more than one leaf subclass is discovered across
-                the dependent packages.
+                the dependent packages because defining multiple leaf subclasses
+                is ambiguous.
         """
         subclasses = cls.subclasses()
         leaf = next(subclasses, cls)
@@ -130,13 +131,7 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
             [fully_qualified_name(subcls) for subcls in (leaf, second, *subclasses)],
             indent=4,
         )
-        msg = f"""Multiple leaf subclasses found for {cls}.
-Defining multiple leaf subclasses is ambiguous.
-This can happen if more than one leaf subclass is defined
-across all the dependent packages.
-
-Found subclasses:
-{subclasses_dump}"""
+        msg = f"multiple leaf subclasses found:\n{subclasses_dump}"
         raise RuntimeError(msg)
 
     @classmethod
