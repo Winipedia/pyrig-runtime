@@ -891,7 +891,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "17.5.2"
+version = "17.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "inquirerpy" },
@@ -902,9 +902,9 @@ dependencies = [
     { name = "tomlkit" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/02/7f/a8e9c8a54c9f9607d2c57e29fcee8cd401163ade5cda5e2374b7e602bb8c/pyrig-17.5.2.tar.gz", hash = "sha256:cb3fc410e7a0d67a3dfcbc3e7886883790fd7a8fcf215b1c98a516f6925e9175", size = 79813, upload-time = "2026-07-07T16:41:57.754Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e2/9c/fe48ff9e2523c34a2be8599cc050f420c4b657f98fc17604008b7ca679e3/pyrig-17.6.0.tar.gz", hash = "sha256:d5207c12dc99a0f2ec0b91bf07f21cb703451cfabb8c6b2b1d2a0792cb36e241", size = 79748, upload-time = "2026-07-07T18:43:20.96Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c9/d2/e0b65f625aedea70635c407545b2a6d0e3f7dfa4283c3f40990535a134dd/pyrig-17.5.2-py3-none-any.whl", hash = "sha256:dec8719eec8836b7df6a28d1e2be90ccfdbcf459e25331a7efc3d2fb49b3db10", size = 124661, upload-time = "2026-07-07T16:41:56.543Z" },
+    { url = "https://files.pythonhosted.org/packages/0f/79/f98d962708cf9b62e4b1adfa845da3f918a2dd3faf6d5fc8ec910b24a0f8/pyrig-17.6.0-py3-none-any.whl", hash = "sha256:a497915b0488ebbd234fea124629390568f6ee615ed68e62e0eb60277ceb5177", size = 124232, upload-time = "2026-07-07T18:43:19.65Z" },
 ]
 
 [[package]]
@@ -951,7 +951,7 @@ wheels = [
 
 [[package]]
 name = "pyrig-runtime"
-version = "3.0.5"
+version = "3.0.6"
 source = { editable = "." }
 dependencies = [
     { name = "typer" },
@@ -992,12 +992,12 @@ dev = [
     { name = "mkdocs-mermaid2-plugin", specifier = ">=1.2.3" },
     { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0.4" },
     { name = "pip-audit", specifier = ">=2.10.1" },
-    { name = "prek", specifier = ">=0.4.6" },
-    { name = "pyrig", specifier = ">=17.0.0" },
-    { name = "pyrig-codecov", specifier = ">=3.0.0" },
-    { name = "pyrig-fixtures", specifier = ">=2.0.0" },
-    { name = "pyrig-pypi", specifier = ">=3.0.0" },
-    { name = "pyrig-runtime-overrides", specifier = ">=2.0.0" },
+    { name = "prek", specifier = ">=0.4.8" },
+    { name = "pyrig", specifier = ">=17.6.0" },
+    { name = "pyrig-codecov", specifier = ">=3.0.10" },
+    { name = "pyrig-fixtures", specifier = ">=2.2.2" },
+    { name = "pyrig-pypi", specifier = ">=3.0.10" },
+    { name = "pyrig-runtime-overrides", specifier = ">=2.0.13" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
     { name = "ruff", specifier = ">=0.15.20" },

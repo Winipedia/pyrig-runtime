@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-runtime"
-version = "3.0.5"
+version = "3.0.6"
 description = "Runtime dependency and library for projects built with pyrig."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -50,12 +50,12 @@ dev = [
     "mkdocs-mermaid2-plugin>=1.2.3",
     "mkdocstrings[python]>=1.0.4",
     "pip-audit>=2.10.1",
-    "prek>=0.4.6",
-    "pyrig>=17.0.0",
-    "pyrig-codecov>=3.0.0",
-    "pyrig-fixtures>=2.0.0",
-    "pyrig-pypi>=3.0.0",
-    "pyrig-runtime-overrides>=2.0.0",
+    "prek>=0.4.8",
+    "pyrig>=17.6.0",
+    "pyrig-codecov>=3.0.10",
+    "pyrig-fixtures>=2.2.2",
+    "pyrig-pypi>=3.0.10",
+    "pyrig-runtime-overrides>=2.0.13",
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
     "ruff>=0.15.20",
