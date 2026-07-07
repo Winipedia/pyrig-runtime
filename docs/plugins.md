@@ -6,8 +6,8 @@ depends on it with no registry, no entry points, and no manual imports.
 
 ## Declaring a base class
 
-Subclass `DependencySubclass` and implement `dependency_package()`, a classmethod
-that returns the package where implementations live:
+Subclass `DependencySubclass` and implement `discovery_module()`, a classmethod
+that returns the module or package that scopes where implementations live:
 
 ```python
 # my_project/plugins/base/plugin.py
@@ -21,7 +21,7 @@ import my_project.plugins
 
 class Plugin(DependencySubclass):
     @classmethod
-    def dependency_package(cls) -> ModuleType:
+    def discovery_module(cls) -> ModuleType:
         return my_project.plugins
 
     @abstractmethod
@@ -29,14 +29,19 @@ class Plugin(DependencySubclass):
         """Return this plugin's result."""
 ```
 
-The returned package scopes discovery. Discovery looks inside that package in
-your own distribution **and** at the same sub-path inside every installed package
-that depends on its root package — so a dependent package contributes plugins by
+The returned module scopes discovery. Discovery looks for subclasses whose
+defining module name starts with the returned module's name, both in your own
+distribution **and** at the same sub-path inside every installed package that
+depends on its root package — so a dependent package contributes plugins by
 mirroring the path (for example, `otherpkg.plugins`).
+
+Return a **package** to widen discovery to its whole module hierarchy, which is
+imported and searched recursively. Return a **plain module** to keep discovery
+narrow, limiting it to that single file.
 
 ## Defining implementations
 
-Put concrete subclasses in any module under the declared package:
+Put concrete subclasses in any module covered by the declared scope:
 
 ```python
 # my_project/plugins/greeting.py
@@ -48,10 +53,12 @@ class Greeting(Plugin):
         return "hello"
 ```
 
-You never import or register them anywhere. The package is traversed
-recursively, so it does not matter how deeply a module or class is nested —
-every module under the package, at any depth, is imported as a side effect, and
-simply defining the class is enough for it to be found.
+You never import or register them anywhere. When the scope is a package it is
+traversed recursively, so it does not matter how deeply a module or class is
+nested — every module under the package, at any depth, is imported as a side
+effect, and simply defining the class is enough for it to be found. When the
+scope is a plain module, define the subclass in that module (or one whose name
+shares its prefix).
 
 ## Discovering and using subclasses
 

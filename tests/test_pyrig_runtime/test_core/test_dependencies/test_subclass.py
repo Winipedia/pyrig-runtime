@@ -20,7 +20,7 @@ from pyrig_pypi.rig.configs.version_control.remote.workflows.deploy import (
 
 from pyrig_runtime import rig
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
-from pyrig_runtime.rig.cli.cli.cli import CLI
+from pyrig_runtime.rig.cli.cli import CLI
 
 
 class TestDependencySubclass:
@@ -31,11 +31,11 @@ class TestDependencySubclass:
         assert isinstance(str(CLI.I), str)
         assert str(CLI.I) == str(CLI) == str(CLI.L)
 
-    def test_dependency_package(self) -> None:
+    def test_discovery_module(self) -> None:
         """Test method."""
         assert issubclass(ConfigFile, DependencySubclass)
-        assert ConfigFile.dependency_package() == configs
-        assert DependencySubclass.dependency_package() is rig
+        assert ConfigFile.discovery_module() == configs
+        assert DependencySubclass.discovery_module() is rig
 
     def test_sort_key(self) -> None:
         """Test method."""

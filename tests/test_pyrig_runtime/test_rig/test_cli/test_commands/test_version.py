@@ -3,7 +3,7 @@
 import pytest
 from pytest_mock import MockerFixture
 
-from pyrig_runtime.rig.cli.cli.cli import CLI
+from pyrig_runtime.rig.cli.cli import CLI
 from pyrig_runtime.rig.cli.commands.version import project_version
 
 

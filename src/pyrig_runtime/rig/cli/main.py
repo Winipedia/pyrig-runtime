@@ -1,6 +1,6 @@
 """Console-script entry point for pyrig-runtime-based projects."""
 
-from pyrig_runtime.rig.cli.cli.cli import CLI
+from pyrig_runtime.rig.cli.cli import CLI
 
 
 def main() -> None:

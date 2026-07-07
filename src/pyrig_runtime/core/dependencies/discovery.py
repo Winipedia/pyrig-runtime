@@ -13,7 +13,7 @@ from pyrig_runtime.core.introspection.modules import (
     root_module,
 )
 from pyrig_runtime.core.introspection.packages import (
-    discover_subclasses_across_package,
+    discover_subclasses_across_module,
 )
 
 logger = logging.getLogger(__name__)
@@ -21,34 +21,34 @@ logger = logging.getLogger(__name__)
 
 def discover_subclasses_across_dependencies[T](
     cls: type[T],
-    package: ModuleType,
+    module: ModuleType,
 ) -> Iterator[type[T]]:
-    """Yield subclasses of `cls` found in `package` and in dependent packages.
+    """Yield subclasses of `cls` found in `module` and in dependent packages.
 
     Args:
         cls: Base class whose subclasses should be discovered.
-        package: Package to search first, also used to determine which root
+        module: Module to search first, also used to determine which root
             package to scan for dependents.
 
     Yields:
-        Subclass types of `cls`, with `package` searched first, then
+        Subclass types of `cls`, with `module` searched first, then
         dependent packages in dependency order.
     """
     logger.debug(
         "Discovering subclasses of %s from modules in packages depending on %s",
         cls.__name__,
-        package.__name__,
+        module.__name__,
     )
 
     return (
         subclass
-        for pkg in chain(
-            (package,),
-            discover_equivalent_modules_across_dependents(module=package),
+        for mod in chain(
+            (module,),
+            discover_equivalent_modules_across_dependents(module=module),
         )
-        for subclass in discover_subclasses_across_package(
+        for subclass in discover_subclasses_across_module(
             cls,
-            package=pkg,
+            module=mod,
         )
     )
 

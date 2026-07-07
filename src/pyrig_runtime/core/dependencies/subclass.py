@@ -63,10 +63,12 @@ class DependencySubclassMeta(ABCMeta):
 class DependencySubclass(metaclass=DependencySubclassMeta):
     """Abstract base enabling plugin-style subclass discovery across installed packages.
 
-    Subclasses declare a sub-package scope by overriding the discovery hook,
+    Subclasses declare a discovery scope by overriding the discovery hook,
     and the base class automatically finds all subclass implementations defined
-    in that sub-package across every installed package that depends on the root
-    package. No explicit registration is required.
+    in that scope across every installed package that depends on the root
+    package. The scope may be a single module, to keep discovery narrow, or a
+    whole sub-package, to widen it to a full hierarchy. No explicit
+    registration is required.
     """
 
     def __str__(self) -> str:
@@ -75,18 +77,19 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
 
     @classmethod
     @abstractmethod
-    def dependency_package(cls) -> ModuleType:
-        """Return the sub-package where this class's implementations are defined.
+    def discovery_module(cls) -> ModuleType:
+        """Return the module or package that scopes discovery of this class.
 
-        Every concrete subclass must override this to return the sub-package
-        module that contains its own implementation classes. The base class uses
-        the returned module to scope cross-package subclass discovery.
+        Every concrete subclass must override this to declare where its
+        implementation classes live. Returning a package widens discovery to
+        that package's whole module hierarchy; returning a plain module keeps
+        discovery narrow to that single module.
 
         The base implementation returns `pyrig_runtime.rig`.
 
         Returns:
-            The sub-package module to search for concrete implementations of
-            this class.
+            The module or package that scopes the search for concrete
+            implementations of this class.
         """
         return rig
 
@@ -158,7 +161,7 @@ Found subclasses:
         return discard_parent_classes(
             discover_subclasses_across_dependencies(
                 cls,
-                package=cls.dependency_package(),
+                module=cls.discovery_module(),
             )
         )
 

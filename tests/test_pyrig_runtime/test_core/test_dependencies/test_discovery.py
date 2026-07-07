@@ -17,7 +17,7 @@ from pyrig_runtime.core.dependencies.discovery import (
     discover_subclasses_across_dependencies,
 )
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
-from pyrig_runtime.rig.cli.cli.cli import CLI
+from pyrig_runtime.rig.cli.cli import CLI
 
 
 def test_discover_equivalent_modules_across_dependents(mocker: MockerFixture) -> None:

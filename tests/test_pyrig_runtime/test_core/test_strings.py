@@ -77,8 +77,8 @@ def test_fully_qualified_name() -> None:
         == "pyrig_runtime.core.dependencies.subclass.DependencySubclass"
     )
 
-    assert fully_qualified_name(DependencySubclass.dependency_package) == (
-        "pyrig_runtime.core.dependencies.subclass.DependencySubclass.dependency_package"
+    assert fully_qualified_name(DependencySubclass.discovery_module) == (
+        "pyrig_runtime.core.dependencies.subclass.DependencySubclass.discovery_module"
     )
 
 

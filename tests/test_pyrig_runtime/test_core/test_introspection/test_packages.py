@@ -11,24 +11,33 @@ from pyrig_runtime.core.dependencies import graph
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.core.introspection import packages
 from pyrig_runtime.core.introspection.packages import (
-    discover_subclasses_across_package,
+    discover_subclasses_across_module,
+    is_package,
     register_package_modules,
     walk_package,
 )
-from pyrig_runtime.rig.cli.cli import cli
-from pyrig_runtime.rig.cli.cli.cli import CLI
+from pyrig_runtime.rig.cli import cli
+from pyrig_runtime.rig.cli.cli import CLI
 
 
-def test_discover_subclasses_across_package() -> None:
+def test_discover_subclasses_across_module() -> None:
     """Test function."""
     subclasses = tuple(
-        discover_subclasses_across_package(
-            cls=DependencySubclass, package=pyrig_runtime
-        )
+        discover_subclasses_across_module(cls=DependencySubclass, module=pyrig_runtime)
     )
     assert ConfigFile not in subclasses
     assert CLI in subclasses
 
+    assert all(issubclass(subcls, DependencySubclass) for subcls in subclasses)
+
+    # `cli` is a plain module, not a package, so discovery is scoped to it alone.
+    assert not is_package(cli)
+
+    subclasses = tuple(
+        discover_subclasses_across_module(cls=DependencySubclass, module=cli)
+    )
+    assert CLI in subclasses
+    assert all(subcls.__module__.startswith(cli.__name__) for subcls in subclasses)
     assert all(issubclass(subcls, DependencySubclass) for subcls in subclasses)
 
 
@@ -58,3 +67,11 @@ def test_walk_package() -> None:
 
     assert packages in module_types
     assert graph in module_types
+
+
+def test_is_package() -> None:
+    """Test function."""
+    assert is_package(pyrig_runtime)
+    assert is_package(core)
+    assert not is_package(cli)
+    assert not is_package(packages)

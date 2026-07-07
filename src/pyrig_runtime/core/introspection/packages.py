@@ -1,4 +1,4 @@
-"""Subclass discovery scoped to a package's full module hierarchy."""
+"""Subclass discovery scoped by a module name prefix."""
 
 from collections.abc import Iterator
 from functools import cache
@@ -8,33 +8,40 @@ from pyrig_runtime.core.introspection.classes import discover_subclasses
 from pyrig_runtime.core.introspection.modules import iter_modules
 
 
-def discover_subclasses_across_package[T](
+def discover_subclasses_across_module[T](
     cls: type[T],
-    package: ModuleType,
+    module: ModuleType,
 ) -> set[type[T]]:
-    """Discover all subclasses of `cls` defined within a package.
+    """Discover all subclasses of `cls` whose module name starts with `module`.
 
-    The package is scanned recursively, so subclasses are found in its
-    sub-modules at any nesting depth, including ones not yet imported when this
-    is called. Only subclasses whose defining module is a proper sub-module of
-    `package` are returned; a class defined directly in the package's own
-    `__init__` module is not discovered, so implementations belong in
-    sub-modules rather than the package `__init__`.
+    When `module` is a package, its full module hierarchy is imported first, so
+    subclasses are found in its sub-modules at any nesting depth, including ones
+    not yet imported when this is called. When `module` is a plain module, no
+    import walking happens and only subclasses already defined are considered.
+
+    A subclass matches when the dotted name of its defining module starts with
+    `module.__name__`. This includes `module` itself, every sub-module of it,
+    and any sibling module whose name shares that prefix (for example, scope
+    `pkg.foo` also matches `pkg.foobar`). Choosing a plain module as the scope
+    therefore narrows discovery to that one file, while choosing a package
+    widens it to the whole hierarchy.
 
     Args:
         cls: Base class whose subclasses should be discovered.
-        package: Package to scope discovery to.
+        module: Module or package whose dotted name prefixes the discovery
+            scope.
 
     Returns:
-        Set of all transitive subclass types of `cls` defined within
-        `package`, excluding `cls` itself.
+        Set of all subclass types of `cls` whose defining module name starts
+        with `module.__name__`, excluding `cls` itself.
     """
-    register_package_modules(package)
+    if is_package(module):
+        register_package_modules(module)
     subclasses = discover_subclasses(cls)
     return {
         subclass
         for subclass in subclasses
-        if subclass.__module__.startswith(f"{package.__name__}.")
+        if subclass.__module__.startswith(module.__name__)
     }
 
 
@@ -71,3 +78,8 @@ def walk_package(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
             yield from walk_package(module)
         else:
             yield module, False
+
+
+def is_package(module: ModuleType) -> bool:
+    """Return `True` if `module` is a package rather than a plain module."""
+    return hasattr(module, "__path__")

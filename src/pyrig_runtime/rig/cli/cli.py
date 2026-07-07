@@ -22,7 +22,7 @@ from pyrig_runtime.core.strings import (
     kebab_to_snake_case,
     snake_to_kebab_case,
 )
-from pyrig_runtime.rig.cli import cli, shared_subcommands, subcommands
+from pyrig_runtime.rig.cli import shared_subcommands, subcommands
 
 
 class CLI(DependencySubclass):
@@ -34,9 +34,9 @@ class CLI(DependencySubclass):
     """
 
     @classmethod
-    def dependency_package(cls) -> ModuleType:
-        """Return the `pyrig_runtime.rig.cli.cli` package module."""
-        return cli
+    def discovery_module(cls) -> ModuleType:
+        """Return the `pyrig_runtime.rig.cli.cli` module."""
+        return sys.modules[__name__]
 
     def run(self) -> None:
         """Build and invoke the Typer application."""

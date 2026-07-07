@@ -4,7 +4,7 @@ from importlib.metadata import version
 
 import typer
 
-from pyrig_runtime.rig.cli.cli.cli import CLI
+from pyrig_runtime.rig.cli.cli import CLI
 
 
 def project_version() -> None:

@@ -10,8 +10,8 @@ from pytest_mock import MockerFixture
 
 from pyrig_runtime.core.introspection.modules import safe_import_module
 from pyrig_runtime.core.strings import kebab_to_snake_case
-from pyrig_runtime.rig.cli import cli as cli_package
-from pyrig_runtime.rig.cli.cli.cli import CLI
+from pyrig_runtime.rig.cli import cli
+from pyrig_runtime.rig.cli.cli import CLI
 
 
 class TestCLI:
@@ -62,9 +62,9 @@ class TestCLI:
         """Test method."""
         assert CLI.I.package_name() == kebab_to_snake_case(CLI.I.project_name())
 
-    def test_dependency_package(self) -> None:
+    def test_discovery_module(self) -> None:
         """Test method."""
-        assert CLI.dependency_package() == cli_package
+        assert CLI.discovery_module() == cli
 
     def test_run(self, mocker: MockerFixture) -> None:
         """Test method."""
