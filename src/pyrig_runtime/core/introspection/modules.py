@@ -13,6 +13,45 @@ from pyrig_runtime.core.wrappers import safe_call
 logger = logging.getLogger(__name__)
 
 
+def import_modules(module_names: Iterable[str]) -> Iterator[ModuleType]:
+    """Import multiple modules by name, lazily.
+
+    Modules are imported on demand as the result is iterated, not eagerly.
+
+    Args:
+        module_names: Dotted module names to import.
+
+    Yields:
+        Each imported module, in the order the names are iterated.
+    """
+    return (import_module(name) for name in module_names)
+
+
+def iter_modules(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
+    """Import and yield each direct child of a package, in discovery order.
+
+    Only the immediate children are visited; nested sub-packages are not
+    recursed into.
+
+    Args:
+        package: Package to iterate. Must have a `__path__` attribute
+            (i.e., must be a package, not a plain module).
+
+    Yields:
+        `(module, is_package)` pairs where `module` is the imported child and
+        `is_package` is `True` when the child is itself a sub-package.
+
+    Note:
+        Importing each child is a deliberate side effect — any module-level
+        code in those children executes on demand as the iterator is consumed.
+    """
+    for _finder, name, is_package in pkgutil_iter_modules(
+        package.__path__, prefix=package.__name__ + "."
+    ):
+        mod = import_module(name)
+        yield mod, is_package
+
+
 @overload
 def replace_root_module(module: ModuleType, root: str) -> ModuleType: ...
 @overload
@@ -68,48 +107,6 @@ def replace_root_module_name(module: ModuleType, root: str) -> str:
     return module.__name__.replace(root_module_name(module), root, 1)
 
 
-def root_module(module: ModuleType) -> ModuleType:
-    """Import and return the top-level package of the given module.
-
-    For a module named `"package.subpackage.module"`, the module corresponding
-    to `"package"` is returned. For a top-level module with no dots in its name,
-    the module for that same name is returned.
-
-    Args:
-        module: Module to resolve the root package for.
-
-    Returns:
-        The module corresponding to the first segment of the dotted name.
-
-    Example:
-        >>> from some_package.subpackage import module
-        >>> root_module(module)
-        <module 'some_package' from '/path/to/some_package/__init__.py'>
-    """
-    return import_module(root_module_name(module))
-
-
-def root_module_name(module: ModuleType) -> str:
-    """Return the name of the top-level package of the given module.
-
-    For a module named `"package.subpackage.module"`, the string `"package"`
-    is returned. For a top-level module with no dots in its name, that same
-    name is returned.
-
-    Args:
-        module: Module to resolve the root package name for.
-
-    Returns:
-        The first segment of the dotted module name.
-
-    Example:
-        >>> from some_package.subpackage import module
-        >>> root_module_name(module)
-        'some_package'
-    """
-    return module.__name__.split(".", 1)[0]
-
-
 @overload
 def safe_import_module(
     module_name: str,
@@ -158,40 +155,43 @@ def safe_import_module(
     )
 
 
-def import_modules(module_names: Iterable[str]) -> Iterator[ModuleType]:
-    """Import multiple modules by name, lazily.
+def root_module(module: ModuleType) -> ModuleType:
+    """Import and return the top-level package of the given module.
 
-    Modules are imported on demand as the result is iterated, not eagerly.
-
-    Args:
-        module_names: Dotted module names to import.
-
-    Yields:
-        Each imported module, in the order the names are iterated.
-    """
-    return (import_module(name) for name in module_names)
-
-
-def iter_modules(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
-    """Import and yield each direct child of a package, in discovery order.
-
-    Only the immediate children are visited; nested sub-packages are not
-    recursed into.
+    For a module named `"package.subpackage.module"`, the module corresponding
+    to `"package"` is returned. For a top-level module with no dots in its name,
+    the module for that same name is returned.
 
     Args:
-        package: Package to iterate. Must have a `__path__` attribute
-            (i.e., must be a package, not a plain module).
+        module: Module to resolve the root package for.
 
-    Yields:
-        `(module, is_package)` pairs where `module` is the imported child and
-        `is_package` is `True` when the child is itself a sub-package.
+    Returns:
+        The module corresponding to the first segment of the dotted name.
 
-    Note:
-        Importing each child is a deliberate side effect — any module-level
-        code in those children executes on demand as the iterator is consumed.
+    Example:
+        >>> from some_package.subpackage import module
+        >>> root_module(module)
+        <module 'some_package' from '/path/to/some_package/__init__.py'>
     """
-    for _finder, name, is_package in pkgutil_iter_modules(
-        package.__path__, prefix=package.__name__ + "."
-    ):
-        mod = import_module(name)
-        yield mod, is_package
+    return import_module(root_module_name(module))
+
+
+def root_module_name(module: ModuleType) -> str:
+    """Return the name of the top-level package of the given module.
+
+    For a module named `"package.subpackage.module"`, the string `"package"`
+    is returned. For a top-level module with no dots in its name, that same
+    name is returned.
+
+    Args:
+        module: Module to resolve the root package name for.
+
+    Returns:
+        The first segment of the dotted module name.
+
+    Example:
+        >>> from some_package.subpackage import module
+        >>> root_module_name(module)
+        'some_package'
+    """
+    return module.__name__.split(".", 1)[0]

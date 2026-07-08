@@ -45,6 +45,11 @@ def discover_subclasses_across_module[T](
     }
 
 
+def is_package(module: ModuleType) -> bool:
+    """Return `True` if `module` is a package rather than a plain module."""
+    return hasattr(module, "__path__")
+
+
 @cache
 def register_package_modules(package: ModuleType) -> None:
     """Ensure all modules in a package hierarchy are imported.
@@ -78,8 +83,3 @@ def walk_package(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
             yield from walk_package(module)
         else:
             yield module, False
-
-
-def is_package(module: ModuleType) -> bool:
-    """Return `True` if `module` is a package rather than a plain module."""
-    return hasattr(module, "__path__")

@@ -5,16 +5,6 @@ from importlib.metadata import metadata
 from types import FunctionType, MethodType
 
 
-def kebab_to_snake_case(value: str) -> str:
-    """Convert a kebab-case string to snake_case, replacing hyphens with underscores."""
-    return value.replace("-", "_")
-
-
-def snake_to_kebab_case(value: str) -> str:
-    """Convert a snake_case string to kebab-case, replacing underscores with hyphens."""
-    return value.replace("_", "-")
-
-
 def dependency_requirement_as_module_name(dep_req: str) -> str:
     """Extract the importable module name from a dependency requirement string.
 
@@ -48,6 +38,21 @@ def dependency_requirement_split_pattern() -> re.Pattern[str]:
     return re.compile(r"[^a-zA-Z0-9_.-]")
 
 
+def distribution_summary(name: str) -> str:
+    """Return the summary recorded in an installed distribution's metadata.
+
+    This function assumes that the package is installed and its
+    metadata has a "Summary" field.
+
+    Args:
+        name: Name of an installed distribution (e.g. `"requests"`).
+
+    Returns:
+        The distribution's summary description.
+    """
+    return metadata(name)["Summary"]
+
+
 def fully_qualified_name(obj: MethodType | FunctionType | type) -> str:
     """Return the fully qualified name of a callable.
 
@@ -65,16 +70,11 @@ def fully_qualified_name(obj: MethodType | FunctionType | type) -> str:
     return f"{obj.__module__}.{obj.__qualname__}"
 
 
-def distribution_summary(name: str) -> str:
-    """Return the summary recorded in an installed distribution's metadata.
+def kebab_to_snake_case(value: str) -> str:
+    """Convert a kebab-case string to snake_case, replacing hyphens with underscores."""
+    return value.replace("-", "_")
 
-    This function assumes that the package is installed and its
-    metadata has a "Summary" field.
 
-    Args:
-        name: Name of an installed distribution (e.g. `"requests"`).
-
-    Returns:
-        The distribution's summary description.
-    """
-    return metadata(name)["Summary"]
+def snake_to_kebab_case(value: str) -> str:
+    """Convert a snake_case string to kebab-case, replacing underscores with hyphens."""
+    return value.replace("_", "-")

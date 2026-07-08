@@ -4,23 +4,19 @@ import inspect
 from collections.abc import Iterable, Iterator
 
 
-def discover_subclasses[T](cls: type[T]) -> set[type[T]]:
-    """Discover all transitive subclasses of `cls` currently loaded in memory.
+def discard_abstract_classes[T](classes: Iterable[type[T]]) -> Iterator[type[T]]:
+    """Filter out abstract classes from a collection.
 
-    Does not trigger any imports, so only subclasses from already-imported
-    modules are included in the result.
+    A class is considered abstract when it has one or more unimplemented
+    abstract methods and therefore cannot be instantiated directly.
 
     Args:
-        cls: Base class to find subclasses of.
+        classes: Iterable of class types to filter.
 
-    Returns:
-        Set of all transitive subclass types, excluding `cls` itself.
+    Yields:
+        Concrete (non-abstract) classes from the input.
     """
-    direct = cls.__subclasses__()
-    subclasses = set(direct)
-    for subclass in direct:
-        subclasses.update(discover_subclasses(subclass))
-    return subclasses
+    return (cls for cls in classes if not inspect.isabstract(cls))
 
 
 def discard_parent_classes[T](
@@ -47,16 +43,20 @@ def discard_parent_classes[T](
     )
 
 
-def discard_abstract_classes[T](classes: Iterable[type[T]]) -> Iterator[type[T]]:
-    """Filter out abstract classes from a collection.
+def discover_subclasses[T](cls: type[T]) -> set[type[T]]:
+    """Discover all transitive subclasses of `cls` currently loaded in memory.
 
-    A class is considered abstract when it has one or more unimplemented
-    abstract methods and therefore cannot be instantiated directly.
+    Does not trigger any imports, so only subclasses from already-imported
+    modules are included in the result.
 
     Args:
-        classes: Iterable of class types to filter.
+        cls: Base class to find subclasses of.
 
-    Yields:
-        Concrete (non-abstract) classes from the input.
+    Returns:
+        Set of all transitive subclass types, excluding `cls` itself.
     """
-    return (cls for cls in classes if not inspect.isabstract(cls))
+    direct = cls.__subclasses__()
+    subclasses = set(direct)
+    for subclass in direct:
+        subclasses.update(discover_subclasses(subclass))
+    return subclasses

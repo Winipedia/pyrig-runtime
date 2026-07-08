@@ -181,6 +181,23 @@ class CLI(DependencySubclass):
         self.register_direct_subcommands(app=app, module=subcommands_module)
         self.register_subcommand_groups(app=app, module=subcommands_module)
 
+    def package_name(self) -> str:
+        """Return the snake_case package name of the invoking project.
+
+        For example, if the project is invoked as `uv run my-project`, the
+        package name is `my_project`.
+        """
+        return kebab_to_snake_case(self.project_name())
+
+    def project_name(self) -> str:
+        """Return the stem of `sys.argv[0]` as the invoking project name.
+
+        When a project is invoked through a registered console-script entry point
+        (e.g. `uv run my-project`), `sys.argv[0]` is the path to that script, so
+        its stem is the project name as it was registered.
+        """
+        return Path(sys.argv[0]).stem
+
     def register_shared_subcommands(self, app: typer.Typer) -> None:
         """Discover and register shared commands from pyrig-runtime and its dependents.
 
@@ -247,20 +264,3 @@ class CLI(DependencySubclass):
             for name, obj in vars(module).items()
             if isinstance(obj, typer.Typer)
         }
-
-    def package_name(self) -> str:
-        """Return the snake_case package name of the invoking project.
-
-        For example, if the project is invoked as `uv run my-project`, the
-        package name is `my_project`.
-        """
-        return kebab_to_snake_case(self.project_name())
-
-    def project_name(self) -> str:
-        """Return the stem of `sys.argv[0]` as the invoking project name.
-
-        When a project is invoked through a registered console-script entry point
-        (e.g. `uv run my-project`), `sys.argv[0]` is the path to that script, so
-        its stem is the project name as it was registered.
-        """
-        return Path(sys.argv[0]).stem

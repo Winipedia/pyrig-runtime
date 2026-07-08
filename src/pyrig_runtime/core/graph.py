@@ -21,23 +21,6 @@ class DiGraph(ABC):
         reverse_edges: Reverse adjacency map from each node to its incoming neighbors.
     """
 
-    @classmethod
-    @cache
-    def cached(cls, *args: Any, **kwargs: Any) -> Self:
-        """Return a cached instance, constructing it only on the first call.
-
-        Repeated calls with identical arguments return the same instance
-        without rebuilding the graph.
-
-        Args:
-            *args: Positional arguments forwarded to the constructor.
-            **kwargs: Keyword arguments forwarded to the constructor.
-
-        Returns:
-            The cached graph instance for the given arguments.
-        """
-        return cls(*args, **kwargs)
-
     def __init__(self, root: str | None = None) -> None:
         """Initialize the directed graph, optionally pruned to the given root."""
         self.root = root
@@ -56,20 +39,22 @@ class DiGraph(ABC):
         must add all nodes and edges that belong to the graph.
         """
 
-    def prune(self, root: str) -> None:
-        """Retain only the given root and its ancestors, removing all other nodes.
+    @classmethod
+    @cache
+    def cached(cls, *args: Any, **kwargs: Any) -> Self:
+        """Return a cached instance, constructing it only on the first call.
 
-        Keeps `root` and all its ancestors (nodes with a directed path to
-        `root`). All other nodes and their associated edges are removed.
+        Repeated calls with identical arguments return the same instance
+        without rebuilding the graph.
 
         Args:
-            root: The node to keep, along with all nodes that have a directed
-                path to it.
+            *args: Positional arguments forwarded to the constructor.
+            **kwargs: Keyword arguments forwarded to the constructor.
+
+        Returns:
+            The cached graph instance for the given arguments.
         """
-        keep = self.ancestors(root) | {root}
-        self.nodes = keep
-        self.edges = {n: self.edges[n] & keep for n in keep}
-        self.reverse_edges = {n: self.reverse_edges[n] & keep for n in keep}
+        return cls(*args, **kwargs)
 
     def add_edge(self, source: str, target: str) -> None:
         """Add a directed edge from source to target.
@@ -93,6 +78,21 @@ class DiGraph(ABC):
         if node not in self.reverse_edges:
             self.reverse_edges[node] = set()
 
+    def prune(self, root: str) -> None:
+        """Retain only the given root and its ancestors, removing all other nodes.
+
+        Keeps `root` and all its ancestors (nodes with a directed path to
+        `root`). All other nodes and their associated edges are removed.
+
+        Args:
+            root: The node to keep, along with all nodes that have a directed
+                path to it.
+        """
+        keep = self.ancestors(root) | {root}
+        self.nodes = keep
+        self.edges = {n: self.edges[n] & keep for n in keep}
+        self.reverse_edges = {n: self.reverse_edges[n] & keep for n in keep}
+
     def sorted_ancestors(self, target: str) -> list[str]:
         """Return all ancestors of the target node in topological order.
 
@@ -113,34 +113,6 @@ class DiGraph(ABC):
                 topological sorting impossible.
         """
         return self.topological_sort_subgraph(self.ancestors(target))
-
-    def ancestors(self, target: str) -> set[str]:
-        """Find all nodes that have a directed path to the target node.
-
-        The target itself is excluded from the result.
-
-        Args:
-            target: Node to find ancestors for.
-
-        Returns:
-            Set of all nodes with a directed path to the target, excluding the
-            target itself.
-
-        Raises:
-            KeyError: If the target node is not in the graph.
-        """
-        visited: set[str] = set()
-        queue: deque[str] = deque(self.reverse_edges[target])
-
-        while queue:
-            node = queue.popleft()
-            if node not in visited:
-                visited.add(node)
-                for neighbor in self.reverse_edges[node]:
-                    if neighbor not in visited:
-                        queue.append(neighbor)
-
-        return visited
 
     def topological_sort_subgraph(self, nodes: set[str]) -> list[str]:
         """Sort a subset of nodes in topological order.
@@ -190,3 +162,31 @@ class DiGraph(ABC):
             raise RuntimeError(msg)
 
         return result
+
+    def ancestors(self, target: str) -> set[str]:
+        """Find all nodes that have a directed path to the target node.
+
+        The target itself is excluded from the result.
+
+        Args:
+            target: Node to find ancestors for.
+
+        Returns:
+            Set of all nodes with a directed path to the target, excluding the
+            target itself.
+
+        Raises:
+            KeyError: If the target node is not in the graph.
+        """
+        visited: set[str] = set()
+        queue: deque[str] = deque(self.reverse_edges[target])
+
+        while queue:
+            node = queue.popleft()
+            if node not in visited:
+                visited.add(node)
+                for neighbor in self.reverse_edges[node]:
+                    if neighbor not in visited:
+                        queue.append(neighbor)
+
+        return visited

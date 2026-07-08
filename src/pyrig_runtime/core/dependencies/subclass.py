@@ -20,10 +20,6 @@ from pyrig_runtime.core.strings import fully_qualified_name
 class DependencySubclassMeta(ABCMeta):
     """Metaclass backing `DependencySubclass` with the cached `I`/`L` properties."""
 
-    def __str__(cls) -> str:
-        """Return the fully qualified name of this class."""
-        return fully_qualified_name(cls)
-
     @property
     def I[C: DependencySubclass](cls: type[C]) -> C:  # noqa: E743, N802
         """Return a cached instance of the leaf subclass.
@@ -59,6 +55,10 @@ class DependencySubclassMeta(ABCMeta):
             cls._leaf = cls.leaf()
         return cls._leaf
 
+    def __str__(cls) -> str:
+        """Return the fully qualified name of this class."""
+        return fully_qualified_name(cls)
+
 
 class DependencySubclass(metaclass=DependencySubclassMeta):
     """Abstract base enabling plugin-style subclass discovery across installed packages.
@@ -70,10 +70,6 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
     whole sub-package, to widen it to a full hierarchy. No explicit
     registration is required.
     """
-
-    def __str__(self) -> str:
-        """Return the fully qualified class name of this instance."""
-        return str(self.__class__)
 
     @classmethod
     @abstractmethod
@@ -94,17 +90,13 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
         return rig
 
     @classmethod
-    def sort_key(cls) -> Any:
-        """Return the sort key used to order this class relative to peer subclasses.
+    def concrete_subclasses(cls) -> Iterator[type[Self]]:
+        """Yield all concrete leaf subclasses discovered across dependent packages.
 
-        Override to sort by priority, numeric position, or any other criterion.
-        The default returns the class name, giving alphabetical ordering.
-
-        Returns:
-            A value comparable with `<` against the sort keys of other
-            subclasses.
+        Yields:
+            Non-abstract leaf subclass types.
         """
-        return cls.__name__
+        return discard_abstract_classes(cls.subclasses())
 
     @classmethod
     def leaf(cls) -> type[Self]:
@@ -135,15 +127,6 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
         raise RuntimeError(msg)
 
     @classmethod
-    def concrete_subclasses(cls) -> Iterator[type[Self]]:
-        """Yield all concrete leaf subclasses discovered across dependent packages.
-
-        Yields:
-            Non-abstract leaf subclass types.
-        """
-        return discard_abstract_classes(cls.subclasses())
-
-    @classmethod
     def subclasses(cls) -> Iterator[type[Self]]:
         """Yield all subclasses discovered across installed dependent packages.
 
@@ -161,6 +144,19 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
         )
 
     @classmethod
+    def sort_key(cls) -> Any:
+        """Return the sort key used to order this class relative to peer subclasses.
+
+        Override to sort by priority, numeric position, or any other criterion.
+        The default returns the class name, giving alphabetical ordering.
+
+        Returns:
+            A value comparable with `<` against the sort keys of other
+            subclasses.
+        """
+        return cls.__name__
+
+    @classmethod
     def subclasses_sorted(cls, subclasses: Iterable[type[Self]]) -> list[type[Self]]:
         """Sort the given subclasses using each subclass's `sort_key()`.
 
@@ -173,3 +169,7 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
             The same subclass types sorted by their `sort_key()`.
         """
         return sorted(subclasses, key=lambda subclass: subclass.sort_key())
+
+    def __str__(self) -> str:
+        """Return the fully qualified class name of this instance."""
+        return str(self.__class__)
