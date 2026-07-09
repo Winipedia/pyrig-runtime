@@ -59,7 +59,14 @@ class DependencyGraph(DiGraph):
             A two-tuple `(name, deps)` where `name` is the normalized package
             name and `deps` is an iterator over the normalized name of each
             declared dependency.
+
+        Note:
+            This does not support legacy distributions that do not declare a
+            `Requires-Dist` field in their metadata.
+            Such distributions will be treated as having no dependencies.
         """
-        return dependency_requirement_as_module_name(dist.name), (
-            dependency_requirement_as_module_name(req) for req in (dist.requires or [])
+        metadata = dist.metadata
+        return dependency_requirement_as_module_name(metadata["Name"]), (
+            dependency_requirement_as_module_name(req)
+            for req in (metadata.get_all("Requires-Dist") or [])
         )
