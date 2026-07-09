@@ -1,8 +1,9 @@
 """String conversion utilities for Python package naming conventions."""
 
-import re
 from importlib.metadata import metadata
 from types import FunctionType, MethodType
+
+from pyrig_runtime.core.constants import NON_DEPENDENCY_CHAR_PATTERN
 
 
 def dependency_requirement_as_module_name(dep_req: str) -> str:
@@ -24,18 +25,8 @@ def dependency_requirement_as_module_name(dep_req: str) -> str:
         ).
     """
     return kebab_to_snake_case(
-        dependency_requirement_split_pattern().split(dep_req, maxsplit=1)[0]
+        NON_DEPENDENCY_CHAR_PATTERN.split(dep_req, maxsplit=1)[0]
     )
-
-
-def dependency_requirement_split_pattern() -> re.Pattern[str]:
-    """Return a compiled regex pattern matching characters outside a package name.
-
-    Returns:
-        A pattern matching any character that is not alphanumeric, an
-        underscore, a hyphen, or a period.
-    """
-    return re.compile(r"[^a-zA-Z0-9_.-]")
 
 
 def distribution_summary(name: str) -> str:

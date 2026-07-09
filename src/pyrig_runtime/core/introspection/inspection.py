@@ -7,8 +7,8 @@ from typing import Any
 
 def obj_members(
     obj: Any, predicate: Callable[[Any], bool] | None = None
-) -> Iterator[tuple[str, Any]]:
-    """Yield the members of an object as name-value pairs without invoking descriptors.
+) -> Iterator[Any]:
+    """Yield the values of an object's members without invoking descriptors.
 
     Members are read statically, so properties with side effects are not
     triggered. `__annotate__` and `__annotate_func__` are always excluded
@@ -20,10 +20,10 @@ def obj_members(
             returns `True` are included.
 
     Returns:
-        `(name, value)` pairs for the matching members of `obj`.
+        The values of the matching members of `obj`.
     """
     return (
-        (member, value)
+        value
         for member, value in inspect.getmembers_static(obj, predicate=predicate)
         if member not in {"__annotate__", "__annotate_func__"}
     )

@@ -1,6 +1,8 @@
 """Test module."""
 
-from pyrig_runtime.core.constants import MISSING
+from pyrig_runtime.core.constants import (
+    MISSING,
+)
 
 
 def test_missing() -> None:

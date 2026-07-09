@@ -47,10 +47,9 @@ class DiGraph(ABC):
 
     def add_node(self, node: str) -> None:
         """Add a node to the graph. No-op if the node already exists."""
-        self.nodes.add(node)
-        if node not in self.edges:
+        if node not in self.nodes:
+            self.nodes.add(node)
             self.edges[node] = set()
-        if node not in self.reverse_edges:
             self.reverse_edges[node] = set()
 
     def prune(self, root: str) -> None:
@@ -154,15 +153,14 @@ class DiGraph(ABC):
         Raises:
             KeyError: If the target node is not in the graph.
         """
-        visited: set[str] = set()
-        queue: deque[str] = deque(self.reverse_edges[target])
+        visited: set[str] = set(self.reverse_edges[target])
+        queue: deque[str] = deque(visited)
 
         while queue:
             node = queue.popleft()
-            if node not in visited:
-                visited.add(node)
-                for neighbor in self.reverse_edges[node]:
-                    if neighbor not in visited:
-                        queue.append(neighbor)
+            for neighbor in self.reverse_edges[node]:
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append(neighbor)
 
         return visited

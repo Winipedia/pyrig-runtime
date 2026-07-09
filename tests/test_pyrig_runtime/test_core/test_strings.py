@@ -1,13 +1,10 @@
 """Tests module."""
 
-import re
-
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.core.strings import (
     dependency_requirement_as_module_name,
-    dependency_requirement_split_pattern,
     distribution_summary,
     fully_qualified_name,
     kebab_to_snake_case,
@@ -30,12 +27,6 @@ def test_snake_to_kebab_case() -> None:
     project_name = snake_to_kebab_case(package_name)
     expected_project_name = "test-project"
     assert project_name == expected_project_name
-
-
-def test_dependency_requirement_split_pattern() -> None:
-    """Test function."""
-    result = dependency_requirement_split_pattern()
-    assert isinstance(result, re.Pattern)
 
 
 def test_dependency_requirement_as_module_name() -> None:
@@ -63,6 +54,10 @@ def test_dependency_requirement_as_module_name() -> None:
     req = "another_package"
     name = dependency_requirement_as_module_name(req)
     assert name == "another_package"
+
+    req = "package.with.dots>=1.0.0"
+    name = dependency_requirement_as_module_name(req)
+    assert name == "package.with.dots"
 
 
 def test_fully_qualified_name() -> None:

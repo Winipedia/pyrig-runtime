@@ -96,12 +96,12 @@ class TestDiGraph:
         with pytest.raises(KeyError):
             graph.ancestors("x")
 
-    def test_ancestors_with_duplicate_queue_entries(self) -> None:
-        """Test ancestors when a node is queued twice before being visited."""
+    def test_ancestors_with_diamond_dependency(self) -> None:
+        """Test ancestors when a common ancestor is reachable via two paths."""
         graph = MyTestDiGraph()
         # Diamond: c depends on both a and b, both a and b depend on target.
-        # Initial queue contains {a, b}; processing either adds c, then the
-        # other also adds c (since c isn't visited yet) → c appears twice.
+        # c is reachable from both a and b, but is only enqueued once since
+        # it's marked visited on first enqueue.
         graph.add_edge("a", "target")
         graph.add_edge("b", "target")
         graph.add_edge("c", "a")

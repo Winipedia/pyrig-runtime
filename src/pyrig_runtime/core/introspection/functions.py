@@ -1,7 +1,7 @@
 """Utilities for Python functions."""
 
 import inspect
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterable, Iterator
 from types import ModuleType
 from typing import Any
 
@@ -24,10 +24,26 @@ def module_functions(
     Yields:
         Each function defined in `module`.
     """
-    for _name, func in obj_members(module):
-        unwrapped_func = unwrap_obj(func)
+    yield from filter_module_functions(module, obj_members(module))
+
+
+def filter_module_functions(
+    module: ModuleType,
+    members: Iterable[Any],
+) -> Iterator[Callable[..., Any]]:
+    """Yield functions from `members` defined directly in `module`.
+
+    Args:
+        module: Module to filter functions for.
+        members: Iterable of candidate members to filter.
+
+    Yields:
+        Each function defined in `module` from `members`.
+    """
+    for member in members:
+        unwrapped_member = unwrap_obj(member)
         if (
-            inspect.isfunction(unwrapped_func)
-            and inspect.getmodule(unwrapped_func) is module
+            inspect.isfunction(unwrapped_member)
+            and unwrapped_member.__module__ == module.__name__
         ):
-            yield func
+            yield member
