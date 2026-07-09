@@ -12,10 +12,12 @@ from pytest_mock import MockerFixture
 import pyrig_runtime
 from pyrig_runtime import core, rig
 from pyrig_runtime.core.dependencies.discovery import (
+    dependency_graph,
     deps_depending_on_dep,
     discover_equivalent_modules_across_dependents,
     discover_subclasses_across_dependencies,
 )
+from pyrig_runtime.core.dependencies.graph import DependencyGraph
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.rig.cli.cli import CLI
 
@@ -57,3 +59,12 @@ def test_deps_depending_on_dep() -> None:
     packages = [*deps_depending_on_dep(pyrig_runtime), pyrig_runtime]
     assert pyrig_runtime in packages
     assert pyrig in packages
+
+
+def test_dependency_graph() -> None:
+    """Test function."""
+    assert isinstance(dependency_graph(), DependencyGraph)
+    assert dependency_graph() is dependency_graph()
+    assert dependency_graph() is not DependencyGraph()
+    assert "typer" not in dependency_graph().nodes
+    assert pyrig.__name__ in dependency_graph().nodes

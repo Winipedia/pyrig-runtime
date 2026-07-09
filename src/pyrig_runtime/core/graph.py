@@ -3,58 +3,33 @@
 import heapq
 from abc import ABC, abstractmethod
 from collections import deque
-from functools import cache
-from typing import Any, Self
 
 
 class DiGraph(ABC):
     """Abstract directed graph with forward and reverse adjacency tracking.
 
-    Subclasses implement `build` to populate nodes and edges. When a `root`
-    node is given, the graph is pruned to contain only that node and every node
-    that transitively points to it.
+    Subclasses implement `build` to populate nodes and edges.
 
     Attributes:
-        root: The root node passed at construction, or `None` if none was given.
         nodes: Set of all node identifiers currently in the graph.
         edges: Forward adjacency map from each node to its outgoing neighbors.
         reverse_edges: Reverse adjacency map from each node to its incoming neighbors.
     """
 
-    def __init__(self, root: str | None = None) -> None:
-        """Initialize the directed graph, optionally pruned to the given root."""
-        self.root = root
+    def __init__(self) -> None:
+        """Initialize the directed graph by building it."""
         self.nodes: set[str] = set()
         self.edges: dict[str, set[str]] = {}
         self.reverse_edges: dict[str, set[str]] = {}
         self.build()
-        if self.root is not None:
-            self.prune(self.root)
 
     @abstractmethod
     def build(self) -> None:
         """Populate the graph with nodes and edges.
 
-        Called during construction before any pruning occurs. Subclasses
-        must add all nodes and edges that belong to the graph.
+        Called during construction. Subclasses must add every node and edge
+        that belongs to the graph.
         """
-
-    @classmethod
-    @cache
-    def cached(cls, *args: Any, **kwargs: Any) -> Self:
-        """Return a cached instance, constructing it only on the first call.
-
-        Repeated calls with identical arguments return the same instance
-        without rebuilding the graph.
-
-        Args:
-            *args: Positional arguments forwarded to the constructor.
-            **kwargs: Keyword arguments forwarded to the constructor.
-
-        Returns:
-            The cached graph instance for the given arguments.
-        """
-        return cls(*args, **kwargs)
 
     def add_edge(self, source: str, target: str) -> None:
         """Add a directed edge from source to target.
@@ -133,6 +108,7 @@ class DiGraph(ABC):
             after all nodes it has outgoing edges to.
 
         Raises:
+            KeyError: If any node in `nodes` is not part of the graph.
             RuntimeError: If the subgraph contains a cycle, making topological
                 sorting impossible.
         """

@@ -6,6 +6,7 @@ from functools import cache
 from itertools import chain
 from types import ModuleType
 
+import pyrig_runtime
 from pyrig_runtime.core.dependencies.graph import DependencyGraph
 from pyrig_runtime.core.introspection.modules import (
     import_modules,
@@ -97,11 +98,30 @@ def deps_depending_on_dep(dependency: ModuleType) -> tuple[ModuleType, ...]:
         Tuple of imported module objects for every package that depends on
         `dependency` directly or transitively, in dependency order.
         Does not include `dependency` itself.
+
+    Raises:
+        KeyError: If `dependency` is not `pyrig_runtime` or one of its
+            dependents.
     """
-    return tuple(
-        import_modules(
-            DependencyGraph.cached(root=dependency.__name__).sorted_ancestors(
-                dependency.__name__
-            )
-        )
-    )
+    graph = dependency_graph()
+    return tuple(import_modules(graph.sorted_ancestors(dependency.__name__)))
+
+
+@cache
+def dependency_graph() -> DependencyGraph:
+    """Return the dependency graph of `pyrig_runtime` and its dependents.
+
+    Built once and cached. Pruned to `pyrig_runtime` and every package that
+    depends on it, directly or transitively; packages it depends on are not
+    included.
+
+    Returns:
+        Directed graph rooted at `pyrig_runtime`, containing only its
+        ancestors.
+
+    Note:
+        The returned instance is shared across all callers. Do not mutate it.
+    """
+    graph = DependencyGraph()
+    graph.prune(root=pyrig_runtime.__name__)
+    return graph

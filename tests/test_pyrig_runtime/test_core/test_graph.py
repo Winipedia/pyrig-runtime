@@ -22,80 +22,6 @@ class MyTestDiGraph(DiGraph):
 class TestDiGraph:
     """Test class."""
 
-    def test_cached(self) -> None:
-        """Test method."""
-        graph1 = DependencyGraph.cached(root="pyrig")
-        graph2 = DependencyGraph.cached(root="pyrig")
-        assert graph2 is graph1
-        graph3 = DependencyGraph.cached(root="typer")
-        assert graph3 is not graph1
-
-        graph4 = DependencyGraph(root="pyrig")
-        assert graph4 is not graph1
-
-    def test_prune(self) -> None:
-        """Test that prune keeps only root and its ancestors."""
-        graph = MyTestDiGraph()
-        # Build graph:
-        #   a -> root -> x -> y
-        #   b -> root
-        #   c -> x          (c depends on x but not root)
-        #   z               (isolated node)
-        graph.add_edge("a", "root")
-        graph.add_edge("b", "root")
-        graph.add_edge("root", "x")
-        graph.add_edge("x", "y")
-        graph.add_edge("c", "x")
-        graph.add_node("z")
-
-        assert len(graph.nodes) == 7  # noqa: PLR2004
-
-        graph.prune("root")
-
-        # Only root, a, b should remain (ancestors of root + root itself)
-        assert graph.nodes == {"root", "a", "b"}
-
-        # Edges between kept nodes should be preserved
-        assert "root" in graph.edges["a"]
-        assert "root" in graph.edges["b"]
-
-        # Edges to pruned nodes should be gone
-        assert "x" not in graph.edges["root"]
-
-        # Pruned nodes are not in the graph
-        assert "x" not in graph.nodes
-        assert "y" not in graph.nodes
-        assert "c" not in graph.nodes
-        assert "z" not in graph.nodes
-
-    def test_prune_no_ancestors(self) -> None:
-        """Test pruning when root has no ancestors."""
-        graph = MyTestDiGraph()
-        graph.add_edge("a", "b")
-        graph.add_edge("b", "c")
-        graph.add_node("root")
-
-        graph.prune("root")
-
-        assert graph.nodes == {"root"}
-
-    def test_prune_transitive_ancestors(self) -> None:
-        """Test that prune keeps transitive ancestors."""
-        graph = MyTestDiGraph()
-        # d -> c -> b -> a (d transitively depends on a)
-        graph.add_edge("d", "c")
-        graph.add_edge("c", "b")
-        graph.add_edge("b", "a")
-        graph.add_node("unrelated")
-
-        graph.prune("a")
-
-        assert graph.nodes == {"a", "b", "c", "d"}
-        assert "a" in graph.edges["b"]
-        assert "b" in graph.edges["c"]
-        assert "c" in graph.edges["d"]
-        assert "unrelated" not in graph.nodes
-
     def test_sorted_ancestors(self) -> None:
         """Test method."""
         graph = DependencyGraph()
@@ -264,3 +190,66 @@ class TestDiGraph:
 
         result = graph.topological_sort_subgraph({"b"})
         assert result == ["b"]
+
+    def test_prune(self) -> None:
+        """Test that prune keeps only root and its ancestors."""
+        graph = MyTestDiGraph()
+        # Build graph:
+        #   a -> root -> x -> y
+        #   b -> root
+        #   c -> x          (c depends on x but not root)
+        #   z               (isolated node)
+        graph.add_edge("a", "root")
+        graph.add_edge("b", "root")
+        graph.add_edge("root", "x")
+        graph.add_edge("x", "y")
+        graph.add_edge("c", "x")
+        graph.add_node("z")
+
+        assert len(graph.nodes) == 7  # noqa: PLR2004
+
+        graph.prune("root")
+
+        # Only root, a, b should remain (ancestors of root + root itself)
+        assert graph.nodes == {"root", "a", "b"}
+
+        # Edges between kept nodes should be preserved
+        assert "root" in graph.edges["a"]
+        assert "root" in graph.edges["b"]
+
+        # Edges to pruned nodes should be gone
+        assert "x" not in graph.edges["root"]
+
+        # Pruned nodes are not in the graph
+        assert "x" not in graph.nodes
+        assert "y" not in graph.nodes
+        assert "c" not in graph.nodes
+        assert "z" not in graph.nodes
+
+    def test_prune_no_ancestors(self) -> None:
+        """Test pruning when root has no ancestors."""
+        graph = MyTestDiGraph()
+        graph.add_edge("a", "b")
+        graph.add_edge("b", "c")
+        graph.add_node("root")
+
+        graph.prune("root")
+
+        assert graph.nodes == {"root"}
+
+    def test_prune_transitive_ancestors(self) -> None:
+        """Test that prune keeps transitive ancestors."""
+        graph = MyTestDiGraph()
+        # d -> c -> b -> a (d transitively depends on a)
+        graph.add_edge("d", "c")
+        graph.add_edge("c", "b")
+        graph.add_edge("b", "a")
+        graph.add_node("unrelated")
+
+        graph.prune("a")
+
+        assert graph.nodes == {"a", "b", "c", "d"}
+        assert "a" in graph.edges["b"]
+        assert "b" in graph.edges["c"]
+        assert "c" in graph.edges["d"]
+        assert "unrelated" not in graph.nodes

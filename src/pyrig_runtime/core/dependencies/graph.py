@@ -15,22 +15,7 @@ class DependencyGraph(DiGraph):
     Nodes are package names; an edge A → B means "A depends on B".
     The graph is built at instantiation by scanning all installed
     distributions.
-
-    When a `root` package is given, the graph is pruned to retain only
-    that package and every package that depends on it directly or
-    transitively.
     """
-
-    def __init__(self, root: str | None = None) -> None:
-        """Initialize the dependency graph rooted at the given package.
-
-        Args:
-            root: Name of the root package. Accepts either the installed name
-                (`some-package`) or the import name (`some_package`).
-        """
-        super().__init__(
-            root=dependency_requirement_as_module_name(root) if root else None
-        )
 
     def build(self) -> None:
         """Build the graph from installed Python distributions."""
@@ -48,7 +33,7 @@ class DependencyGraph(DiGraph):
         Both the package name and every dependency name are normalized to an
         importable module name; version specifiers and extras in requirement
         strings are stripped. Dots are preserved for namespace packages
-        (e.g. ``zope.interface`` remains ``zope.interface``). The dependency
+        (e.g. `zope.interface` remains `zope.interface`). The dependency
         iterator is exhausted once consumed; it yields nothing when the
         distribution declares no dependencies.
 

@@ -18,18 +18,10 @@ class TestDependencyGraph:
         assert result_name == "pyrig"
         assert "typer" in result_deps
 
-    def test___init__(self) -> None:
-        """Test method."""
-        # Test it initializes without error
-
-        # Verify it has nodes (should have installed packages)
-        num_nodes = len(DEP_GRAPH.nodes)
-        assert num_nodes > 0, "Expected graph to have nodes after initialization"
-
-        assert "" not in DEP_GRAPH.nodes
-
     def test_build(self) -> None:
         """Test method."""
+        assert len(DEP_GRAPH.nodes) > 0
+        assert "" not in DEP_GRAPH.nodes
         # Verify that known packages are in the graph
         assert "pyrig" in DEP_GRAPH.nodes
         assert "typer" in DEP_GRAPH.nodes
