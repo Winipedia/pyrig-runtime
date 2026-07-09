@@ -79,32 +79,32 @@ def discover_equivalent_modules_across_dependents(
         dependency.__name__,
     )
 
-    for package in deps_depending_on_dep(dependency):
+    for package in dependency_ancestors(dependency):
         package_module = replace_root_module(module, package.__name__, default=None)
         if package_module is not None:
             yield package_module
 
 
 @cache
-def deps_depending_on_dep(dependency: ModuleType) -> tuple[ModuleType, ...]:
-    """Return every installed package that depends on `dependency`.
+def dependency_ancestors(target: ModuleType) -> tuple[ModuleType, ...]:
+    """Return every installed package that depends on `target`.
 
-    The result is cached per unique `dependency` argument.
+    The result is cached per unique `target` argument.
 
     Args:
-        dependency: Package whose dependents should be discovered.
+        target: Package whose dependents should be discovered.
 
     Returns:
         Tuple of imported module objects for every package that depends on
-        `dependency` directly or transitively, in dependency order.
-        Does not include `dependency` itself.
+        `target` directly or transitively, in dependency order. Does not
+        include `target` itself.
 
     Raises:
-        KeyError: If `dependency` is not `pyrig_runtime` or one of its
+        KeyError: If `target` is not `pyrig_runtime` or one of its
             dependents.
     """
     graph = dependency_graph()
-    return tuple(import_modules(graph.sorted_ancestors(dependency.__name__)))
+    return tuple(import_modules(graph.sorted_ancestors(target.__name__)))
 
 
 @cache
