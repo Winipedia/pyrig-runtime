@@ -17,7 +17,7 @@ def dependency_requirement_as_module_name(dep_req: str) -> str:
             e.g., `"requests>=2.0,<3.0"` or
             `"my-package[extra]==1.0.0"`or
             `"some.package==1.0.0"`
-        ).
+            ).
 
     Returns:
         The package name in snake_case (
