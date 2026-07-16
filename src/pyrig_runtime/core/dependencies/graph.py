@@ -26,7 +26,8 @@ class DependencyGraph(DiGraph):
                 self.add_edge(name, dep)
 
     def parse_name_and_deps(
-        self, dist: importlib.metadata.Distribution
+        self,
+        dist: importlib.metadata.Distribution,
     ) -> tuple[str, Iterator[str]]:
         """Extract the package name and dependencies from a distribution.
 

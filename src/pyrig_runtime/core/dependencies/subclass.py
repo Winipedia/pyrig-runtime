@@ -4,7 +4,10 @@ import json
 from abc import ABCMeta, abstractmethod
 from collections.abc import Iterable, Iterator
 from types import ModuleType
-from typing import Any, Self
+from typing import TYPE_CHECKING, Self
+
+if TYPE_CHECKING:
+    from _typeshed import SupportsRichComparison
 
 from pyrig_runtime import rig
 from pyrig_runtime.core.dependencies.discovery import (
@@ -140,11 +143,11 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
             discover_subclasses_across_dependencies(
                 cls,
                 module=cls.discovery_module(),
-            )
+            ),
         )
 
     @classmethod
-    def sort_key(cls) -> Any:
+    def sort_key(cls) -> "SupportsRichComparison":
         """Return the sort key used to order this class relative to peer subclasses.
 
         Override to sort by priority, numeric position, or any other criterion.
@@ -157,7 +160,7 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
         return cls.__name__
 
     @classmethod
-    def subclasses_sorted(cls, subclasses: Iterable[type[Self]]) -> list[type[Self]]:
+    def sort_subclasses(cls, subclasses: Iterable[type[Self]]) -> list[type[Self]]:
         """Sort the given subclasses using each subclass's `sort_key()`.
 
         Does not perform any discovery.

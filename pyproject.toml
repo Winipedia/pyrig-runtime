@@ -1,116 +1,116 @@
 [project]
 name = "pyrig-runtime"
-version = "3.5.4"
+version = "3.7.0"
 description = "Runtime dependency and library for projects built with pyrig."
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = [
-    "typer>=0.26.8",
-]
 license = "MIT"
 license-files = [
-    "LICENSE",
+  "LICENSE",
 ]
-classifiers = [
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
-    "Operating System :: OS Independent",
-    "Typing :: Typed",
+authors = [
+  { name = "Winipedia" },
+]
+maintainers = [
+  { name = "Winipedia" },
 ]
 keywords = [
-    "pyrig",
+  "pyrig",
+]
+classifiers = [
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Typing :: Typed",
+]
+dependencies = [
+  "typer>=0.26.8",
 ]
 
-[[project.authors]]
-name = "Winipedia"
-
-[[project.maintainers]]
-name = "Winipedia"
-
 [project.urls]
-Homepage = "https://github.com/Winipedia/pyrig-runtime"
-Documentation = "https://Winipedia.github.io/pyrig-runtime"
-Source = "https://github.com/Winipedia/pyrig-runtime"
-Issues = "https://github.com/Winipedia/pyrig-runtime/issues"
 Changelog = "https://github.com/Winipedia/pyrig-runtime/releases"
+Documentation = "https://Winipedia.github.io/pyrig-runtime"
+Homepage = "https://github.com/Winipedia/pyrig-runtime"
+Issues = "https://github.com/Winipedia/pyrig-runtime/issues"
+Source = "https://github.com/Winipedia/pyrig-runtime"
 
 [project.scripts]
 pyrig-runtime = "pyrig_runtime.rig.cli.main:main"
 
 [dependency-groups]
 dev = [
-    "bandit>=1.9.4",
-    "deptry>=0.25.1",
-    "detect-secrets>=1.5.0",
-    "mkdocs>=1.6.1",
-    "mkdocs-material>=9.7.6",
-    "mkdocs-mermaid2-plugin>=1.2.3",
-    "mkdocstrings[python]>=1.0.5",
-    "pip-audit>=2.10.1",
-    "prek>=0.4.8",
-    "pyrig>=18.3.4",
-    "pyrig-codecov>=3.2.6",
-    "pyrig-fixtures>=2.3.2",
-    "pyrig-pypi>=3.1.2",
-    "pyrig-runtime-overrides>=2.1.2",
-    "pytest>=9.1.1",
-    "pytest-cov>=7.1.0",
-    "ruff>=0.15.21",
-    "rumdl>=0.2.30",
-    "ty>=0.0.58",
-    "typos>=1.48.0",
+  "bandit>=1.9.4",
+  "deptry>=0.25.1",
+  "detect-secrets>=1.5.0",
+  "mkdocs>=1.6.1",
+  "mkdocs-material>=9.7.6",
+  "mkdocs-mermaid2-plugin>=1.2.3",
+  "mkdocstrings[python]>=1.0.5",
+  "pip-audit>=2.10.1",
+  "pre-commit-hooks",
+  "prek>=0.4.8",
+  "pyrig>=18.3.4",
+  "pyrig-codecov>=3.2.6",
+  "pyrig-fixtures>=2.3.2",
+  "pyrig-pypi>=3.1.2",
+  "pyrig-runtime-overrides>=2.1.2",
+  "pytest>=9.1.1",
+  "pytest-cov>=7.1.0",
+  "pytest-randomly",
+  "ruff>=0.15.21",
+  "rumdl>=0.2.30",
+  "ryl",
+  "shellcheck-py",
+  "shfmt-py",
+  "tombi",
+  "ty>=0.0.58",
+  "typos>=1.48.0",
 ]
 
 [build-system]
 requires = [
-    "uv_build",
+  "uv-build",
 ]
 build-backend = "uv_build"
-
-[tool.ruff.lint]
-select = [
-    "ALL",
-]
-ignore = [
-    "COM812",
-    "ANN401",
-]
-
-[tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = [
-    "S101",
-]
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"
-
-[tool.ruff.format]
-docstring-code-format = true
-
-[tool.pytest]
-testpaths = [
-    "tests",
-]
-addopts = [
-    "--cov=pyrig_runtime",
-    "--cov-branch",
-    "--cov-fail-under=100",
-    "--cov-report=term-missing:skip-covered",
-    "--cov-report=xml",
-]
-filterwarnings = [
-    "error",
-]
-strict = true
 
 [tool.deptry]
 root = "src"
 
 [tool.deptry.per_rule_ignores]
 DEP002 = [
-    "pyrig-runtime",
+  "pyrig-runtime",
 ]
+
+[tool.pytest]
+addopts = [
+  "--cov-branch",
+  "--cov-fail-under=100",
+  "--cov-report=term-missing:skip-covered",
+  "--cov-report=xml",
+  "--cov=pyrig_runtime",
+]
+filterwarnings = [
+  "error",
+]
+strict = true
+testpaths = [
+  "tests",
+]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = [
+  "ALL",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+  "S101",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

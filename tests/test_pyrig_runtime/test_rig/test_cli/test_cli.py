@@ -20,7 +20,9 @@ class TestCLI:
     def test_base_app_kwargs(self, mocker: MockerFixture) -> None:
         """Test method."""
         project_name_mock = mocker.patch.object(
-            CLI.I, CLI.project_name.__name__, return_value="pyrig-runtime"
+            CLI.I,
+            CLI.project_name.__name__,
+            return_value="pyrig-runtime",
         )
         kwargs = CLI.I.base_app_kwargs()
         project_name_mock.assert_called()
@@ -108,7 +110,8 @@ class TestCLI:
     def test_callback(self, mocker: MockerFixture) -> None:
         """Test method."""
         configure_logging_mock = mocker.patch.object(
-            CLI.I, CLI.configure_logging.__name__
+            CLI.I,
+            CLI.configure_logging.__name__,
         )
         CLI.I.callback()
         configure_logging_mock.assert_called()
@@ -138,7 +141,9 @@ class TestCLI:
     def test_register_subcommands(self, mocker: MockerFixture) -> None:
         """Test method."""
         project_name_mock = mocker.patch.object(
-            CLI.I, CLI.project_name.__name__, return_value="pyrig"
+            CLI.I,
+            CLI.project_name.__name__,
+            return_value="pyrig",
         )
         app = CLI.I.base_app()
         CLI.I.register_subcommands(app)

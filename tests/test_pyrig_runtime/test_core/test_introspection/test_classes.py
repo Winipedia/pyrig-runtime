@@ -133,7 +133,7 @@ def test_discard_parent_classes() -> None:
 def test_discard_abstract_classes() -> None:
     """Test function."""
     classes = tuple(
-        discard_abstract_classes([AbstractParent, ConcreteChild, AnotherAbstractChild])
+        discard_abstract_classes([AbstractParent, ConcreteChild, AnotherAbstractChild]),
     )
     assert AbstractParent not in classes, f"Expected AbstractParent not in {classes}"
     assert AnotherAbstractChild not in classes, (

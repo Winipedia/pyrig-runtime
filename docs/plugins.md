@@ -66,7 +66,7 @@ shares its prefix).
 | --- | --- |
 | `Plugin.subclasses()` | Every leaf subclass found across the dependency graph (intermediate base classes are dropped). |
 | `Plugin.concrete_subclasses()` | The same as `Plugin.subclasses()`, excluding abstract classes from the returned result. |
-| `Plugin.subclasses_sorted(subclasses)` | A given iterable of subclasses ordered by `sort_key()`. |
+| `Plugin.sort_subclasses(subclasses)` | A given iterable of subclasses ordered by `sort_key()`. |
 | `Plugin.L` | The single leaf subclass — or the class itself if none exist. Raises if more than one leaf is found. |
 | `Plugin.I` | A cached instance of `Plugin.L`. |
 
@@ -82,7 +82,7 @@ result = Plugin.I.run()  # call the one active implementation
 Across packages, subclasses are discovered in dependency order — a package is
 processed before the packages that depend on it. Within a single package the
 order is not guaranteed. When you need a deterministic order, override
-`sort_key()` and iterate with `subclasses_sorted()`.
+`sort_key()` and iterate with `sort_subclasses()`.
 
 ## A single active implementation
 

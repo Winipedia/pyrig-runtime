@@ -1,8 +1,9 @@
 """Abstract directed graph foundation with forward and reverse edge traversal."""
 
-import heapq
 from abc import ABC, abstractmethod
 from collections import deque
+from collections.abc import Iterable
+from graphlib import TopologicalSorter
 
 
 class DiGraph(ABC):
@@ -67,7 +68,7 @@ class DiGraph(ABC):
         self.edges = {n: self.edges[n] & keep for n in keep}
         self.reverse_edges = {n: self.reverse_edges[n] & keep for n in keep}
 
-    def sorted_ancestors(self, target: str) -> list[str]:
+    def sorted_ancestors(self, target: str) -> Iterable[str]:
         """Return all ancestors of the target node in topological order.
 
         Ancestors are nodes that have a directed path to the target. The
@@ -88,13 +89,12 @@ class DiGraph(ABC):
         """
         return self.topological_sort_subgraph(self.ancestors(target))
 
-    def topological_sort_subgraph(self, nodes: set[str]) -> list[str]:
+    def topological_sort_subgraph(self, nodes: set[str]) -> Iterable[str]:
         """Sort a subset of nodes in topological order.
 
         If there is an edge from A to B, B appears before A in the result.
-        The ordering is deterministic: when multiple nodes are eligible to be
-        emitted at the same step, they are emitted in ascending lexicographic
-        order.
+        Nodes with no dependency relationship between them may appear in
+        any relative order.
 
         Only edges whose both endpoints are in `nodes` are considered; edges
         to or from nodes outside the subset are ignored.
@@ -111,32 +111,9 @@ class DiGraph(ABC):
             RuntimeError: If the subgraph contains a cycle, making topological
                 sorting impossible.
         """
-        out_degree: dict[str, int] = dict.fromkeys(nodes, 0)
-
-        for node in nodes:
-            for dependency in self.edges[node]:
-                if dependency in nodes:
-                    out_degree[node] += 1
-
-        heap: list[str] = [node for node in nodes if out_degree[node] == 0]
-        heapq.heapify(heap)
-        result: list[str] = []
-
-        while heap:
-            node = heapq.heappop(heap)
-            result.append(node)
-
-            for dependent in self.reverse_edges[node]:
-                if dependent in nodes:
-                    out_degree[dependent] -= 1
-                    if out_degree[dependent] == 0:
-                        heapq.heappush(heap, dependent)
-
-        if len(result) != len(nodes):
-            msg = f"graph contains a cycle among: {set(nodes) - set(result)}"
-            raise RuntimeError(msg)
-
-        return result
+        return TopologicalSorter(
+            {node: self.edges[node] & nodes for node in nodes},
+        ).static_order()
 
     def ancestors(self, target: str) -> set[str]:
         """Find all nodes that have a directed path to the target node.

@@ -25,7 +25,7 @@ def dependency_requirement_as_module_name(dep_req: str) -> str:
         ).
     """
     return kebab_to_snake_case(
-        NON_DEPENDENCY_CHAR_PATTERN.split(dep_req, maxsplit=1)[0]
+        NON_DEPENDENCY_CHAR_PATTERN.split(dep_req, maxsplit=1)[0],
     )
 
 

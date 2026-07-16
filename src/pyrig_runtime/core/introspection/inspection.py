@@ -2,11 +2,13 @@
 
 import inspect
 from collections.abc import Callable, Iterator
-from typing import Any
+from types import FunctionType
+from typing import Any, overload
 
 
 def obj_members(
-    obj: Any, predicate: Callable[[Any], bool] | None = None
+    obj: object,
+    predicate: Callable[[Any], bool] | None = None,
 ) -> Iterator[Any]:
     """Yield the values of an object's members without invoking descriptors.
 
@@ -29,6 +31,12 @@ def obj_members(
     )
 
 
+@overload
+def unwrap_obj(obj: Callable[..., Any]) -> FunctionType | type: ...
+@overload
+def unwrap_obj(obj: property) -> FunctionType: ...
+@overload
+def unwrap_obj[T](obj: T) -> T: ...
 def unwrap_obj(obj: Any) -> Any:
     """Unwrap a Python object to its innermost underlying object.
 

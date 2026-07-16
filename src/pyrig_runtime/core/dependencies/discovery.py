@@ -1,6 +1,5 @@
 """Subclass and module discovery scoped across installed package dependents."""
 
-import logging
 from collections.abc import Iterator
 from functools import cache
 from itertools import chain
@@ -16,8 +15,6 @@ from pyrig_runtime.core.introspection.modules import (
 from pyrig_runtime.core.introspection.packages import (
     discover_subclasses_across_module,
 )
-
-logger = logging.getLogger(__name__)
 
 
 def discover_subclasses_across_dependencies[T](
@@ -35,12 +32,6 @@ def discover_subclasses_across_dependencies[T](
         Subclass types of `cls`, with `module` searched first, then
         dependent packages in dependency order.
     """
-    logger.debug(
-        "Discovering subclasses of %s from modules in packages depending on %s",
-        cls.__name__,
-        module.__name__,
-    )
-
     return (
         subclass
         for mod in chain(
@@ -72,14 +63,7 @@ def discover_equivalent_modules_across_dependents(
         Successfully imported module objects in dependency order. Dependents
         that have no module at the equivalent sub-path are silently skipped.
     """
-    dependency = root_module(module)
-    logger.debug(
-        "Discovering modules equivalent to %s in packages depending on %s",
-        module.__name__,
-        dependency.__name__,
-    )
-
-    for package in dependency_ancestors(dependency):
+    for package in dependency_ancestors(root_module(module)):
         package_module = replace_root_module(module, package.__name__, default=None)
         if package_module is not None:
             yield package_module

@@ -8,7 +8,8 @@ from pyrig_runtime.rig.cli.commands.version import project_version
 
 
 def test_project_version(
-    capsys: pytest.CaptureFixture[str], mocker: MockerFixture
+    capsys: pytest.CaptureFixture[str],
+    mocker: MockerFixture,
 ) -> None:
     """Test function."""
     # mock project_name_from_argv to return "pyrig"

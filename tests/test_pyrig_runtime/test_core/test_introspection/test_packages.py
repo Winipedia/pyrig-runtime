@@ -23,7 +23,7 @@ from pyrig_runtime.rig.cli.cli import CLI
 def test_discover_subclasses_across_module() -> None:
     """Test function."""
     subclasses = tuple(
-        discover_subclasses_across_module(cls=DependencySubclass, module=pyrig_runtime)
+        discover_subclasses_across_module(cls=DependencySubclass, module=pyrig_runtime),
     )
     assert ConfigFile not in subclasses
     assert CLI in subclasses
@@ -34,7 +34,7 @@ def test_discover_subclasses_across_module() -> None:
     assert not is_package(cli)
 
     subclasses = tuple(
-        discover_subclasses_across_module(cls=DependencySubclass, module=cli)
+        discover_subclasses_across_module(cls=DependencySubclass, module=cli),
     )
     assert CLI in subclasses
     assert all(subcls.__module__.startswith(cli.__name__) for subcls in subclasses)

@@ -172,7 +172,9 @@ class CLI(DependencySubclass):
             registration is silently skipped.
         """
         subcommands_module = replace_root_module(
-            subcommands, root=self.package_name(), default=None
+            subcommands,
+            root=self.package_name(),
+            default=None,
         )
 
         if subcommands_module is None:

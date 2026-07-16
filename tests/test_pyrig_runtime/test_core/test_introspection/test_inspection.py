@@ -80,7 +80,7 @@ def test_unwrap_obj() -> None:
     )
 
     unwrapped_method = unwrap_obj(
-        _TestDeeplyNestedClassMethod.deeply_nested_class_method
+        _TestDeeplyNestedClassMethod.deeply_nested_class_method,
     )
     assert unwrapped_method.__name__ == "deeply_nested_class_method", (
         f"Expected 'deeply_nested_class_method', got {unwrapped_method.__name__}"
@@ -91,11 +91,11 @@ def test_unwrap_obj() -> None:
     assert unwrapped_property.__name__ == "some_property"
 
     unwrapped_static_method = unwrap_obj(
-        inspect.getattr_static(_TestDeeplyNestedClassMethod, "some_static_method")
+        inspect.getattr_static(_TestDeeplyNestedClassMethod, "some_static_method"),
     )
     assert unwrapped_static_method.__name__ == "some_static_method"
 
     unwrapped_class_method = unwrap_obj(
-        inspect.getattr_static(_TestDeeplyNestedClassMethod, "some_class_method")
+        inspect.getattr_static(_TestDeeplyNestedClassMethod, "some_class_method"),
     )
     assert unwrapped_class_method.__name__ == "some_class_method"

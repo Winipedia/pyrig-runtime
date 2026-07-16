@@ -46,7 +46,8 @@ def iter_modules(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
         code in those children executes on demand as the iterator is consumed.
     """
     for _finder, name, is_package in pkgutil_iter_modules(
-        package.__path__, prefix=package.__name__ + "."
+        package.__path__,
+        prefix=package.__name__ + ".",
     ):
         mod = import_module(name)
         yield mod, is_package
@@ -56,10 +57,14 @@ def iter_modules(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
 def replace_root_module(module: ModuleType, root: str) -> ModuleType: ...
 @overload
 def replace_root_module[T](
-    module: ModuleType, root: str, default: T
+    module: ModuleType,
+    root: str,
+    default: T,
 ) -> ModuleType | T: ...
 def replace_root_module(
-    module: ModuleType, root: str, default: Any = MISSING
+    module: ModuleType,
+    root: str,
+    default: Any = MISSING,
 ) -> ModuleType | Any:
     """Import the equivalent module under a different root package.
 
@@ -148,8 +153,7 @@ def safe_import_module(
     """
     return safe_call(
         import_module,
-        module_name,
-        package,
+        kwargs={"name": module_name, "package": package},
         default=default,
         exceptions=exceptions,
     )

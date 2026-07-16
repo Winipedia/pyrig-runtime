@@ -72,7 +72,8 @@ def test_iter_modules(tmp_path: Path) -> None:
         module_file = package_dir / "test_module.py"
         module_file.write_text('"""Test module."""\n')
         package = import_module_with_file_fallback(
-            package_dir, name=test_iter_modules.__name__
+            package_dir,
+            name=test_iter_modules.__name__,
         )
 
         modules = iter_modules(package)
