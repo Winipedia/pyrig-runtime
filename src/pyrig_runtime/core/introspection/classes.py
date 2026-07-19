@@ -34,13 +34,8 @@ def discard_parent_classes[T](
         Classes that have no subclasses present in the same collection.
     """
     classes = set(classes)
-    return (
-        cls
-        for cls in classes
-        if not any(
-            issubclass(candidate, cls) for candidate in classes if candidate is not cls
-        )
-    )
+    ancestors = {ancestor for cls in classes for ancestor in cls.__mro__[1:]}
+    return (cls for cls in classes if cls not in ancestors)
 
 
 def discover_subclasses[T](cls: type[T]) -> set[type[T]]:
@@ -55,8 +50,12 @@ def discover_subclasses[T](cls: type[T]) -> set[type[T]]:
     Returns:
         Set of all transitive subclass types, excluding `cls` itself.
     """
-    direct = cls.__subclasses__()
-    subclasses = set(direct)
-    for subclass in direct:
-        subclasses.update(discover_subclasses(subclass))
-    return subclasses
+    visited: set[type[T]] = set()
+    stack = cls.__subclasses__()
+    while stack:
+        subclass = stack.pop()
+        if subclass in visited:
+            continue
+        visited.add(subclass)
+        stack.extend(subclass.__subclasses__())
+    return visited
