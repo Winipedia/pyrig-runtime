@@ -36,7 +36,7 @@ def discover_subclasses_across_dependencies[T](
         subclass
         for mod in chain(
             (module,),
-            discover_equivalent_modules_across_dependents(module=module),
+            discover_equivalent_modules_across_dependencies(module=module),
         )
         for subclass in discover_subclasses_across_module(
             cls,
@@ -45,7 +45,7 @@ def discover_subclasses_across_dependencies[T](
     )
 
 
-def discover_equivalent_modules_across_dependents(
+def discover_equivalent_modules_across_dependencies(
     module: ModuleType,
 ) -> Iterator[ModuleType]:
     """Yield the equivalent module from every dependent of `module`'s root package.

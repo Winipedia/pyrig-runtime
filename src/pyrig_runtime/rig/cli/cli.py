@@ -10,7 +10,7 @@ from typing import Any
 import typer
 
 from pyrig_runtime.core.dependencies.discovery import (
-    discover_equivalent_modules_across_dependents,
+    discover_equivalent_modules_across_dependencies,
 )
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.core.introspection.functions import module_functions
@@ -214,7 +214,7 @@ class CLI(DependencySubclass):
         """
         for shared_subcommands_module in chain(
             (shared_subcommands,),
-            discover_equivalent_modules_across_dependents(
+            discover_equivalent_modules_across_dependencies(
                 shared_subcommands,
             ),
         ):

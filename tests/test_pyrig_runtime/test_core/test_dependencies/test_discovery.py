@@ -14,7 +14,7 @@ from pyrig_runtime import core, rig
 from pyrig_runtime.core.dependencies.discovery import (
     dependency_ancestors,
     dependency_graph,
-    discover_equivalent_modules_across_dependents,
+    discover_equivalent_modules_across_dependencies,
     discover_subclasses_across_dependencies,
 )
 from pyrig_runtime.core.dependencies.graph import DependencyGraph
@@ -22,10 +22,10 @@ from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.rig.cli.cli import CLI
 
 
-def test_discover_equivalent_modules_across_dependents(mocker: MockerFixture) -> None:
+def test_discover_equivalent_modules_across_dependencies(mocker: MockerFixture) -> None:
     """Test function."""
     # Test getting the same module from all packages depending on pyrig
-    modules = tuple(discover_equivalent_modules_across_dependents(core))
+    modules = tuple(discover_equivalent_modules_across_dependencies(core))
     assert core not in modules
     assert pyrig_core in modules
 
@@ -35,12 +35,12 @@ def test_discover_equivalent_modules_across_dependents(mocker: MockerFixture) ->
         dependency_ancestors.__module__ + "." + dependency_ancestors.__name__,
         return_value=[pyrig_runtime],
     )
-    modules = tuple(discover_equivalent_modules_across_dependents(core))
+    modules = tuple(discover_equivalent_modules_across_dependencies(core))
     assert core in modules
     mock_all_deps.assert_called_once()
 
     mock_all_deps.return_value = [typer]
-    modules = tuple(discover_equivalent_modules_across_dependents(rig))
+    modules = tuple(discover_equivalent_modules_across_dependencies(rig))
     assert not modules
 
 
