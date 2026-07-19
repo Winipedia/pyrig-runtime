@@ -1,6 +1,5 @@
 """Abstract base for cross-package subclass discovery without explicit registration."""
 
-import json
 from abc import ABCMeta, abstractmethod
 from collections.abc import Iterable, Iterator
 from types import ModuleType
@@ -122,11 +121,10 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
         if second is None:
             return leaf
 
-        subclasses_dump = json.dumps(
-            [fully_qualified_name(subcls) for subcls in (leaf, second, *subclasses)],
-            indent=4,
+        subclasses_formatted = "\n".join(
+            fully_qualified_name(subcls) for subcls in (leaf, second, *subclasses)
         )
-        msg = f"multiple leaf subclasses found:\n{subclasses_dump}"
+        msg = f"multiple leaf subclasses found:\n{subclasses_formatted}"
         raise RuntimeError(msg)
 
     @classmethod
