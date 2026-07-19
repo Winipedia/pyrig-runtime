@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-runtime"
-version = "3.20.5"
+version = "3.20.6"
 description = "Runtime dependency and library for projects built with pyrig."
 readme = "README.md"
 requires-python = ">=3.12"
