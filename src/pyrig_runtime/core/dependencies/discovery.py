@@ -75,14 +75,14 @@ def discover_equivalent_modules_across_dependencies(
         Successfully imported module objects in dependency order. Dependents
         that have no module at the equivalent sub-path are silently skipped.
     """
-    for package in dependency_ancestors(root_module(module)):
+    for package in discover_dependent_packages(root_module(module)):
         package_module = replace_root_module(module, package.__name__, default=None)
         if package_module is not None:
             yield package_module
 
 
 @cache
-def dependency_ancestors(target: ModuleType) -> tuple[ModuleType, ...]:
+def discover_dependent_packages(target: ModuleType) -> tuple[ModuleType, ...]:
     """Return every installed package that depends on `target`.
 
     The result is cached per unique `target` argument.

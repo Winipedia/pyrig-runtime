@@ -63,14 +63,14 @@ class TestDependencySubclass:
         assert len(subclasses) > 0
         assert all(issubclass(subclass, ConfigFile) for subclass in subclasses)
 
-    def test_sort_subclasses(self) -> None:
+    def test_sorted_subclasses(self) -> None:
         """Test method."""
         subclasses = (
             ReadmeConfigFile,
             PyprojectConfigFile,
             LicenseConfigFile,
         )
-        result = ConfigFile.sort_subclasses(subclasses)
+        result = ConfigFile.sorted_subclasses(subclasses)
         assert result == [
             LicenseConfigFile,
             PyprojectConfigFile,

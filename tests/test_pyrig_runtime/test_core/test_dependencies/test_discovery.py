@@ -12,8 +12,8 @@ from pytest_mock import MockerFixture
 import pyrig_runtime
 from pyrig_runtime import core, rig
 from pyrig_runtime.core.dependencies.discovery import (
-    dependency_ancestors,
     dependency_graph,
+    discover_dependent_packages,
     discover_equivalent_modules_across_dependencies,
     discover_subclasses_across_dependencies,
 )
@@ -29,10 +29,12 @@ def test_discover_equivalent_modules_across_dependencies(mocker: MockerFixture) 
     assert core not in modules
     assert pyrig_core in modules
 
-    # mock dependency_ancestors to return a fake dependent package
+    # mock discover_dependent_packages to return a fake dependent package
     # the following is mostly to get 100% test coverage
     mock_all_deps = mocker.patch(
-        dependency_ancestors.__module__ + "." + dependency_ancestors.__name__,
+        discover_dependent_packages.__module__
+        + "."
+        + discover_dependent_packages.__name__,
         return_value=[pyrig_runtime],
     )
     modules = tuple(discover_equivalent_modules_across_dependencies(core))
@@ -61,9 +63,9 @@ def test_discover_subclasses_across_dependencies() -> None:
     assert AlsoADependencySubclass in subclasses
 
 
-def test_dependency_ancestors() -> None:
+def test_discover_dependent_packages() -> None:
     """Test function."""
-    packages = [*dependency_ancestors(pyrig_runtime), pyrig_runtime]
+    packages = [*discover_dependent_packages(pyrig_runtime), pyrig_runtime]
     assert pyrig_runtime in packages
     assert pyrig in packages
 

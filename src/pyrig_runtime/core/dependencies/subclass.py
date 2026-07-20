@@ -158,7 +158,10 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
         return cls.__name__
 
     @classmethod
-    def sort_subclasses(cls, subclasses: Iterable[type[Self]]) -> list[type[Self]]:
+    def sorted_subclasses(
+        cls,
+        subclasses: Iterable[type[Self]],
+    ) -> list[type[Self]]:
         """Sort the given subclasses using each subclass's `sort_key()`.
 
         Does not perform any discovery.
@@ -169,7 +172,10 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
         Returns:
             The same subclass types sorted by their `sort_key()`.
         """
-        return sorted(subclasses, key=lambda subclass: subclass.sort_key())
+        return sorted(
+            subclasses,
+            key=lambda subclass: subclass.sort_key(),
+        )
 
     def __str__(self) -> str:
         """Return the fully qualified class name of this instance."""
