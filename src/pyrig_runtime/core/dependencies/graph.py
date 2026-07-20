@@ -7,6 +7,7 @@ from pyrig_runtime.core.graph import DiGraph
 from pyrig_runtime.core.strings import (
     dependency_requirement_as_module_name,
     distribution_header_value_pattern,
+    kebab_to_snake_case,
 )
 
 DISTRIBUTION_NAME_PATTERN = distribution_header_value_pattern("Name")
@@ -62,7 +63,7 @@ class DependencyGraph(DiGraph):
             return "", iter(())
         header, _, _ = text.partition("\n\n")
         name = DISTRIBUTION_NAME_PATTERN.findall(header)[0]
-        return dependency_requirement_as_module_name(name), (
+        return kebab_to_snake_case(name), (
             dependency_requirement_as_module_name(req)
             for req in DISTRIBUTION_REQUIRES_DIST_PATTERN.findall(header)
         )
