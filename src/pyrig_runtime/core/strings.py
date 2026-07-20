@@ -3,9 +3,8 @@
 import re
 from importlib.metadata import Distribution
 from types import FunctionType, MethodType
-from typing import cast
 
-NON_DEPENDENCY_CHAR_PATTERN = re.compile(r"[^a-zA-Z0-9_.-]")
+DEPENDENCY_NAME_PATTERN = re.compile(r"^([a-zA-Z0-9_.-]*)")
 
 
 def distribution_header_value_pattern(field_name: str) -> re.Pattern[str]:
@@ -36,9 +35,7 @@ def dependency_requirement_as_module_name(dep_req: str) -> str:
             e.g., `"requests"`, `"my_package"`, `"some.package"`
         ).
     """
-    return kebab_to_snake_case(
-        NON_DEPENDENCY_CHAR_PATTERN.split(dep_req, maxsplit=1)[0],
-    )
+    return kebab_to_snake_case(regex_find(DEPENDENCY_NAME_PATTERN, dep_req))
 
 
 def distribution_summary(metadata: str) -> str:
@@ -133,7 +130,10 @@ def regex_find(pattern: re.Pattern[str], text: str) -> str:
         The first captured group from the regex search.
 
     Raises:
-        TypeError: If no match is found and None[1] is attempted to be accessed,
-        indicating that the pattern did not match the text.
+        LookupError: If no match is found for the pattern in the text.
     """
-    return cast("re.Match[str]", pattern.search(text))[1]
+    match = pattern.search(text)
+    if match is None:
+        msg = f"No match found for pattern {pattern.pattern} in text."
+        raise LookupError(msg)
+    return match[1]

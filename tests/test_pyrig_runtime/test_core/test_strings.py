@@ -190,5 +190,5 @@ def test_regex_find() -> None:
     multi_match_text = "Name: first\nOther: value\nName: second\n"
     assert regex_find(pattern, multi_match_text) == "first"
 
-    with pytest.raises(TypeError):
+    with pytest.raises(LookupError):
         regex_find(pattern, "no matching field here")
