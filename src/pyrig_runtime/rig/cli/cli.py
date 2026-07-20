@@ -68,8 +68,12 @@ class CLI(DependencySubclass):
         """
         return {
             "no_args_is_help": True,
-            "help": distribution_summary(self.project_name()),
+            "help": self.help_text(),
         }
+
+    def help_text(self) -> str:
+        """Return the help text for the invoking project."""
+        return distribution_summary(self.project_name())
 
     def build_app(self, app: typer.Typer) -> typer.Typer:
         """Register the callback and all commands onto the given app.

@@ -196,3 +196,9 @@ class TestCLI:
         groups = CLI.I.module_subcommand_groups(pyrig_subcommands_module)
         assert "mk" in groups
         assert isinstance(groups["mk"], typer.Typer)
+
+    def test_help_text(self) -> None:
+        """Test method."""
+        help_text = CLI.I.help_text()
+        assert isinstance(help_text, str)
+        assert len(help_text) > 0
