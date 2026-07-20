@@ -9,7 +9,7 @@ from pyrig_runtime.core.strings import (
     distribution_header,
     distribution_metadata,
     distribution_name,
-    distribution_requires,
+    distribution_requirements,
     kebab_to_snake_case,
 )
 
@@ -64,5 +64,5 @@ class DependencyGraph(DiGraph):
         header = distribution_header(metadata)
         return kebab_to_snake_case(distribution_name(header)), (
             dependency_requirement_as_module_name(req)
-            for req in distribution_requires(header)
+            for req in distribution_requirements(header)
         )

@@ -14,7 +14,7 @@ from pyrig_runtime.core.strings import (
     distribution_header_value_pattern,
     distribution_metadata,
     distribution_name,
-    distribution_requires,
+    distribution_requirements,
     distribution_summary,
     fully_qualified_name,
     kebab_to_snake_case,
@@ -140,7 +140,7 @@ def test_distribution_name() -> None:
         assert distribution_name(metadata) == dist.name
 
 
-def test_distribution_requires() -> None:
+def test_distribution_requirements() -> None:
     """Test function."""
     metadata = (
         "Metadata-Version: 2.1\n"
@@ -148,10 +148,10 @@ def test_distribution_requires() -> None:
         "Requires-Dist: requests>=2.0\n"
         "Requires-Dist: typer\n"
     )
-    assert distribution_requires(metadata) == ["requests>=2.0", "typer"]
+    assert distribution_requirements(metadata) == ["requests>=2.0", "typer"]
 
     metadata_no_deps = "Metadata-Version: 2.1\nName: some-package\n"
-    assert distribution_requires(metadata_no_deps) == []
+    assert distribution_requirements(metadata_no_deps) == []
 
     for dist in importlib.metadata.distributions():
         metadata = distribution_metadata(dist)
@@ -160,11 +160,11 @@ def test_distribution_requires() -> None:
         assert header is not None
         requires = dist.requires
         if requires is None:
-            assert distribution_requires(header) == []
-            assert distribution_requires(metadata) == []
+            assert distribution_requirements(header) == []
+            assert distribution_requirements(metadata) == []
             continue
-        assert distribution_requires(header) == requires
-        assert distribution_requires(metadata) == requires
+        assert distribution_requirements(header) == requires
+        assert distribution_requirements(metadata) == requires
 
 
 def test_distribution_metadata(mocker: MockerFixture) -> None:

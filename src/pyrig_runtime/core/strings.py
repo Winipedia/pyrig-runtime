@@ -13,7 +13,9 @@ def distribution_header_value_pattern(field_name: str) -> re.Pattern[str]:
 
 
 DISTRIBUTION_NAME_PATTERN = distribution_header_value_pattern("Name")
-DISTRIBUTION_REQUIRES_DIST_PATTERN = distribution_header_value_pattern("Requires-Dist")
+DISTRIBUTION_REQUIRES_DIST_PATTERN = distribution_header_value_pattern(
+    "Requires-Dist",
+)
 DISTRIBUTION_SUMMARY_PATTERN = distribution_header_value_pattern("Summary")
 
 
@@ -65,7 +67,7 @@ def distribution_name(metadata: str) -> str:
     return regex_find(DISTRIBUTION_NAME_PATTERN, metadata)
 
 
-def distribution_requires(metadata: str) -> list[str]:
+def distribution_requirements(metadata: str) -> list[str]:
     """Return the list of dependency requirements from a distribution's metadata."""
     return DISTRIBUTION_REQUIRES_DIST_PATTERN.findall(metadata)
 
