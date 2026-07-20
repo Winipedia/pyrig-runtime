@@ -39,8 +39,8 @@ def walk_package(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
         `(module, is_package)` pairs for each visited module, where
         `is_package` is `True` when the module is itself a sub-package.
     """
-    for module, is_package in iter_modules(package):
-        if is_package:
+    for module, is_pkg in iter_modules(package):
+        if is_pkg:
             yield module, True
             yield from walk_package(module)
         else:
