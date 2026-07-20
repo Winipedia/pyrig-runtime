@@ -88,10 +88,13 @@ def replace_root_module(
         <module 'other_package.subpackage.module'
          from '/path/to/other_package/subpackage/module.py'>
     """
-    return safe_import_module(replace_root_module_name(module, root), default=default)
+    return safe_import_module(
+        replace_root_module_name(module.__name__, root),
+        default=default,
+    )
 
 
-def replace_root_module_name(module: ModuleType, root: str) -> str:
+def replace_root_module_name(name: str, root: str) -> str:
     """Return the equivalent module name under a different root package.
 
     Replaces the first dotted segment of `module.__name__` with `root`. Later
@@ -99,17 +102,17 @@ def replace_root_module_name(module: ModuleType, root: str) -> str:
     name.
 
     Args:
-        module: Module whose root segment should be swapped.
+        name: Dotted module name (e.g., `"package.subpackage.module"`).
         root: Root package name to substitute in.
 
     Returns:
         The equivalent dotted module name under `root`.
 
     Example:
-        >>> replace_root_module_name(module, "other_package")
+        >>> replace_root_module_name("some_package.subpackage.module", "other_package")
         'other_package.subpackage.module'
     """
-    return module.__name__.replace(root_module_name(module), root, 1)
+    return name.replace(root_module_name(name), root, 1)
 
 
 @overload
@@ -173,14 +176,14 @@ def root_module(module: ModuleType) -> ModuleType:
         The module corresponding to the first segment of the dotted name.
 
     Example:
-        >>> from some_package.subpackage import module
-        >>> root_module(module)
+        >>> from some_package.subpackage import module as mod
+        >>> root_module(mod)
         <module 'some_package' from '/path/to/some_package/__init__.py'>
     """
-    return import_module(root_module_name(module))
+    return import_module(root_module_name(module.__name__))
 
 
-def root_module_name(module: ModuleType) -> str:
+def root_module_name(name: str) -> str:
     """Return the name of the top-level package of the given module.
 
     For a module named `"package.subpackage.module"`, the string `"package"`
@@ -188,14 +191,14 @@ def root_module_name(module: ModuleType) -> str:
     name is returned.
 
     Args:
-        module: Module to resolve the root package name for.
+        name: Dotted module name (e.g., `"package.subpackage.module"`).
 
     Returns:
         The first segment of the dotted module name.
 
     Example:
-        >>> from some_package.subpackage import module
-        >>> root_module_name(module)
+        >>> from some_package.subpackage import module as mod
+        >>> root_module_name(mod.__name__)
         'some_package'
     """
-    return module.__name__.split(".", 1)[0]
+    return name.split(".", 1)[0]

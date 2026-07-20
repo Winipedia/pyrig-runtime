@@ -85,14 +85,14 @@ def test_iter_modules(tmp_path: Path) -> None:
 
 def test_replace_root_module_name() -> None:
     """Test function."""
-    assert replace_root_module_name(core, pyrig.__name__) == "pyrig.core"
-    assert replace_root_module_name(pyrig_runtime, "sys") == "sys"
+    assert replace_root_module_name(core.__name__, pyrig.__name__) == "pyrig.core"
+    assert replace_root_module_name(pyrig_runtime.__name__, "sys") == "sys"
 
 
 def test_root_module_name() -> None:
     """Test function."""
-    assert root_module_name(pyrig_runtime) == "pyrig_runtime"
-    assert root_module_name(core) == "pyrig_runtime"
-    assert root_module_name(sys) == "sys"
-    assert root_module_name(core) == "pyrig_runtime"
-    assert root_module_name(pyrig_core) == "pyrig"
+    assert root_module_name(pyrig_runtime.__name__) == "pyrig_runtime"
+    assert root_module_name(core.__name__) == "pyrig_runtime"
+    assert root_module_name(sys.__name__) == "sys"
+    assert root_module_name(core.__name__) == "pyrig_runtime"
+    assert root_module_name(pyrig_core.__name__) == "pyrig"

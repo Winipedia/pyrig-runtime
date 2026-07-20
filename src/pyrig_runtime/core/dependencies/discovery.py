@@ -2,18 +2,21 @@
 
 from collections.abc import Iterator
 from functools import cache
-from itertools import chain
 from types import ModuleType
 
 import pyrig_runtime
 from pyrig_runtime.core.dependencies.graph import DependencyGraph
+from pyrig_runtime.core.introspection.classes import discover_subclasses
 from pyrig_runtime.core.introspection.modules import (
     import_modules,
     replace_root_module,
+    replace_root_module_name,
     root_module,
+    root_module_name,
 )
 from pyrig_runtime.core.introspection.packages import (
-    discover_subclasses_across_module,
+    is_package,
+    register_package_modules,
 )
 
 
@@ -32,17 +35,28 @@ def discover_subclasses_across_dependencies[T](
         Subclass types of `cls`, with `module` searched first, then
         dependent packages in dependency order.
     """
-    return (
-        subclass
-        for mod in chain(
-            (module,),
-            discover_equivalent_modules_across_dependencies(module=module),
-        )
-        for subclass in discover_subclasses_across_module(
-            cls,
-            module=mod,
-        )
-    )
+    modules = (module, *discover_equivalent_modules_across_dependencies(module=module))
+    for package in filter(
+        is_package,
+        modules,
+    ):
+        register_package_modules(package)
+
+    module_roots = {root_module_name(module.__name__) for module in modules}
+
+    module_name = module.__name__
+    root_name = root_module_name(module_name)
+    for subclass in discover_subclasses(cls):
+        cls_module_name = subclass.__module__
+        if root_module_name(
+            cls_module_name,
+        ) in module_roots and replace_root_module_name(
+            cls_module_name,
+            root_name,
+        ).startswith(
+            module_name,
+        ):
+            yield subclass
 
 
 def discover_equivalent_modules_across_dependencies(
