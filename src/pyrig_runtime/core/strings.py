@@ -85,8 +85,8 @@ def distribution_header(metadata: str) -> str:
     Returns:
         The header portion of the distribution's metadata.
     """
-    header_end = metadata.find("\n\n")
-    return metadata[:header_end] if header_end != -1 else metadata
+    end = metadata.find("\n\n")
+    return metadata[:end] if end != -1 else metadata
 
 
 def distribution_metadata(dist: Distribution) -> str | None:
