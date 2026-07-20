@@ -6,6 +6,7 @@ from collections.abc import Iterator
 from pyrig_runtime.core.graph import DiGraph
 from pyrig_runtime.core.strings import (
     dependency_requirement_as_module_name,
+    distribution_header,
     distribution_header_value_pattern,
     kebab_to_snake_case,
 )
@@ -58,11 +59,9 @@ class DependencyGraph(DiGraph):
             `Requires-Dist` field in their metadata.
             Such distributions will be treated as having no dependencies.
         """
-        text = dist.read_text("METADATA")
-        if text is None:
+        header = distribution_header(dist)
+        if not header:
             return "", iter(())
-        header_end = text.find("\n\n")
-        header = text[:header_end] if header_end != -1 else text
         return kebab_to_snake_case(DISTRIBUTION_NAME_PATTERN.findall(header)[0]), (
             dependency_requirement_as_module_name(req)
             for req in DISTRIBUTION_REQUIRES_DIST_PATTERN.findall(header)

@@ -7,6 +7,7 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.core.strings import (
     dependency_requirement_as_module_name,
+    distribution_header,
     distribution_header_value_pattern,
     distribution_summary,
     fully_qualified_name,
@@ -94,7 +95,11 @@ def test_distribution_header_value_pattern() -> None:
     requires_dist_pattern = distribution_header_value_pattern("Requires-Dist")
 
     for dist in importlib.metadata.distributions():
-        text = dist.read_text("METADATA") or dist.read_text("PKG-INFO") or ""
+        if dist.name == "pyrig-runtime":
+            break
+        text = dist.read_text("METADATA")
+        assert text is not None
+
         header, _, _ = text.partition("\n\n")
 
         assert name_pattern.findall(header) == [dist.metadata["Name"]] == [dist.name]
@@ -103,3 +108,13 @@ def test_distribution_header_value_pattern() -> None:
             == (dist.metadata.get_all("Requires-Dist") or [])
             == (dist.requires or [])
         )
+
+
+def test_distribution_header() -> None:
+    """Test function."""
+    for dist in importlib.metadata.distributions():
+        text = dist.read_text("METADATA")
+        if text is None:
+            assert distribution_header(dist) == ""
+            continue
+        assert distribution_header(dist) == text.partition("\n\n")[0]

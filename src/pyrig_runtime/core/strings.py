@@ -1,7 +1,7 @@
 """String conversion utilities for Python package naming conventions."""
 
 import re
-from importlib.metadata import metadata
+from importlib.metadata import Distribution, metadata
 from types import FunctionType, MethodType
 
 NON_DEPENDENCY_CHAR_PATTERN = re.compile(r"[^a-zA-Z0-9_.-]")
@@ -48,6 +48,26 @@ def distribution_summary(name: str) -> str:
 def distribution_header_value_pattern(field_name: str) -> re.Pattern[str]:
     """Compile a regex matching every value of a single-line RFC 822 header."""
     return re.compile(rf"^{field_name}:[ \t]*(.*)$", re.MULTILINE)
+
+
+def distribution_header(dist: Distribution) -> str:
+    """Return the header portion of a distribution's metadata.
+
+    The header is the part of the metadata before the first blank line. It
+    contains all single-line RFC 822 headers, including "Name" and
+    "Requires-Dist".
+
+    Args:
+        dist: An installed distribution.
+
+    Returns:
+        The header portion of the distribution's metadata.
+    """
+    text = dist.read_text("METADATA")
+    if text is None:
+        return ""
+    header_end = text.find("\n\n")
+    return text[:header_end] if header_end != -1 else text
 
 
 def fully_qualified_name(obj: MethodType | FunctionType | type) -> str:
