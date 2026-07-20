@@ -61,9 +61,9 @@ class DependencyGraph(DiGraph):
         text = dist.read_text("METADATA")
         if text is None:
             return "", iter(())
-        header, _, _ = text.partition("\n\n")
-        name = DISTRIBUTION_NAME_PATTERN.findall(header)[0]
-        return kebab_to_snake_case(name), (
+        header_end = text.find("\n\n")
+        header = text[:header_end] if header_end != -1 else text
+        return kebab_to_snake_case(DISTRIBUTION_NAME_PATTERN.findall(header)[0]), (
             dependency_requirement_as_module_name(req)
             for req in DISTRIBUTION_REQUIRES_DIST_PATTERN.findall(header)
         )
