@@ -2,6 +2,7 @@
 
 import logging
 import sys
+from importlib.metadata import distribution
 from itertools import chain
 from pathlib import Path
 from types import ModuleType
@@ -18,6 +19,7 @@ from pyrig_runtime.core.introspection.modules import (
     replace_root_module,
 )
 from pyrig_runtime.core.strings import (
+    distribution_metadata,
     distribution_summary,
     kebab_to_snake_case,
     snake_to_kebab_case,
@@ -73,7 +75,12 @@ class CLI(DependencySubclass):
 
     def help_text(self) -> str:
         """Return the help text for the invoking project."""
-        return distribution_summary(self.project_name())
+        metadata = distribution_metadata(
+            distribution(self.project_name()),
+        )
+        if metadata is None:
+            return ""
+        return distribution_summary(metadata)
 
     def build_app(self, app: typer.Typer) -> typer.Typer:
         """Register the callback and all commands onto the given app.

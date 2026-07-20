@@ -1,7 +1,7 @@
 """String conversion utilities for Python package naming conventions."""
 
 import re
-from importlib.metadata import Distribution, metadata
+from importlib.metadata import Distribution
 from types import FunctionType, MethodType
 from typing import cast
 
@@ -15,6 +15,7 @@ def distribution_header_value_pattern(field_name: str) -> re.Pattern[str]:
 
 DISTRIBUTION_NAME_PATTERN = distribution_header_value_pattern("Name")
 DISTRIBUTION_REQUIRES_DIST_PATTERN = distribution_header_value_pattern("Requires-Dist")
+DISTRIBUTION_SUMMARY_PATTERN = distribution_header_value_pattern("Summary")
 
 
 def dependency_requirement_as_module_name(dep_req: str) -> str:
@@ -40,19 +41,19 @@ def dependency_requirement_as_module_name(dep_req: str) -> str:
     )
 
 
-def distribution_summary(name: str) -> str:
+def distribution_summary(metadata: str) -> str:
     """Return the summary recorded in an installed distribution's metadata.
 
     This function assumes that the package is installed and its
     metadata has a "Summary" field.
 
     Args:
-        name: Name of an installed distribution (e.g. `"requests"`).
+        metadata: The full metadata of an installed distribution.
 
     Returns:
         The distribution's summary description.
     """
-    return metadata(name)["Summary"]
+    return regex_find(DISTRIBUTION_SUMMARY_PATTERN, metadata)
 
 
 def distribution_name(metadata: str) -> str:
@@ -64,7 +65,7 @@ def distribution_name(metadata: str) -> str:
     Returns:
         The name of the distribution.
     """
-    return cast("re.Match[str]", DISTRIBUTION_NAME_PATTERN.search(metadata))[1]
+    return regex_find(DISTRIBUTION_NAME_PATTERN, metadata)
 
 
 def distribution_requires(metadata: str) -> list[str]:
@@ -119,3 +120,20 @@ def kebab_to_snake_case(value: str) -> str:
 def snake_to_kebab_case(value: str) -> str:
     """Convert a snake_case string to kebab-case, replacing underscores with hyphens."""
     return value.replace("_", "-")
+
+
+def regex_find(pattern: re.Pattern[str], text: str) -> str:
+    """Return the first captured group from a regex search on the given text.
+
+    Args:
+        pattern: A compiled regex pattern with at least one capturing group.
+        text: The text to search within.
+
+    Returns:
+        The first captured group from the regex search.
+
+    Raises:
+        TypeError: If no match is found and None[1] is attempted to be accessed,
+        indicating that the pattern did not match the text.
+    """
+    return cast("re.Match[str]", pattern.search(text))[1]

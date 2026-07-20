@@ -9,7 +9,7 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pytest_mock import MockerFixture
 
 from pyrig_runtime.core.introspection.modules import safe_import_module
-from pyrig_runtime.core.strings import kebab_to_snake_case
+from pyrig_runtime.core.strings import distribution_metadata, kebab_to_snake_case
 from pyrig_runtime.rig.cli import cli
 from pyrig_runtime.rig.cli.cli import CLI
 
@@ -197,8 +197,14 @@ class TestCLI:
         assert "mk" in groups
         assert isinstance(groups["mk"], typer.Typer)
 
-    def test_help_text(self) -> None:
+    def test_help_text(self, mocker: MockerFixture) -> None:
         """Test method."""
         help_text = CLI.I.help_text()
         assert isinstance(help_text, str)
         assert len(help_text) > 0
+
+        mocker.patch(
+            cli.__name__ + "." + distribution_metadata.__name__,
+            return_value=None,
+        )
+        assert CLI.I.help_text() == ""

@@ -1,7 +1,9 @@
 """Tests module."""
 
 import importlib.metadata
+import re
 
+import pytest
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pytest_mock import MockerFixture
 
@@ -16,6 +18,7 @@ from pyrig_runtime.core.strings import (
     distribution_summary,
     fully_qualified_name,
     kebab_to_snake_case,
+    regex_find,
     snake_to_kebab_case,
 )
 from pyrig_runtime.rig.cli import shared_subcommands
@@ -87,10 +90,13 @@ def test_fully_qualified_name() -> None:
 
 def test_distribution_summary() -> None:
     """Test function."""
-    assert (
-        distribution_summary("pyrig-runtime")
-        == PyprojectConfigFile().project_description()
+    metadata = distribution_metadata(
+        importlib.metadata.distribution("pyrig-runtime"),
     )
+    assert metadata is not None
+    assert distribution_summary(metadata) == PyprojectConfigFile().project_description()
+    header = distribution_header(metadata)
+    assert distribution_summary(header) == PyprojectConfigFile().project_description()
 
 
 def test_distribution_header_value_pattern() -> None:
@@ -171,3 +177,18 @@ def test_distribution_metadata(mocker: MockerFixture) -> None:
 
     mocker.patch.object(dist, "read_text", return_value=None)
     assert distribution_metadata(dist) is None
+
+
+def test_regex_find() -> None:
+    """Test function."""
+    pattern = re.compile(r"^Name:[ \t]*(.*)$", re.MULTILINE)
+
+    text = "Metadata-Version: 2.1\nName: some-package\nVersion: 1.0\n"
+    assert regex_find(pattern, text) == "some-package"
+
+    # only the first match is returned, even when the pattern matches more than once
+    multi_match_text = "Name: first\nOther: value\nName: second\n"
+    assert regex_find(pattern, multi_match_text) == "first"
+
+    with pytest.raises(TypeError):
+        regex_find(pattern, "no matching field here")
