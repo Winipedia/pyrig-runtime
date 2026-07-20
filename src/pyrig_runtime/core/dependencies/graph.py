@@ -6,7 +6,11 @@ from collections.abc import Iterator
 from pyrig_runtime.core.graph import DiGraph
 from pyrig_runtime.core.strings import (
     dependency_requirement_as_module_name,
+    distribution_header_value_pattern,
 )
+
+DISTRIBUTION_NAME_PATTERN = distribution_header_value_pattern("Name")
+DISTRIBUTION_REQUIRES_DIST_PATTERN = distribution_header_value_pattern("Requires-Dist")
 
 
 class DependencyGraph(DiGraph):
@@ -21,6 +25,8 @@ class DependencyGraph(DiGraph):
         """Build the graph from installed Python distributions."""
         for dist in importlib.metadata.distributions():
             name, deps = self.parse_name_and_deps(dist)
+            if not name:
+                continue
             self.add_node(name)
             for dep in deps:
                 self.add_edge(name, dep)
@@ -51,8 +57,12 @@ class DependencyGraph(DiGraph):
             `Requires-Dist` field in their metadata.
             Such distributions will be treated as having no dependencies.
         """
-        metadata = dist.metadata
-        return dependency_requirement_as_module_name(metadata["Name"]), (
+        text = dist.read_text("METADATA")
+        if text is None:
+            return "", iter(())
+        header, _, _ = text.partition("\n\n")
+        name = DISTRIBUTION_NAME_PATTERN.findall(header)[0]
+        return dependency_requirement_as_module_name(name), (
             dependency_requirement_as_module_name(req)
-            for req in (metadata.get_all("Requires-Dist") or [])
+            for req in DISTRIBUTION_REQUIRES_DIST_PATTERN.findall(header)
         )

@@ -1,9 +1,10 @@
 """String conversion utilities for Python package naming conventions."""
 
+import re
 from importlib.metadata import metadata
 from types import FunctionType, MethodType
 
-from pyrig_runtime.core.constants import NON_DEPENDENCY_CHAR_PATTERN
+NON_DEPENDENCY_CHAR_PATTERN = re.compile(r"[^a-zA-Z0-9_.-]")
 
 
 def dependency_requirement_as_module_name(dep_req: str) -> str:
@@ -42,6 +43,11 @@ def distribution_summary(name: str) -> str:
         The distribution's summary description.
     """
     return metadata(name)["Summary"]
+
+
+def distribution_header_value_pattern(field_name: str) -> re.Pattern[str]:
+    """Compile a regex matching every value of a single-line RFC 822 header."""
+    return re.compile(rf"^{field_name}:[ \t]*(.*)$", re.MULTILINE)
 
 
 def fully_qualified_name(obj: MethodType | FunctionType | type) -> str:

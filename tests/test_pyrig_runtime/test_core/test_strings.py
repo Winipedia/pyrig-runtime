@@ -1,10 +1,13 @@
 """Tests module."""
 
+import importlib.metadata
+
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.core.strings import (
     dependency_requirement_as_module_name,
+    distribution_header_value_pattern,
     distribution_summary,
     fully_qualified_name,
     kebab_to_snake_case,
@@ -83,3 +86,20 @@ def test_distribution_summary() -> None:
         distribution_summary("pyrig-runtime")
         == PyprojectConfigFile().project_description()
     )
+
+
+def test_distribution_header_value_pattern() -> None:
+    """Test function."""
+    name_pattern = distribution_header_value_pattern("Name")
+    requires_dist_pattern = distribution_header_value_pattern("Requires-Dist")
+
+    for dist in importlib.metadata.distributions():
+        text = dist.read_text("METADATA") or dist.read_text("PKG-INFO") or ""
+        header, _, _ = text.partition("\n\n")
+
+        assert name_pattern.findall(header) == [dist.metadata["Name"]] == [dist.name]
+        assert (
+            requires_dist_pattern.findall(header)
+            == (dist.metadata.get_all("Requires-Dist") or [])
+            == (dist.requires or [])
+        )
