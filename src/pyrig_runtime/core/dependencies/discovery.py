@@ -2,6 +2,7 @@
 
 from collections.abc import Iterator
 from functools import cache
+from itertools import chain
 from types import ModuleType
 
 import pyrig_runtime
@@ -35,10 +36,12 @@ def discover_subclasses_across_dependencies[T](
         Subclass types of `cls`, with `module` searched first, then
         dependent packages in dependency order.
     """
-    modules = (module, *discover_equivalent_modules_across_dependencies(module=module))
     for package in filter(
         is_package,
-        modules,
+        chain(
+            (module,),
+            discover_equivalent_modules_across_dependencies(module=module),
+        ),
     ):
         register_package_modules(package)
 

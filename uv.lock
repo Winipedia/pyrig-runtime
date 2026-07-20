@@ -916,7 +916,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "18.28.5"
+version = "18.28.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "inquirerpy" },
@@ -927,9 +927,9 @@ dependencies = [
     { name = "tomli-w" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/83/76/7bde80dfc439d4a33a034d43aa993295b45fe5801127f6809b3597674c99/pyrig-18.28.5.tar.gz", hash = "sha256:50925bf6ab290739f6f9276d56a6e7fa2526f97b21eabc6732acd35daf6800ae", size = 92583, upload-time = "2026-07-19T23:51:05.49Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/32/66/ecc4af9e6d9dffa3c46971412c45e64e3cbd582f532f35afefa8f3191953/pyrig-18.28.6.tar.gz", hash = "sha256:a158307f568c2b4f38b7b6a35f64c2888f42f074f99939548e95a2441d66a454", size = 92599, upload-time = "2026-07-20T01:21:20.527Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9d/43/1a69b36c122fbfd58d24c9872cb975a62e5c99804539c905000f6715f11b/pyrig-18.28.5-py3-none-any.whl", hash = "sha256:d77c4b68517b47d7c8cbd16785912c2c59b4f20a4ecd119869fa2d9e6e766c5d", size = 155699, upload-time = "2026-07-19T23:51:02.85Z" },
+    { url = "https://files.pythonhosted.org/packages/e8/00/376b1e39c2e73dcadd3c801b65557d07a682cd182f3f7fa9e161ac8cfee9/pyrig-18.28.6-py3-none-any.whl", hash = "sha256:bc27c1c5de3595bfb56630f095844c9a5d3a54d0cfd5a22617014556025bb553", size = 155698, upload-time = "2026-07-20T01:21:17.291Z" },
 ]
 
 [[package]]
