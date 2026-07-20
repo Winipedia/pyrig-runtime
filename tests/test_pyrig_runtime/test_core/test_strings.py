@@ -95,8 +95,6 @@ def test_distribution_header_value_pattern() -> None:
     requires_dist_pattern = distribution_header_value_pattern("Requires-Dist")
 
     for dist in importlib.metadata.distributions():
-        if dist.name == "pyrig-runtime":
-            break
         text = dist.read_text("METADATA")
         assert text is not None
 
