@@ -53,6 +53,13 @@ def test_discover_subclasses_across_dependencies() -> None:
     assert PyprojectConfigFile in subclasses
     assert MirrorTestConfigFile in subclasses
 
+    class AlsoADependencySubclass(DependencySubclass):
+        pass
+
+    AlsoADependencySubclass.__module__ = "not_a_real_dependency.rig"
+    subclasses = set(discover_subclasses_across_dependencies(DependencySubclass, rig))
+    assert AlsoADependencySubclass in subclasses
+
 
 def test_dependency_ancestors() -> None:
     """Test function."""

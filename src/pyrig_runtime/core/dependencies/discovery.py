@@ -42,16 +42,11 @@ def discover_subclasses_across_dependencies[T](
     ):
         register_package_modules(package)
 
-    module_roots = {root_module_name(module.__name__) for module in modules}
-
     module_name = module.__name__
     root_name = root_module_name(module_name)
     for subclass in discover_subclasses(cls):
-        cls_module_name = subclass.__module__
-        if root_module_name(
-            cls_module_name,
-        ) in module_roots and replace_root_module_name(
-            cls_module_name,
+        if replace_root_module_name(
+            subclass.__module__,
             root_name,
         ).startswith(
             module_name,
