@@ -2,6 +2,8 @@
 
 import importlib.metadata
 
+from pytest_mock import MockerFixture
+
 from pyrig_runtime.core.dependencies.graph import DependencyGraph
 
 DEP_GRAPH = DependencyGraph()
@@ -17,6 +19,30 @@ class TestDependencyGraph:
         result_name, result_deps = DEP_GRAPH.parse_name_and_deps(dist)
         assert result_name == "pyrig"
         assert "typer" in result_deps
+
+    def test_parse_name_and_deps_without_metadata(
+        self,
+        mocker: MockerFixture,
+    ) -> None:
+        """Test method."""
+        dist = importlib.metadata.distribution("pyrig-runtime")
+        mocker.patch.object(dist, "read_text", return_value=None)
+        result_name, result_deps = DEP_GRAPH.parse_name_and_deps(dist)
+        assert result_name == ""
+        assert list(result_deps) == []
+
+    def test_build_skips_distributions_without_a_name(
+        self,
+        mocker: MockerFixture,
+    ) -> None:
+        """Test method."""
+        mocker.patch.object(
+            DependencyGraph,
+            "parse_name_and_deps",
+            return_value=("", iter(())),
+        )
+        graph = DependencyGraph()
+        assert graph.nodes == set()
 
     def test_build(self) -> None:
         """Test method."""

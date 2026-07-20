@@ -3,12 +3,16 @@
 import importlib.metadata
 
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pytest_mock import MockerFixture
 
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.core.strings import (
     dependency_requirement_as_module_name,
     distribution_header,
     distribution_header_value_pattern,
+    distribution_metadata,
+    distribution_name,
+    distribution_requires,
     distribution_summary,
     fully_qualified_name,
     kebab_to_snake_case,
@@ -112,7 +116,58 @@ def test_distribution_header() -> None:
     """Test function."""
     for dist in importlib.metadata.distributions():
         text = dist.read_text("METADATA")
-        if text is None:
-            assert distribution_header(dist) == ""
+        assert text is not None
+        assert distribution_header(text) == text.partition("\n\n")[0]
+
+
+def test_distribution_name() -> None:
+    """Test function."""
+    metadata = "Metadata-Version: 2.1\nName: some-package\nVersion: 1.0\n"
+    assert distribution_name(metadata) == "some-package"
+
+    for dist in importlib.metadata.distributions():
+        metadata = distribution_metadata(dist)
+        assert metadata is not None
+        header = distribution_header(metadata)
+        assert header is not None
+        assert distribution_name(header) == dist.name
+        assert distribution_name(metadata) == dist.name
+
+
+def test_distribution_requires() -> None:
+    """Test function."""
+    metadata = (
+        "Metadata-Version: 2.1\n"
+        "Name: some-package\n"
+        "Requires-Dist: requests>=2.0\n"
+        "Requires-Dist: typer\n"
+    )
+    assert distribution_requires(metadata) == ["requests>=2.0", "typer"]
+
+    metadata_no_deps = "Metadata-Version: 2.1\nName: some-package\n"
+    assert distribution_requires(metadata_no_deps) == []
+
+    for dist in importlib.metadata.distributions():
+        metadata = distribution_metadata(dist)
+        assert metadata is not None
+        header = distribution_header(metadata)
+        assert header is not None
+        requires = dist.requires
+        if requires is None:
+            assert distribution_requires(header) == []
+            assert distribution_requires(metadata) == []
             continue
-        assert distribution_header(dist) == text.partition("\n\n")[0]
+        assert distribution_requires(header) == requires
+        assert distribution_requires(metadata) == requires
+
+
+def test_distribution_metadata(mocker: MockerFixture) -> None:
+    """Test function."""
+    for dist in importlib.metadata.distributions():
+        assert distribution_metadata(dist) == dist.read_text("METADATA")
+
+    dist = importlib.metadata.distribution("pyrig-runtime")
+    assert distribution_metadata(dist) == dist.read_text("METADATA")
+
+    mocker.patch.object(dist, "read_text", return_value=None)
+    assert distribution_metadata(dist) is None

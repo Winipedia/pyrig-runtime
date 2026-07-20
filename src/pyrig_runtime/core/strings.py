@@ -7,6 +7,15 @@ from types import FunctionType, MethodType
 NON_DEPENDENCY_CHAR_PATTERN = re.compile(r"[^a-zA-Z0-9_.-]")
 
 
+def distribution_header_value_pattern(field_name: str) -> re.Pattern[str]:
+    """Compile a regex matching every value of a single-line RFC 822 header."""
+    return re.compile(rf"^{field_name}:[ \t]*(.*)$", re.MULTILINE)
+
+
+DISTRIBUTION_NAME_PATTERN = distribution_header_value_pattern("Name")
+DISTRIBUTION_REQUIRES_DIST_PATTERN = distribution_header_value_pattern("Requires-Dist")
+
+
 def dependency_requirement_as_module_name(dep_req: str) -> str:
     """Extract the importable module name from a dependency requirement string.
 
@@ -45,12 +54,24 @@ def distribution_summary(name: str) -> str:
     return metadata(name)["Summary"]
 
 
-def distribution_header_value_pattern(field_name: str) -> re.Pattern[str]:
-    """Compile a regex matching every value of a single-line RFC 822 header."""
-    return re.compile(rf"^{field_name}:[ \t]*(.*)$", re.MULTILINE)
+def distribution_name(metadata: str) -> str:
+    """Return the name of a distribution from its metadata.
+
+    Args:
+        metadata: The full metadata of an installed distribution.
+
+    Returns:
+        The name of the distribution.
+    """
+    return DISTRIBUTION_NAME_PATTERN.findall(metadata)[0]
 
 
-def distribution_header(dist: Distribution) -> str:
+def distribution_requires(metadata: str) -> list[str]:
+    """Return the list of dependency requirements from a distribution's metadata."""
+    return DISTRIBUTION_REQUIRES_DIST_PATTERN.findall(metadata)
+
+
+def distribution_header(metadata: str) -> str:
     """Return the header portion of a distribution's metadata.
 
     The header is the part of the metadata before the first blank line. It
@@ -58,16 +79,18 @@ def distribution_header(dist: Distribution) -> str:
     "Requires-Dist".
 
     Args:
-        dist: An installed distribution.
+        metadata: The full metadata of an installed distribution.
 
     Returns:
         The header portion of the distribution's metadata.
     """
-    text = dist.read_text("METADATA")
-    if text is None:
-        return ""
-    header_end = text.find("\n\n")
-    return text[:header_end] if header_end != -1 else text
+    header_end = metadata.find("\n\n")
+    return metadata[:header_end] if header_end != -1 else metadata
+
+
+def distribution_metadata(dist: Distribution) -> str | None:
+    """Return the full metadata of a distribution."""
+    return dist.read_text("METADATA")
 
 
 def fully_qualified_name(obj: MethodType | FunctionType | type) -> str:
