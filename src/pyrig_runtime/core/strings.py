@@ -3,6 +3,7 @@
 import re
 from importlib.metadata import Distribution, metadata
 from types import FunctionType, MethodType
+from typing import cast
 
 NON_DEPENDENCY_CHAR_PATTERN = re.compile(r"[^a-zA-Z0-9_.-]")
 
@@ -63,7 +64,7 @@ def distribution_name(metadata: str) -> str:
     Returns:
         The name of the distribution.
     """
-    return DISTRIBUTION_NAME_PATTERN.findall(metadata)[0]
+    return cast("re.Match[str]", DISTRIBUTION_NAME_PATTERN.search(metadata))[1]
 
 
 def distribution_requires(metadata: str) -> list[str]:
