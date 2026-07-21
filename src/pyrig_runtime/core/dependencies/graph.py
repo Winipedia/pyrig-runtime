@@ -5,10 +5,10 @@ from collections.abc import Iterator
 
 from pyrig_runtime.core.graph import DiGraph
 from pyrig_runtime.core.strings import (
-    dependency_requirement_as_module_name,
     distribution_header,
     distribution_metadata,
     distribution_name,
+    distribution_requirement_as_module_name,
     distribution_requirements,
     kebab_to_snake_case,
 )
@@ -63,6 +63,6 @@ class DependencyGraph(DiGraph):
             return "", iter(())
         header = distribution_header(metadata)
         return kebab_to_snake_case(distribution_name(header)), (
-            dependency_requirement_as_module_name(req)
+            distribution_requirement_as_module_name(req)
             for req in distribution_requirements(header)
         )

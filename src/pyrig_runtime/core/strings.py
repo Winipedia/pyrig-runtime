@@ -19,14 +19,14 @@ DISTRIBUTION_REQUIRES_DIST_PATTERN = distribution_header_value_pattern(
 DISTRIBUTION_SUMMARY_PATTERN = distribution_header_value_pattern("Summary")
 
 
-def dependency_requirement_as_module_name(dep_req: str) -> str:
+def distribution_requirement_as_module_name(req: str) -> str:
     """Extract the importable module name from a dependency requirement string.
 
     Version specifiers, extras notation, and any other non-name characters are
     stripped. Hyphens in the package name are normalized to underscores.
 
     Args:
-        dep_req: A dependency requirement string (
+        req: A dependency requirement string (
             e.g., `"requests>=2.0,<3.0"` or
             `"my-package[extra]==1.0.0"`or
             `"some.package==1.0.0"`
@@ -37,7 +37,7 @@ def dependency_requirement_as_module_name(dep_req: str) -> str:
             e.g., `"requests"`, `"my_package"`, `"some.package"`
         ).
     """
-    return kebab_to_snake_case(regex_find(DEPENDENCY_NAME_PATTERN, dep_req))
+    return kebab_to_snake_case(regex_find(DEPENDENCY_NAME_PATTERN, req))
 
 
 def distribution_summary(metadata: str) -> str:
