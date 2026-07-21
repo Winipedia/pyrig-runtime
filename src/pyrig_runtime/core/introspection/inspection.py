@@ -24,10 +24,11 @@ def obj_members(
     Returns:
         The values of the matching members of `obj`.
     """
+    excluded = {"__annotate__", "__annotate_func__"}
     return (
         value
         for member, value in inspect.getmembers_static(obj, predicate=predicate)
-        if member not in {"__annotate__", "__annotate_func__"}
+        if member not in excluded
     )
 
 
