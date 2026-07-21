@@ -11,7 +11,7 @@ from typing import Any
 import typer
 
 from pyrig_runtime.core.dependencies.discovery import (
-    discover_equivalent_modules_across_dependencies,
+    equivalent_modules_across_dependencies,
 )
 from pyrig_runtime.core.dependencies.distribution import (
     distribution_metadata,
@@ -227,7 +227,7 @@ class CLI(DependencySubclass):
         """
         for shared_subcommands_module in chain(
             (shared_subcommands,),
-            discover_equivalent_modules_across_dependencies(
+            equivalent_modules_across_dependencies(
                 shared_subcommands,
             ),
         ):

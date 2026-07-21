@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 from pyrig_runtime import rig
 from pyrig_runtime.core.dependencies.discovery import (
-    discover_subclasses_across_dependencies,
+    subclasses_across_dependencies,
 )
 from pyrig_runtime.core.introspection.classes import (
     discard_abstract_classes,
@@ -139,7 +139,7 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
             Leaf subclass types.
         """
         return discard_parent_classes(
-            discover_subclasses_across_dependencies(
+            subclasses_across_dependencies(
                 cls,
                 module=cls.discovery_module(),
             ),

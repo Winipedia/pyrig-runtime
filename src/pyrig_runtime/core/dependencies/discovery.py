@@ -21,7 +21,7 @@ from pyrig_runtime.core.introspection.packages import (
 )
 
 
-def discover_subclasses_across_dependencies[T](
+def subclasses_across_dependencies[T](
     cls: type[T],
     module: ModuleType,
 ) -> Iterator[type[T]]:
@@ -40,7 +40,7 @@ def discover_subclasses_across_dependencies[T](
         is_package,
         chain(
             (module,),
-            discover_equivalent_modules_across_dependencies(module=module),
+            equivalent_modules_across_dependencies(module=module),
         ),
     ):
         register_package_modules(package)
@@ -55,7 +55,7 @@ def discover_subclasses_across_dependencies[T](
             yield subclass
 
 
-def discover_equivalent_modules_across_dependencies(
+def equivalent_modules_across_dependencies(
     module: ModuleType,
 ) -> Iterator[ModuleType]:
     """Yield the equivalent module from every dependent of `module`'s root package.
@@ -73,14 +73,14 @@ def discover_equivalent_modules_across_dependencies(
         Successfully imported module objects in dependency order. Dependents
         that have no module at the equivalent sub-path are silently skipped.
     """
-    for package in discover_dependent_packages(root_module(module)):
+    for package in dependent_packages(root_module(module)):
         package_module = replace_root_module(module, package.__name__, default=None)
         if package_module is not None:
             yield package_module
 
 
 @cache
-def discover_dependent_packages(package: ModuleType) -> tuple[ModuleType, ...]:
+def dependent_packages(package: ModuleType) -> tuple[ModuleType, ...]:
     """Return every installed package that depends on `package`.
 
     The result is cached per unique `package` argument.
