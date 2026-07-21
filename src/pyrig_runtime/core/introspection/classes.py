@@ -34,8 +34,8 @@ def discard_parent_classes[T](
         Classes that have no subclasses present in the same collection.
     """
     classes = set(classes)
-    ancestors = {ancestor for cls in classes for ancestor in cls.__mro__[1:]}
-    return (cls for cls in classes if cls not in ancestors)
+    parents = {parent for cls in classes for parent in cls.__mro__[1:]}
+    return (cls for cls in classes if cls not in parents)
 
 
 def discover_subclasses[T](cls: type[T]) -> set[type[T]]:
