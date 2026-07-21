@@ -13,14 +13,16 @@ import typer
 from pyrig_runtime.core.dependencies.discovery import (
     discover_equivalent_modules_across_dependencies,
 )
+from pyrig_runtime.core.dependencies.distribution import (
+    distribution_metadata,
+    distribution_summary,
+)
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.core.introspection.functions import module_functions
 from pyrig_runtime.core.introspection.modules import (
     replace_root_module,
 )
 from pyrig_runtime.core.strings import (
-    distribution_metadata,
-    distribution_summary,
     kebab_to_snake_case,
     snake_to_kebab_case,
 )

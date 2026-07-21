@@ -3,13 +3,15 @@
 import importlib.metadata
 from collections.abc import Iterator
 
-from pyrig_runtime.core.graph import DiGraph
-from pyrig_runtime.core.strings import (
+from pyrig_runtime.core.dependencies.distribution import (
     distribution_header,
     distribution_metadata,
     distribution_name,
     distribution_requirement_as_module_name,
     distribution_requirements,
+)
+from pyrig_runtime.core.graph import DiGraph
+from pyrig_runtime.core.strings import (
     kebab_to_snake_case,
 )
 

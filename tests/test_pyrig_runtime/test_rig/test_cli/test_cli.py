@@ -8,8 +8,9 @@ from pyrig.rig.cli import subcommands as pyrig_subcommands_module
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pytest_mock import MockerFixture
 
+from pyrig_runtime.core.dependencies.distribution import distribution_metadata
 from pyrig_runtime.core.introspection.modules import safe_import_module
-from pyrig_runtime.core.strings import distribution_metadata, kebab_to_snake_case
+from pyrig_runtime.core.strings import kebab_to_snake_case
 from pyrig_runtime.rig.cli import cli
 from pyrig_runtime.rig.cli.cli import CLI
 
