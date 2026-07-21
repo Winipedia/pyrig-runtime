@@ -4,7 +4,7 @@ import re
 from importlib.metadata import Distribution
 from types import FunctionType, MethodType
 
-DEPENDENCY_NAME_PATTERN = re.compile(r"^([a-zA-Z0-9_.-]*)")
+REQUIRES_DIST_NAME_PATTERN = re.compile(r"^([a-zA-Z0-9_.-]*)")
 
 
 def distribution_header_value_pattern(field_name: str) -> re.Pattern[str]:
@@ -37,7 +37,7 @@ def distribution_requirement_as_module_name(req: str) -> str:
             e.g., `"requests"`, `"my_package"`, `"some.package"`
         ).
     """
-    return kebab_to_snake_case(regex_find(DEPENDENCY_NAME_PATTERN, req))
+    return kebab_to_snake_case(regex_find(REQUIRES_DIST_NAME_PATTERN, req))
 
 
 def distribution_summary(metadata: str) -> str:
