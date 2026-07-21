@@ -2,6 +2,7 @@
 
 import inspect
 from collections.abc import Iterable, Iterator
+from itertools import filterfalse
 
 
 def discard_abstract_classes[T](classes: Iterable[type[T]]) -> Iterator[type[T]]:
@@ -16,7 +17,7 @@ def discard_abstract_classes[T](classes: Iterable[type[T]]) -> Iterator[type[T]]
     Yields:
         Concrete (non-abstract) classes from the input.
     """
-    return (cls for cls in classes if not inspect.isabstract(cls))
+    return filterfalse(inspect.isabstract, classes)
 
 
 def discard_parent_classes[T](
@@ -35,7 +36,7 @@ def discard_parent_classes[T](
     """
     classes = set(classes)
     parents = {parent for cls in classes for parent in cls.__mro__[1:]}
-    return (cls for cls in classes if cls not in parents)
+    return filterfalse(parents.__contains__, classes)
 
 
 def discover_subclasses[T](cls: type[T]) -> set[type[T]]:

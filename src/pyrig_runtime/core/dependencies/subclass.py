@@ -2,6 +2,7 @@
 
 from abc import ABCMeta, abstractmethod
 from collections.abc import Iterable, Iterator
+from operator import methodcaller
 from types import ModuleType
 from typing import TYPE_CHECKING, Self
 
@@ -174,7 +175,7 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
         """
         return sorted(
             subclasses,
-            key=lambda subclass: subclass.sort_key(),
+            key=methodcaller(cls.sort_key.__name__),
         )
 
     def __str__(self) -> str:

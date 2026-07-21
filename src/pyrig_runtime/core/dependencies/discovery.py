@@ -51,9 +51,7 @@ def discover_subclasses_across_dependencies[T](
         if replace_root_module_name(
             subclass.__module__,
             root_name,
-        ).startswith(
-            module_name,
-        ):
+        ).startswith(module_name):
             yield subclass
 
 
@@ -82,25 +80,25 @@ def discover_equivalent_modules_across_dependencies(
 
 
 @cache
-def discover_dependent_packages(target: ModuleType) -> tuple[ModuleType, ...]:
-    """Return every installed package that depends on `target`.
+def discover_dependent_packages(package: ModuleType) -> tuple[ModuleType, ...]:
+    """Return every installed package that depends on `package`.
 
-    The result is cached per unique `target` argument.
+    The result is cached per unique `package` argument.
 
     Args:
-        target: Package whose dependents should be discovered.
+        package: Package whose dependents should be discovered.
 
     Returns:
         Tuple of imported module objects for every package that depends on
-        `target` directly or transitively, in dependency order. Does not
-        include `target` itself.
+        `package` directly or transitively, in dependency order. Does not
+        include `package` itself.
 
     Raises:
-        KeyError: If `target` is not `pyrig_runtime` or one of its
+        KeyError: If `package` is not `pyrig_runtime` or one of its
             dependents.
     """
     graph = dependency_graph()
-    return tuple(import_modules(graph.sorted_ancestors(target.__name__)))
+    return tuple(import_modules(graph.sorted_ancestors(package.__name__)))
 
 
 @cache
