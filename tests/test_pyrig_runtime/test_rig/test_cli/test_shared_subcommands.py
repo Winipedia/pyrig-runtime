@@ -1,6 +1,6 @@
 """module."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from types import FunctionType
 
 from pyrig_runtime.rig.cli import shared_subcommands
@@ -10,11 +10,11 @@ from pyrig_runtime.rig.cli.shared_subcommands import version
 
 def test_version(
     command_works: Callable[[FunctionType], bool],
-    command_calls_function: Callable[[FunctionType, FunctionType], bool],
+    command_calls_function: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
 ) -> None:
     """Test function."""
     assert command_works(version)
-    assert command_calls_function(version, project_version)
+    assert command_calls_function(version, project_version, [])
 
 
 def test_docstring() -> None:
