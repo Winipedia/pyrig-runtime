@@ -6,7 +6,7 @@ from importlib.metadata import distribution
 from itertools import chain
 from pathlib import Path
 from types import ModuleType
-from typing import Any
+from typing import Annotated, Any
 
 import typer
 
@@ -108,20 +108,24 @@ class CLI(DependencySubclass):
 
     def callback(
         self,
-        verbose: int = typer.Option(
-            0,
-            "--verbose",
-            "-v",
-            count=True,
-            help="Increase verbosity: -v (DEBUG), -vv (modules), -vvv (timestamps)",
-        ),
-        quiet: int = typer.Option(
-            0,
-            "--quiet",
-            "-q",
-            count=True,
-            help="Decrease verbosity: -q (WARNING), -qq (ERROR), -qqq (CRITICAL)",
-        ),
+        verbose: Annotated[
+            int,
+            typer.Option(
+                "--verbose",
+                "-v",
+                count=True,
+                help="Increase verbosity: -v (DEBUG), -vv (modules), -vvv (timestamps)",
+            ),
+        ] = 0,
+        quiet: Annotated[
+            int,
+            typer.Option(
+                "--quiet",
+                "-q",
+                count=True,
+                help="Decrease verbosity: -q (WARNING), -qq (ERROR), -qqq (CRITICAL)",
+            ),
+        ] = 0,
     ) -> None:
         """Apply the verbosity options for the current invocation.
 
