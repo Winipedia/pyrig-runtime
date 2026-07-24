@@ -1,4 +1,4 @@
-"""Subclass discovery scoped by a module name prefix."""
+"""Python package utilities."""
 
 from collections.abc import Iterator
 from functools import cache

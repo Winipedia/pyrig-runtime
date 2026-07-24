@@ -19,13 +19,18 @@ from pyrig_runtime.core.strings import (
 class DependencyGraph(DiGraph):
     """Directed graph of installed Python package dependencies.
 
-    Nodes are package names; an edge A → B means "A depends on B".
-    The graph is built at instantiation by scanning all installed
-    distributions.
+    Nodes are package names normalized to their importable module form
+    (hyphens become underscores); an edge A → B means "A depends on B".
+    The graph is built at instantiation by scanning every installed
+    distribution.
     """
 
     def build(self) -> None:
-        """Build the graph from installed Python distributions."""
+        """Build the graph from installed Python distributions.
+
+        Distributions whose metadata cannot be read are skipped and do
+        not become nodes.
+        """
         for dist in importlib.metadata.distributions():
             name, deps = self.parse_name_and_deps(dist)
             if not name:
@@ -40,25 +45,22 @@ class DependencyGraph(DiGraph):
     ) -> tuple[str, Iterator[str]]:
         """Extract the package name and dependencies from a distribution.
 
-        Both the package name and every dependency name are normalized to an
-        importable module name; version specifiers and extras in requirement
-        strings are stripped. Dots are preserved for namespace packages
-        (e.g. `zope.interface` remains `zope.interface`). The dependency
-        iterator is exhausted once consumed; it yields nothing when the
-        distribution declares no dependencies.
+        The name and every dependency name are normalized to an importable
+        module name; dots are preserved for namespace packages (e.g.
+        `zope.interface` remains `zope.interface`).
 
         Args:
             dist: Distribution to extract metadata from.
 
         Returns:
-            A two-tuple `(name, deps)` where `name` is the normalized package
-            name and `deps` is an iterator over the normalized name of each
-            declared dependency.
+            A two-tuple `(name, deps)` where `deps` is an iterator over the
+            normalized name of each dependency the distribution declares. If
+            the distribution's metadata cannot be read, `name` is the empty
+            string and `deps` yields nothing.
 
-        Note:
-            This does not support legacy distributions that do not declare a
-            `Requires-Dist` field in their metadata.
-            Such distributions will be treated as having no dependencies.
+        Raises:
+            LookupError: If the distribution's metadata can be read but does
+                not declare a `Name` field.
         """
         metadata = distribution_metadata(dist)
         if metadata is None:

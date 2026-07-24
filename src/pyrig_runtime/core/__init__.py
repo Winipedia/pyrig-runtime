@@ -1,1 +1,1 @@
-"""Infrastructure for cross-package dependency and subclass discovery."""
+"""Foundational utilities and cross-package discovery machinery."""

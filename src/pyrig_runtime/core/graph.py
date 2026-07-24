@@ -62,6 +62,9 @@ class DiGraph(ABC):
         Args:
             root: The node to keep, along with all nodes that have a directed
                 path to it.
+
+        Raises:
+            KeyError: If `root` is not in the graph.
         """
         keep = self.ancestors(root) | {root}
         self.nodes = keep
@@ -78,14 +81,14 @@ class DiGraph(ABC):
         Args:
             target: Node to find ancestors of.
 
-        Returns:
-            List of ancestor node identifiers in topological order.
-            Returns an empty list if the target has no ancestors.
+        Yields:
+            Each ancestor of `target`, in topological order. Yields nothing
+            if the target has no ancestors.
 
         Raises:
             KeyError: If the target node is not in the graph.
-            RuntimeError: If the ancestor subgraph contains a cycle, making
-                topological sorting impossible.
+            graphlib.CycleError: If the ancestor subgraph contains a cycle,
+                making topological sorting impossible.
         """
         return self.topological_sort_subgraph(self.ancestors(target))
 
@@ -102,14 +105,13 @@ class DiGraph(ABC):
         Args:
             nodes: The subset of nodes to sort.
 
-        Returns:
-            List of nodes in topological order, with each node appearing
-            after all nodes it has outgoing edges to.
+        Yields:
+            Each node in `nodes`, in topological order.
 
         Raises:
             KeyError: If any node in `nodes` is not part of the graph.
-            RuntimeError: If the subgraph contains a cycle, making topological
-                sorting impossible.
+            graphlib.CycleError: If the subgraph contains a cycle, making
+                topological sorting impossible.
         """
         return TopologicalSorter(
             {node: self.edges[node] & nodes for node in nodes},
@@ -118,14 +120,12 @@ class DiGraph(ABC):
     def ancestors(self, target: str) -> set[str]:
         """Find all nodes that have a directed path to the target node.
 
-        The target itself is excluded from the result.
-
         Args:
             target: Node to find ancestors for.
 
         Returns:
-            Set of all nodes with a directed path to the target, excluding the
-            target itself.
+            Set of nodes with a directed path to the target. The target
+            itself is included only if the graph has a cycle back to it.
 
         Raises:
             KeyError: If the target node is not in the graph.

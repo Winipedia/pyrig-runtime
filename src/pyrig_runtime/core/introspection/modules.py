@@ -97,9 +97,8 @@ def replace_root_module(
 def replace_root_module_name(name: str, root: str) -> str:
     """Return the equivalent module name under a different root package.
 
-    Replaces the first dotted segment of `module.__name__` with `root`. Later
-    segments are left untouched even if they happen to share the old root's
-    name.
+    Replaces the first dotted segment of `name` with `root`. Later segments
+    are left untouched even if they happen to share the old root's name.
 
     Args:
         name: Dotted module name (e.g., `"package.subpackage.module"`).
@@ -197,8 +196,7 @@ def root_module_name(name: str) -> str:
         The first segment of the dotted module name.
 
     Example:
-        >>> from some_package.subpackage import module as mod
-        >>> root_module_name(mod.__name__)
+        >>> root_module_name("some_package.subpackage.module")
         'some_package'
     """
     return name.split(".", 1)[0]

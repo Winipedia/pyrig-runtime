@@ -1,4 +1,4 @@
-"""String conversion utilities for Python package naming conventions."""
+"""String related utilities."""
 
 import re
 from types import FunctionType, MethodType

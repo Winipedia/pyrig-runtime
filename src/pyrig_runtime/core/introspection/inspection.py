@@ -21,8 +21,8 @@ def obj_members(
         predicate: Optional filter. When given, only members for which it
             returns `True` are included.
 
-    Returns:
-        The values of the matching members of `obj`.
+    Yields:
+        Each matching member's value.
     """
     excluded = {"__annotate__", "__annotate_func__"}
     return (

@@ -36,6 +36,8 @@ class DependencySubclassMeta(ABCMeta):
 
         Raises:
             RuntimeError: If more than one leaf subclass is found.
+            TypeError: If the leaf subclass is abstract and cannot be
+                instantiated.
         """
         if "_instance" not in cls.__dict__:
             cls._instance = cls.L()
@@ -66,12 +68,12 @@ class DependencySubclassMeta(ABCMeta):
 class DependencySubclass(metaclass=DependencySubclassMeta):
     """Abstract base enabling plugin-style subclass discovery across installed packages.
 
-    Subclasses declare a discovery scope by overriding the discovery hook,
-    and the base class automatically finds all subclass implementations defined
-    in that scope across every installed package that depends on the root
-    package. The scope may be a single module, to keep discovery narrow, or a
-    whole sub-package, to widen it to a full hierarchy. No explicit
-    registration is required.
+    Subclasses declare a discovery scope by overriding the discovery hook, and
+    the base class automatically finds every subclass defined at that scope,
+    both within its root package and across every installed package that
+    depends on it. The scope may be a single module, to keep discovery
+    narrow, or a whole sub-package, to widen it to a full module hierarchy.
+    No explicit registration is required.
     """
 
     @classmethod
@@ -79,22 +81,27 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
     def discovery_module(cls) -> ModuleType:
         """Return the module or package that scopes discovery of this class.
 
-        Every concrete subclass must override this to declare where its
-        implementation classes live. Returning a package widens discovery to
-        that package's whole module hierarchy; returning a plain module keeps
-        discovery narrow to that single module.
+        Used by `subclasses()` to scope cross-package discovery to the correct
+        namespace. Every concrete subclass must override this to declare where its
+        own implementation classes live: returning a package widens discovery to
+        that package's whole module hierarchy, while returning a plain module
+        keeps discovery narrow to that single module.
 
         The base implementation returns `pyrig_runtime.rig`.
 
         Returns:
-            The module or package that scopes the search for concrete
-            implementations of this class.
+            The module or package that scopes the search for this class's
+            subclasses.
+
+        Note:
+            The returned module's root package must be `pyrig_runtime` itself
+            or one of its installed dependents; otherwise discovery fails.
         """
         return rig
 
     @classmethod
     def concrete_subclasses(cls) -> Iterator[type[Self]]:
-        """Yield all concrete leaf subclasses discovered across dependent packages.
+        """Yield all concrete leaf subclasses found within the declared discovery scope.
 
         Yields:
             Non-abstract leaf subclass types.
@@ -103,7 +110,7 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
 
     @classmethod
     def leaf(cls) -> type[Self]:
-        """Return the single leaf subclass found across dependent packages.
+        """Return the single leaf subclass found within the declared discovery scope.
 
         If no subclasses are found, the class itself is returned.
 
@@ -112,8 +119,8 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
             subclasses are found. May be abstract.
 
         Raises:
-            RuntimeError: If more than one leaf subclass is discovered across
-                the dependent packages because defining multiple leaf subclasses
+            RuntimeError: If more than one leaf subclass is discovered within
+                the discovery scope because defining multiple leaf subclasses
                 is ambiguous.
         """
         subclasses = cls.subclasses()
@@ -130,7 +137,7 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
 
     @classmethod
     def subclasses(cls) -> Iterator[type[Self]]:
-        """Yield all subclasses discovered across installed dependent packages.
+        """Yield all subclasses discovered within the declared discovery scope.
 
         Only leaf-level subclasses are yielded; any intermediate parent classes
         that also appear in the result set are omitted.
@@ -179,5 +186,5 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
         )
 
     def __str__(self) -> str:
-        """Return the fully qualified class name of this instance."""
+        """Return the fully qualified name of this instance's class."""
         return str(self.__class__)

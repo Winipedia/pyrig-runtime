@@ -11,13 +11,12 @@ def version() -> None:
     """Print the name and installed version.
 
     Reports the version of whichever project's CLI entry point was used to
-    invoke this command, not pyrig-runtime's own version. The project must be
-    installed; an editable install is sufficient.
+    invoke this command. The project must be installed.
 
     Example:
         ```
-        $ uv run myproject version
-        myproject 0.4.1
+        $ uv run my-project version
+        my-project 0.4.1
         ```
     """
     from pyrig_runtime.rig.cli.commands.version import project_version  # noqa: PLC0415

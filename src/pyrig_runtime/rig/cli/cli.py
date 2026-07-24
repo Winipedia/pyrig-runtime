@@ -39,7 +39,7 @@ class CLI(DependencySubclass):
 
     @classmethod
     def discovery_module(cls) -> ModuleType:
-        """Return the `pyrig_runtime.rig.cli.cli` module."""
+        """Return this module, keeping subclass discovery scoped to it alone."""
         return sys.modules[__name__]
 
     def run(self) -> None:
@@ -76,7 +76,12 @@ class CLI(DependencySubclass):
         }
 
     def help_text(self) -> str:
-        """Return the help text for the invoking project."""
+        """Return the help text for the invoking project.
+
+        Returns:
+            The project's distribution summary, or an empty string if no
+            metadata is available for it.
+        """
         metadata = distribution_metadata(
             distribution(self.project_name()),
         )
@@ -140,11 +145,13 @@ class CLI(DependencySubclass):
 
         Each increment of `verbose` lowers the log level by one step (toward
         DEBUG); each increment of `quiet` raises it by one step (toward
-        CRITICAL). The format also expands at higher verbosity, adding module
-        names at two increments and timestamps at three.
+        CRITICAL). The message format also expands as `verbose` increases:
+        the level name is added first, then the module name, then a
+        timestamp.
 
-        The log level is intentionally unclamped to potentially support
-        custom log levels.
+        The resulting level is not clamped to the standard range, so a high
+        enough `verbose` or `quiet` count can push it below `DEBUG` or above
+        `CRITICAL`.
 
         Args:
             verbose: Number of times verbosity was increased (e.g. via `-v`).
