@@ -67,7 +67,8 @@ shares its prefix).
 | `Plugin.subclasses()` | Every leaf subclass found across the dependency graph (intermediate base classes are dropped). |
 | `Plugin.concrete_subclasses()` | The same as `Plugin.subclasses()`, excluding abstract classes from the returned result. |
 | `Plugin.sorted_subclasses(subclasses)` | A given iterable of subclasses ordered by `sort_key()`. |
-| `Plugin.L` | The single leaf subclass — or the class itself if none exist. Raises if more than one leaf is found. |
+| `Plugin.leaf()` | The single leaf subclass — or the class itself if none exist. Raises if more than one leaf is found. Computed fresh on every call. |
+| `Plugin.L` | The same result as `Plugin.leaf()`, cached per class and reused on every subsequent access. |
 | `Plugin.I` | A cached instance of `Plugin.L`. |
 
 ```python

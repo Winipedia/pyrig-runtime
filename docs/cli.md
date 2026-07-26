@@ -17,8 +17,9 @@ my-project = "pyrig_runtime.rig.cli.main:main"
 ```
 
 Running the script builds the Typer application and dispatches the requested
-command. The invoking project is detected automatically, so its commands are
-loaded.
+command. The invoking project is detected from the name of the script that
+launched it (`my-project` above); converted to snake_case (`my_project`),
+that name is where the project's own commands are loaded from.
 
 `-v` / `-q` adjust logging verbosity. Something like `-vv` or `-qqq` or
 even `-vqqvqvq` are also possible.
@@ -46,8 +47,9 @@ hello world
 ## Customizing the build
 
 The application is built by a `CLI` class, which is itself a
-[discoverable plugin](plugins.md). A project can subclass it to override
-any step of the build — the most-derived subclass is used automatically.
+[discoverable plugin](plugins.md). Define a subclass in your project's
+`my_project.rig.cli.cli` module to override any step of the build — the
+most-derived subclass is used automatically.
 
 ## Shared commands
 
