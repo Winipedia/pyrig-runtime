@@ -6,6 +6,7 @@ import pytest
 from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.community.license import LicenseConfigFile
+from pyrig.rig.configs.docs.builder import DocsBuilderConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.readme import ReadmeConfigFile
 from pyrig.rig.configs.version_control.remote.workflows.deploy import (
@@ -66,15 +67,17 @@ class TestDependencySubclass:
     def test_sorted_subclasses(self) -> None:
         """Test method."""
         subclasses = (
+            DocsBuilderConfigFile,
             ReadmeConfigFile,
             PyprojectConfigFile,
             LicenseConfigFile,
         )
         result = ConfigFile.sorted_subclasses(subclasses)
         assert result == [
+            ReadmeConfigFile,
             LicenseConfigFile,
             PyprojectConfigFile,
-            ReadmeConfigFile,
+            DocsBuilderConfigFile,
         ]
 
 
