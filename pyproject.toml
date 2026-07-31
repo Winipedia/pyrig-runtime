@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-runtime"
-version = "3.20.37"
+version = "3.20.38"
 description = "Runtime dependency and library for projects built with pyrig."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -9,10 +9,10 @@ license-files = [
   "LICENSE",
 ]
 authors = [
-  { name = "Winipedia" },
+  { name = "Winipedia", email = "winipedia@gmx.de" },
 ]
 maintainers = [
-  { name = "Winipedia" },
+  { name = "Winipedia", email = "winipedia@gmx.de" },
 ]
 keywords = [
   "pyrig",
