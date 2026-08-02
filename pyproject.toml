@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-runtime"
-version = "3.20.40"
+version = "3.20.41"
 description = "Runtime dependency and library for projects built with pyrig."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -44,8 +44,6 @@ dev = [
   "bandit>=1.9.4",
   "deptry>=0.25.1",
   "detect-secrets>=1.5.0",
-  "mkdocs>=1.6.1",
-  "mkdocs-material>=9.7.6",
   "mkdocstrings[python]>=1.0.5",
   "pre-commit-hooks",
   "prek>=0.4.8",
@@ -65,6 +63,7 @@ dev = [
   "tombi",
   "ty>=0.0.58",
   "typos>=1.48.0",
+  "zensical>=0.0.52",
 ]
 
 [build-system]
