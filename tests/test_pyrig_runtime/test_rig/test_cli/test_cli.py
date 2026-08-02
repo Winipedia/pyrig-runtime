@@ -32,8 +32,9 @@ class TestCLI:
             "help": PyprojectConfigFile().project_description(),
         }
 
-    def test_register_direct_subcommands(self) -> None:
+    def test_register_direct_subcommands(self, mocker: MockerFixture) -> None:
         """Test method."""
+        mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
         # fetch the live module: other tests may re-import it into sys.modules,
         # which would make the module-level reference stale for identity checks
         module = safe_import_module(pyrig_subcommands_module.__name__)
@@ -51,8 +52,9 @@ class TestCLI:
         # nor are the group objects themselves registered as groups
         assert len(app.registered_groups) == 0
 
-    def test_register_subcommand_groups(self) -> None:
+    def test_register_subcommand_groups(self, mocker: MockerFixture) -> None:
         """Test method."""
+        mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
         module = safe_import_module(pyrig_subcommands_module.__name__)
         app = CLI.I.base_app()
         CLI.I.register_subcommand_groups(app=app, module=module)
@@ -75,24 +77,28 @@ class TestCLI:
         CLI.I.run()
         run_mock.assert_called_once()
 
-    def test_app(self) -> None:
+    def test_app(self, mocker: MockerFixture) -> None:
         """Test method."""
+        mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
         app = CLI.I.app()
         assert isinstance(app, typer.Typer)
 
-    def test_base_app(self) -> None:
+    def test_base_app(self, mocker: MockerFixture) -> None:
         """Test method."""
+        mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
         base_app = CLI.I.base_app()
         assert isinstance(base_app, typer.Typer)
 
-    def test_build_app(self) -> None:
+    def test_build_app(self, mocker: MockerFixture) -> None:
         """Test method."""
+        mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
         base_app = CLI.I.base_app()
         build_app = CLI.I.build_app(base_app)
         assert build_app is base_app
 
-    def test_register_callback(self) -> None:
+    def test_register_callback(self, mocker: MockerFixture) -> None:
         """Test method."""
+        mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
         app = CLI.I.base_app()
         CLI.I.register_callback(app)
         # check that the callback is registered
@@ -100,13 +106,13 @@ class TestCLI:
 
     def test_project_name(self, mocker: MockerFixture) -> None:
         """Test method."""
+        mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
         project_name = CLI.I.project_name()
-        assert isinstance(project_name, str)
-        assert len(project_name) > 0
+        assert project_name == "pyrig-runtime"
 
-        mocker.patch.object(sys, "argv", ["/path/to/my-project.exe"])
+        mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime.exe"])
         project_name = CLI.I.project_name()
-        assert project_name == "my-project"
+        assert project_name == "pyrig-runtime"
 
     def test_callback(self, mocker: MockerFixture) -> None:
         """Test method."""
@@ -180,8 +186,10 @@ class TestCLI:
         import_module_mock.assert_called_once()
         assert len(app.registered_commands) == 0
 
-    def test_register_shared_subcommands(self) -> None:
+    def test_register_shared_subcommands(self, mocker: MockerFixture) -> None:
         """Test method."""
+        mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
+
         app = CLI.I.base_app()
         CLI.I.register_shared_subcommands(app)
         # check that version is in the app commands
@@ -200,6 +208,7 @@ class TestCLI:
 
     def test_help_text(self, mocker: MockerFixture) -> None:
         """Test method."""
+        mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
         help_text = CLI.I.help_text()
         assert isinstance(help_text, str)
         assert len(help_text) > 0
