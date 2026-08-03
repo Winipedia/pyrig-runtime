@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-runtime"
-version = "3.20.44"
+version = "3.20.47"
 description = "Runtime dependency and library for projects built with pyrig."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -90,6 +90,7 @@ addopts = [
   "--cov=pyrig_runtime",
   "--dist=worksteal",
   "--numprocesses=auto",
+  "--report-chars=a",
 ]
 filterwarnings = [
   "error",
