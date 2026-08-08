@@ -25,6 +25,44 @@ from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.rig.cli.cli import CLI
 
 
+class A(DependencySubclass):
+    """Test class."""
+
+    @classmethod
+    def discovery_module(cls) -> ModuleType:
+        """Return the discovery module."""
+        return rig
+
+    @classmethod
+    def merge_key(cls) -> str:
+        """Return the merge key."""
+        return "merge_key"
+
+
+class B(A):
+    """Test class."""
+
+    __module__ = rig.__name__
+
+
+class C(B):
+    """Test class."""
+
+    __module__ = rig.__name__
+
+
+class D(A):
+    """Test class."""
+
+    __module__ = rig.__name__
+
+
+class E(A):
+    """Test class."""
+
+    __module__ = rig.__name__
+
+
 class TestDependencySubclass:
     """Test class."""
 
@@ -49,34 +87,6 @@ class TestDependencySubclass:
         assert issubclass(leaf, ProgrammingLanguage)
         assert ProgrammingLanguage.leaf() is ProgrammingLanguage.leaf().leaf()
 
-        class A(DependencySubclass):
-            """Test class."""
-
-            @classmethod
-            def discovery_module(cls) -> ModuleType:
-                """Return the discovery module."""
-                return rig
-
-        class B(A):
-            """Test class."""
-
-            __module__ = rig.__name__
-
-        class C(B):
-            """Test class."""
-
-            __module__ = rig.__name__
-
-        class D(A):
-            """Test class."""
-
-            __module__ = rig.__name__
-
-        class E(A):
-            """Test class."""
-
-            __module__ = rig.__name__
-
         leaf = A.leaf()
         assert issubclass(leaf, A)
         assert issubclass(leaf, B)
@@ -93,11 +103,17 @@ class TestDependencySubclass:
         assert all(issubclass(subclass, ConfigFile) for subclass in result)
         assert all(not inspect.isabstract(subclass) for subclass in result)
 
-    def test_subclasses(self) -> None:
+    def test_leaves(self) -> None:
         """Test method."""
-        subclasses = tuple(ConfigFile.subclasses())
-        assert len(subclasses) > 0
-        assert all(issubclass(subclass, ConfigFile) for subclass in subclasses)
+        leaves = tuple(A.leaves())
+        assert len(leaves) == 1
+        leaf = leaves[0]
+        assert issubclass(leaf, A)
+        assert issubclass(leaf, B)
+        assert issubclass(leaf, C)
+        assert issubclass(leaf, D)
+        assert issubclass(leaf, E)
+        assert leaf not in (A, B, C, D, E)
 
     def test_sorted_subclasses(self) -> None:
         """Test method."""
@@ -115,27 +131,23 @@ class TestDependencySubclass:
             DocsBuilderConfigFile,
         ]
 
-    def test_discovered_subclasses(self) -> None:
+    def test_subclasses(self) -> None:
         """Test method."""
-        discovered = tuple(ConfigFile.discovered_subclasses())
         subclasses = tuple(ConfigFile.subclasses())
+        assert len(subclasses) > 0
+        assert all(issubclass(subclass, ConfigFile) for subclass in subclasses)
 
-        # `subclasses()` discards `DeployWorkflowConfigFile` because it has
-        # been superseded by `PyPIDeployWorkflowConfigFile`;
-        # `discovered_subclasses()` keeps both, since it does not filter
-        # down to leaves.
-        assert TOMLConfigFile in discovered
-        assert TOMLConfigFile not in subclasses
+        assert TOMLConfigFile in subclasses
 
-        assert DeployWorkflowConfigFile in discovered
-        assert DeployWorkflowConfigFile not in subclasses
-        assert DeployWorkflowConfigFile.L in discovered
+        assert DeployWorkflowConfigFile in subclasses
+        assert DeployWorkflowConfigFile.L in subclasses
 
-        assert PyPIDeployWorkflowConfigFile in discovered
         assert PyPIDeployWorkflowConfigFile in subclasses
-        assert PyPIDeployWorkflowConfigFile.L in discovered
+        assert PyPIDeployWorkflowConfigFile.L in subclasses
 
-        assert set(subclasses) <= set(discovered)
+    def test_merge_key(self) -> None:
+        """Test method."""
+        assert CLI.merge_key() == CLI.__name__
 
 
 class TestDependencySubclassMeta:

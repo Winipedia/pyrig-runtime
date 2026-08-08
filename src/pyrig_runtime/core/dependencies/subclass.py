@@ -1,7 +1,8 @@
 """Abstract base for cross-package subclass discovery without explicit registration."""
 
 from abc import ABCMeta, abstractmethod
-from collections.abc import Iterable, Iterator
+from collections import defaultdict
+from collections.abc import Hashable, Iterable, Iterator
 from operator import methodcaller
 from types import ModuleType
 from typing import TYPE_CHECKING, Self
@@ -106,20 +107,21 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
         Yields:
             Non-abstract leaf subclass types.
         """
-        return filter_concrete_classes(cls.subclasses())
+        return filter_concrete_classes(cls.leaves())
 
     @classmethod
     def leaf(cls) -> type[Self]:
-        """Return the single leaf subclass, or a merge of them if several are found.
+        """Return the single leaf subclass.
 
-        If no subclasses are found, the class itself is returned. If more
-        than one leaf subclass is found, a new subclass inheriting from
-        every one of them is generated and returned instead.
+        If no subclasses are found, the class itself is returned. If the
+        discovered leaves share a single merge key, they are combined
+        into one newly generated subclass and returned instead of any
+        individual leaf.
 
         Returns:
             The single leaf subclass type, the class itself if none are
-            found, or a generated subclass combining every leaf if more
-            than one is found. May be abstract.
+            found, or a generated subclass combining every leaf that
+            shares a merge key.
 
         Raises:
             TypeError: If the discovered leaf subclasses cannot be
@@ -129,41 +131,47 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
             Discovery runs fresh on every call, and merging generates a
             new type each time, so two calls do not return the identical
             object when leaves are merged — only `L` caches a stable
-            result. The generated subclass's bases follow the order of
-            `subclasses()`, which is stable across calls but reflects
-            discovery order rather than any deliberate priority — so
-            which leaf's behavior wins for any method they both define
-            should not be relied upon.
+            result. Which merged leaf's behavior wins for any method
+            they both define should not be relied upon.
         """
-        subclasses = cls.subclasses()
-        leaf = next(subclasses, cls)
-        if (second := next(subclasses, None)) is None:
-            return leaf
+        return next(cls.leaves(), cls)
 
-        return generate_class(
-            name=cls.__name__,
-            bases=(leaf, second, *subclasses),
-        )
+    @classmethod
+    def leaves(cls) -> Iterator[type[Self]]:
+        """Yield leaf subclasses discovered within the declared discovery scope.
+
+        Only leaf-level subclasses are considered; any intermediate parent
+        classes that also appear in the result are omitted. The remaining leaves
+        are grouped by `merge_key()`: a group with a single leaf is yielded as-is,
+        while a group with several leaves is combined into one newly generated subclass
+        inheriting from every leaf in that group, letting independently-installed
+        packages cooperatively extend the same class by sharing a merge key.
+
+        Yields:
+            Leaf subclass types, one per distinct `merge_key()` value.
+
+        Raises:
+            TypeError: If the leaves within a merge key group cannot be
+                combined into a single class.
+        """
+        by_merge_key: dict[Hashable, list[type[Self]]] = defaultdict(list)
+        for subclass in filter_leaf_classes(cls.subclasses()):
+            by_merge_key[subclass.merge_key()].append(subclass)
+        for subclasses in by_merge_key.values():
+            subcls = subclasses[0]
+            if len(subclasses) == 1:
+                yield subcls
+            else:
+                yield generate_class(
+                    name=subcls.__name__,
+                    bases=tuple(subclasses),
+                )
 
     @classmethod
     def subclasses(cls) -> Iterator[type[Self]]:
-        """Yield all subclasses discovered within the declared discovery scope.
-
-        Only leaf-level subclasses are yielded; any intermediate parent classes
-        that also appear in the result set are omitted.
-
-        Yields:
-            Leaf subclass types.
-        """
-        return filter_leaf_classes(
-            cls.discovered_subclasses(),
-        )
-
-    @classmethod
-    def discovered_subclasses(cls) -> Iterator[type[Self]]:
         """Yield every subclass discovered within the declared discovery scope.
 
-        Includes intermediate parent classes; unlike `subclasses()`, the
+        Includes intermediate parent classes; unlike `leaves()`, the
         result is not filtered down to leaves.
 
         Yields:
@@ -185,6 +193,22 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
 
         Returns:
             A value comparable with `<` against the sort keys of other
+            subclasses.
+        """
+        return cls.__name__
+
+    @classmethod
+    def merge_key(cls) -> Hashable:
+        """Return the key that decides which leaf subclasses get merged together.
+
+        Leaf subclasses that return an equal merge key are combined into
+        one generated subclass by `leaves()`; those with different keys
+        stay apart. Override to group cooperating implementations under a
+        shared key. The default returns the class name, so same-named
+        leaf overrides across dependent packages merge automatically.
+
+        Returns:
+            A value comparable with `==` against the merge keys of other
             subclasses.
         """
         return cls.__name__

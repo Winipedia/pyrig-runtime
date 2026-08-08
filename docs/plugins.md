@@ -64,11 +64,12 @@ shares its prefix).
 
 | Accessor | Returns |
 | --- | --- |
-| `Plugin.subclasses()` | Every leaf subclass found across the dependency graph (intermediate base classes are dropped). |
-| `Plugin.discovered_subclasses()` | Every subclass found across the dependency graph, including intermediate base classes. |
-| `Plugin.concrete_subclasses()` | The same as `Plugin.subclasses()`, excluding abstract classes from the returned result. |
+| `Plugin.subclasses()` | Every subclass found across the dependency graph, including intermediate base classes. |
+| `Plugin.leaves()` | Every leaf subclass found across the dependency graph (intermediate base classes are dropped), with leaves that share a `merge_key()` combined into one generated subclass. |
+| `Plugin.concrete_subclasses()` | The same as `Plugin.leaves()`, excluding abstract classes from the returned result. |
 | `Plugin.sorted_subclasses(subclasses)` | A given iterable of subclasses ordered by `sort_key()`. |
-| `Plugin.leaf()` | The single leaf subclass, the class itself if none exist, or a generated subclass merging every leaf if more than one is found. Computed fresh on every call. |
+| `Plugin.merge_key()` | The key deciding which leaf subclasses get merged together; leaves with an equal key are combined. Defaults to the class name. |
+| `Plugin.leaf()` | The single leaf subclass, the class itself if none exist, or a generated subclass merging every leaf that shares a merge key. Computed fresh on every call. |
 | `Plugin.L` | The same result as `Plugin.leaf()`, cached per class and reused on every subsequent access. |
 | `Plugin.I` | A cached instance of `Plugin.L`. |
 
@@ -92,15 +93,23 @@ imports are reorganized. When you need an order you control, override
 
 `L` and `I` are for hierarchies that are meant to have exactly one active
 implementation: the most-derived (leaf) subclass wins, which lets a dependent
-package override a base implementation simply by subclassing it. If two
-unrelated leaves are found, they are merged into one generated subclass that
-inherits from both, so `L` and `I` still resolve to a single type in the
-common case. Which leaf's behavior wins for any method both of them define is
+package override a base implementation simply by subclassing it.
+
+Before `L`/`I` pick a leaf, leaves are grouped by `merge_key()`. Leaves that
+return an equal key are merged into one generated subclass that inherits from
+all of them, so independently-installed packages can each override the same
+class and still resolve to a single type. The default key is the class name,
+so this merge happens automatically whenever each override reuses the base
+class's own name — give unrelated implementations distinct names (or
+override `merge_key()` yourself) to keep them apart instead of merging them.
+
+Which leaf's behavior wins for any method more than one of them define is
 then decided by ordinary MRO precedence over discovery order — stable, but
 not something you control — so resolve the ambiguity yourself (see below)
-whenever that matters. If the leaves' own base orderings are mutually
-inconsistent, the merge itself is impossible and `L`/`I` raise `TypeError`
-instead — resolving the ambiguity yourself avoids that failure too.
+whenever that matters. If the leaves sharing a merge key have mutually
+inconsistent base orderings, the merge itself is impossible and `L`/`I` raise
+`TypeError` instead — resolving the ambiguity yourself avoids that failure
+too.
 
 ## Resolving conflicts
 
@@ -111,34 +120,36 @@ defined, it is the single leaf, so this works:
 Greeting.I.run()  # "hello"
 ```
 
-Now suppose two installed packages each override `Greeting`:
+Now suppose two installed packages each override `Greeting`, both reusing its
+name so they share the default merge key:
 
 ```python
 # plugin_one/plugins/greeting.py
-from my_project.plugins.greeting import Greeting
+from my_project.plugins.greeting import Greeting as _Greeting
 
 
-class GreetingOne(Greeting):
+class Greeting(_Greeting):
     def run(self) -> str:
         return "hi"
 ```
 
 ```python
 # plugin_two/plugins/greeting.py
-from my_project.plugins.greeting import Greeting
+from my_project.plugins.greeting import Greeting as _Greeting
 
 
-class GreetingTwo(Greeting):
+class Greeting(_Greeting):
     def run(self) -> str:
         return "hey"
 ```
 
-With both installed, `Greeting` has two leaf subclasses. `Greeting.L` becomes an
-automatically generated subclass of both `GreetingOne` and `GreetingTwo`, and
-`Greeting.I` an instance of it. Since the generated class does not override
-`run()` itself, which implementation answers the call depends on ordinary MRO
-precedence over discovery order — the same on every run, but a byproduct of
-import order rather than something you chose:
+With both installed, `Greeting` has two leaf subclasses that share the
+default merge key (both are named `Greeting`). `Greeting.L` becomes an
+automatically generated subclass of both, and `Greeting.I` an instance of it.
+Since the generated class does not override `run()` itself, which
+implementation answers the call depends on ordinary MRO precedence over
+discovery order — the same on every run, but a byproduct of import order
+rather than something you chose:
 
 ```python
 Greeting.I.run()  # "hi" or "hey" — whichever leaf discovery finds first
@@ -152,8 +163,8 @@ automatically generated merge:
 
 ```python
 # my_other_project/plugins/greeting.py
-from plugin_one.plugins.greeting import GreetingOne
-from plugin_two.plugins.greeting import GreetingTwo
+from plugin_one.plugins.greeting import Greeting as GreetingOne
+from plugin_two.plugins.greeting import Greeting as GreetingTwo
 
 
 class GreetingResolved(GreetingOne, GreetingTwo):
