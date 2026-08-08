@@ -66,7 +66,7 @@ shares its prefix).
 | --- | --- |
 | `Plugin.subclasses()` | Every subclass found across the dependency graph, including intermediate base classes. |
 | `Plugin.leaves()` | Every leaf subclass found across the dependency graph (intermediate base classes are dropped), with leaves that share a `merge_key()` combined into one generated subclass. |
-| `Plugin.concrete_subclasses()` | The same as `Plugin.leaves()`, excluding abstract classes from the returned result. |
+| `Plugin.concrete_leaves()` | The same as `Plugin.leaves()`, excluding abstract classes from the returned result. |
 | `Plugin.sorted_subclasses(subclasses)` | A given iterable of subclasses ordered by `sort_key()`. |
 | `Plugin.merge_key()` | The key deciding which leaf subclasses get merged together; leaves with an equal key are combined. Defaults to the class name. |
 | `Plugin.leaf()` | The single leaf subclass, the class itself if none exist, or a generated subclass merging every leaf that shares a merge key. Computed fresh on every call. |
@@ -74,7 +74,7 @@ shares its prefix).
 | `Plugin.I` | A cached instance of `Plugin.L`. |
 
 ```python
-for plugin in Plugin.concrete_subclasses():
+for plugin in Plugin.concrete_leaves():
     ...
 
 result = Plugin.I.run()  # call the one active implementation

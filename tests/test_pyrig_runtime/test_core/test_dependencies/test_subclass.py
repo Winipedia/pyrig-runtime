@@ -96,9 +96,9 @@ class TestDependencySubclass:
 
         assert leaf not in (A, B, C, D, E)
 
-    def test_concrete_subclasses(self) -> None:
+    def test_concrete_leaves(self) -> None:
         """Test method."""
-        result = tuple(ConfigFile.concrete_subclasses())
+        result = tuple(ConfigFile.concrete_leaves())
         assert len(result) > 0
         assert all(issubclass(subclass, ConfigFile) for subclass in result)
         assert all(not inspect.isabstract(subclass) for subclass in result)

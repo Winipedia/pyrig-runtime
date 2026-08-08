@@ -101,7 +101,7 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
         return rig
 
     @classmethod
-    def concrete_subclasses(cls) -> Iterator[type[Self]]:
+    def concrete_leaves(cls) -> Iterator[type[Self]]:
         """Yield all concrete leaf subclasses found within the declared discovery scope.
 
         Yields:
