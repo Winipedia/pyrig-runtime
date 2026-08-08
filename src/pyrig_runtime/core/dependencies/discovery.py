@@ -38,8 +38,9 @@ def subclasses_across_dependencies[T](
             package determines which dependents are searched.
 
     Yields:
-        Subclass types of `cls` found anywhere in the search scope, in no
-        guaranteed order.
+        Subclass types of `cls` found anywhere in the search scope. The
+        order is stable across calls but reflects discovery order, not
+        any deliberate priority.
 
     Note:
         Every module within the search scope is imported as a side effect,

@@ -16,6 +16,7 @@ from pyrig_runtime.core.dependencies.discovery import (
 from pyrig_runtime.core.introspection.classes import (
     discard_abstract_classes,
     discard_parent_classes,
+    generate_class,
 )
 from pyrig_runtime.core.strings import fully_qualified_name
 
@@ -25,19 +26,17 @@ class DependencySubclassMeta(ABCMeta):
 
     @property
     def I[C: DependencySubclass](cls: type[C]) -> C:  # noqa: E743, N802
-        """Return a cached instance of the leaf subclass.
+        """Return a cached instance of `L`.
 
         The instance is created once per class and reused on every subsequent
         access.
 
         Returns:
-            An instance of the leaf subclass, or of the class itself if no
-            subclasses exist.
+            An instance of `L`.
 
         Raises:
-            RuntimeError: If more than one leaf subclass is found.
-            TypeError: If the leaf subclass is abstract and cannot be
-                instantiated.
+            TypeError: If `L` is abstract and cannot be instantiated, or if
+                resolving `L` itself raises.
         """
         if "_instance" not in cls.__dict__:
             cls._instance = cls.L()
@@ -45,16 +44,17 @@ class DependencySubclassMeta(ABCMeta):
 
     @property
     def L[C: DependencySubclass](cls: type[C]) -> type[C]:  # noqa: N802
-        """Return the cached leaf subclass type.
+        """Return the cached result of `leaf()`.
 
-        The result is cached per class and reused on every subsequent access.
+        Computed once per class on first access and reused on every
+        subsequent access.
 
         Returns:
-            The single leaf subclass type, or the class itself if no
-            subclasses exist. May be abstract.
+            The same value `leaf()` returns for this class.
 
         Raises:
-            RuntimeError: If more than one leaf subclass is found.
+            TypeError: If `leaf()` cannot resolve a single type for this
+                class.
         """
         if "_leaf" not in cls.__dict__:
             cls._leaf = cls.leaf()
@@ -110,30 +110,40 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
 
     @classmethod
     def leaf(cls) -> type[Self]:
-        """Return the single leaf subclass found within the declared discovery scope.
+        """Return the single leaf subclass, or a merge of them if several are found.
 
-        If no subclasses are found, the class itself is returned.
+        If no subclasses are found, the class itself is returned. If more
+        than one leaf subclass is found, a new subclass inheriting from
+        every one of them is generated and returned instead.
 
         Returns:
-            The single leaf subclass type, or the class itself if no
-            subclasses are found. May be abstract.
+            The single leaf subclass type, the class itself if none are
+            found, or a generated subclass combining every leaf if more
+            than one is found. May be abstract.
 
         Raises:
-            RuntimeError: If more than one leaf subclass is discovered within
-                the discovery scope because defining multiple leaf subclasses
-                is ambiguous.
+            TypeError: If the discovered leaf subclasses cannot be
+                combined into a single class.
+
+        Note:
+            Discovery runs fresh on every call, and merging generates a
+            new type each time, so two calls do not return the identical
+            object when leaves are merged — only `L` caches a stable
+            result. The generated subclass's bases follow the order of
+            `subclasses()`, which is stable across calls but reflects
+            discovery order rather than any deliberate priority — so
+            which leaf's behavior wins for any method they both define
+            should not be relied upon.
         """
         subclasses = cls.subclasses()
         leaf = next(subclasses, cls)
-        second = next(subclasses, None)
-        if second is None:
+        if (second := next(subclasses, None)) is None:
             return leaf
 
-        subclasses_formatted = "\n".join(
-            fully_qualified_name(subcls) for subcls in (leaf, second, *subclasses)
+        return generate_class(
+            name=cls.__name__,
+            bases=(leaf, second, *subclasses),
         )
-        msg = f"multiple leaf subclasses found:\n{subclasses_formatted}"
-        raise RuntimeError(msg)
 
     @classmethod
     def subclasses(cls) -> Iterator[type[Self]]:
@@ -146,10 +156,24 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
             Leaf subclass types.
         """
         return discard_parent_classes(
-            subclasses_across_dependencies(
-                cls,
-                module=cls.discovery_module(),
-            ),
+            cls.discovered_subclasses(),
+        )
+
+    @classmethod
+    def discovered_subclasses(cls) -> Iterator[type[Self]]:
+        """Yield every subclass discovered within the declared discovery scope.
+
+        Includes intermediate parent classes; unlike `subclasses()`, the
+        result is not filtered down to leaves.
+
+        Yields:
+            Subclass types found anywhere in the discovery scope. The
+            order is stable across calls but reflects discovery order,
+            not any deliberate priority.
+        """
+        return subclasses_across_dependencies(
+            cls,
+            module=cls.discovery_module(),
         )
 
     @classmethod

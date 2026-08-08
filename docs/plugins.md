@@ -65,9 +65,10 @@ shares its prefix).
 | Accessor | Returns |
 | --- | --- |
 | `Plugin.subclasses()` | Every leaf subclass found across the dependency graph (intermediate base classes are dropped). |
+| `Plugin.discovered_subclasses()` | Every subclass found across the dependency graph, including intermediate base classes. |
 | `Plugin.concrete_subclasses()` | The same as `Plugin.subclasses()`, excluding abstract classes from the returned result. |
 | `Plugin.sorted_subclasses(subclasses)` | A given iterable of subclasses ordered by `sort_key()`. |
-| `Plugin.leaf()` | The single leaf subclass — or the class itself if none exist. Raises if more than one leaf is found. Computed fresh on every call. |
+| `Plugin.leaf()` | The single leaf subclass, the class itself if none exist, or a generated subclass merging every leaf if more than one is found. Computed fresh on every call. |
 | `Plugin.L` | The same result as `Plugin.leaf()`, cached per class and reused on every subsequent access. |
 | `Plugin.I` | A cached instance of `Plugin.L`. |
 
@@ -81,8 +82,10 @@ result = Plugin.I.run()  # call the one active implementation
 ## Ordering
 
 Across packages, subclasses are discovered in dependency order — a package is
-processed before the packages that depend on it. Within a single package the
-order is not guaranteed. When you need a deterministic order, override
+processed before the packages that depend on it. Within a single package,
+discovery order is stable across runs but is a byproduct of module import
+order, not a deliberate priority — it can shift if files are renamed or
+imports are reorganized. When you need an order you control, override
 `sort_key()` and iterate with `sorted_subclasses()`.
 
 ## A single active implementation
@@ -90,8 +93,14 @@ order is not guaranteed. When you need a deterministic order, override
 `L` and `I` are for hierarchies that are meant to have exactly one active
 implementation: the most-derived (leaf) subclass wins, which lets a dependent
 package override a base implementation simply by subclassing it. If two
-unrelated leaves are found, `L` raises — that ambiguity is treated as a
-configuration error that must be resolved.
+unrelated leaves are found, they are merged into one generated subclass that
+inherits from both, so `L` and `I` still resolve to a single type in the
+common case. Which leaf's behavior wins for any method both of them define is
+then decided by ordinary MRO precedence over discovery order — stable, but
+not something you control — so resolve the ambiguity yourself (see below)
+whenever that matters. If the leaves' own base orderings are mutually
+inconsistent, the merge itself is impossible and `L`/`I` raise `TypeError`
+instead — resolving the ambiguity yourself avoids that failure too.
 
 ## Resolving conflicts
 
@@ -124,12 +133,22 @@ class GreetingTwo(Greeting):
         return "hey"
 ```
 
-With both installed, `Greeting` has two leaf subclasses, so `Greeting.I` (and
-`Greeting.L`) raises — the active implementation is ambiguous.
+With both installed, `Greeting` has two leaf subclasses. `Greeting.L` becomes an
+automatically generated subclass of both `GreetingOne` and `GreetingTwo`, and
+`Greeting.I` an instance of it. Since the generated class does not override
+`run()` itself, which implementation answers the call depends on ordinary MRO
+precedence over discovery order — the same on every run, but a byproduct of
+import order rather than something you chose:
 
-Resolve it in a package that depends on both by defining a class that inherits
-from each conflicting leaf. It becomes the single most-derived leaf, so
-discovery picks it unambiguously:
+```python
+Greeting.I.run()  # "hi" or "hey" — whichever leaf discovery finds first
+```
+
+When you need a specific or custom-combined result instead of leaving it to
+chance, define your own resolving class in a package that depends on both,
+inheriting from the leaves in the order you intend. Being the single
+most-derived leaf, it is what discovery finds, taking priority over the
+automatically generated merge:
 
 ```python
 # my_other_project/plugins/greeting.py

@@ -1,10 +1,12 @@
 """module."""
 
 import inspect
+from types import ModuleType
 
 import pytest
 from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import ConfigFile
+from pyrig.rig.configs.base.toml import TOMLConfigFile
 from pyrig.rig.configs.community.license import LicenseConfigFile
 from pyrig.rig.configs.docs.builder import DocsBuilderConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
@@ -13,7 +15,6 @@ from pyrig.rig.configs.version_control.remote.workflows.deploy import (
     DeployWorkflowConfigFile,
 )
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
-from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig_pypi.rig.configs.version_control.remote.workflows.deploy import (
     DeployWorkflowConfigFile as PyPIDeployWorkflowConfigFile,
@@ -48,8 +49,42 @@ class TestDependencySubclass:
         assert issubclass(leaf, ProgrammingLanguage)
         assert ProgrammingLanguage.leaf() is ProgrammingLanguage.leaf().leaf()
 
-        with pytest.raises(RuntimeError, match=r"multiple leaf subclasses found:.*"):
-            _ = Tool.leaf()
+        class A(DependencySubclass):
+            """Test class."""
+
+            @classmethod
+            def discovery_module(cls) -> ModuleType:
+                """Return the discovery module."""
+                return rig
+
+        class B(A):
+            """Test class."""
+
+            __module__ = rig.__name__
+
+        class C(B):
+            """Test class."""
+
+            __module__ = rig.__name__
+
+        class D(A):
+            """Test class."""
+
+            __module__ = rig.__name__
+
+        class E(A):
+            """Test class."""
+
+            __module__ = rig.__name__
+
+        leaf = A.leaf()
+        assert issubclass(leaf, A)
+        assert issubclass(leaf, B)
+        assert issubclass(leaf, C)
+        assert issubclass(leaf, D)
+        assert issubclass(leaf, E)
+
+        assert leaf not in (A, B, C, D, E)
 
     def test_concrete_subclasses(self) -> None:
         """Test method."""
@@ -79,6 +114,28 @@ class TestDependencySubclass:
             PyprojectConfigFile,
             DocsBuilderConfigFile,
         ]
+
+    def test_discovered_subclasses(self) -> None:
+        """Test method."""
+        discovered = tuple(ConfigFile.discovered_subclasses())
+        subclasses = tuple(ConfigFile.subclasses())
+
+        # `subclasses()` discards `DeployWorkflowConfigFile` because it has
+        # been superseded by `PyPIDeployWorkflowConfigFile`;
+        # `discovered_subclasses()` keeps both, since it does not filter
+        # down to leaves.
+        assert TOMLConfigFile in discovered
+        assert TOMLConfigFile not in subclasses
+
+        assert DeployWorkflowConfigFile in discovered
+        assert DeployWorkflowConfigFile not in subclasses
+        assert DeployWorkflowConfigFile.L in discovered
+
+        assert PyPIDeployWorkflowConfigFile in discovered
+        assert PyPIDeployWorkflowConfigFile in subclasses
+        assert PyPIDeployWorkflowConfigFile.L in discovered
+
+        assert set(subclasses) <= set(discovered)
 
 
 class TestDependencySubclassMeta:

@@ -3,10 +3,13 @@
 from abc import ABC, abstractmethod
 from typing import ClassVar
 
+import pytest
+
 from pyrig_runtime.core.introspection.classes import (
     discard_abstract_classes,
     discard_parent_classes,
     discover_subclasses,
+    generate_class,
 )
 
 
@@ -126,17 +129,16 @@ def test_discover_subclasses() -> None:
     # Test with ParentClass - should find TestClass as subclass
     subclasses = discover_subclasses(ParentClass)
 
-    assert isinstance(subclasses, set)
-    assert subclasses == {ChildTestClass, GrandchildTestClass}
+    assert subclasses == (ChildTestClass, GrandchildTestClass)
 
     # Test with TestClass - should have no subclasses
-    assert discover_subclasses(ChildTestClass) == {GrandchildTestClass}
+    assert discover_subclasses(ChildTestClass) == (GrandchildTestClass,)
 
     # Test with GrandchildTestClass - should have no subclasses
-    assert discover_subclasses(GrandchildTestClass) == set()
+    assert discover_subclasses(GrandchildTestClass) == ()
 
     # A class that has never been subclassed at all.
-    assert discover_subclasses(Unrelated) == set()
+    assert discover_subclasses(Unrelated) == ()
 
 
 def test_discover_subclasses_multiple_inheritance() -> None:
@@ -144,10 +146,10 @@ def test_discover_subclasses_multiple_inheritance() -> None:
     # DiamondJoin is reachable from DiamondBase through both DiamondLeft and
     # DiamondRight; it must still be discovered exactly once, not duplicated
     # or missed because of the two incoming paths.
-    assert discover_subclasses(DiamondBase) == {DiamondLeft, DiamondRight, DiamondJoin}
-    assert discover_subclasses(DiamondLeft) == {DiamondJoin}
-    assert discover_subclasses(DiamondRight) == {DiamondJoin}
-    assert discover_subclasses(DiamondJoin) == set()
+    assert discover_subclasses(DiamondBase) == (DiamondRight, DiamondJoin, DiamondLeft)
+    assert discover_subclasses(DiamondLeft) == (DiamondJoin,)
+    assert discover_subclasses(DiamondRight) == (DiamondJoin,)
+    assert discover_subclasses(DiamondJoin) == ()
 
 
 def test_discard_parent_classes() -> None:
@@ -198,3 +200,80 @@ def test_discard_abstract_classes() -> None:
 
     # An empty collection stays empty.
     assert set(discard_abstract_classes([])) == set()
+
+
+def test_generate_class() -> None:
+    """Test function."""
+
+    # Bases are local and used only in this test: `generate_class` creates
+    # real classes that outlive the test until Python's cyclic garbage
+    # collector reclaims them (a class holds itself alive via `__mro__`), so
+    # reusing a module-level fixture class here would risk it lingering as a
+    # phantom subclass in another test's `discover_subclasses` assertions.
+    class Base:
+        """Test class."""
+
+    generated = generate_class(name="Generated", bases=(Base,))
+    assert generated.__name__ == "Generated"
+    assert generated.__bases__ == (Base,)
+    assert issubclass(generated, Base)
+
+    # Attributes come from `namespace`.
+    with_namespace = generate_class(
+        name="WithNamespace",
+        bases=(Base,),
+        namespace={"class_var": "namespace_value"},
+    )
+    assert getattr(with_namespace, "class_var") == "namespace_value"  # noqa: B009
+
+    # Functions passed as `methods` become methods, keyed by their `__name__`.
+    def instance_method(self: object) -> str:  # noqa: ARG001
+        return "from_methods"
+
+    with_methods = generate_class(
+        name="WithMethods",
+        bases=(Base,),
+        methods=[instance_method],
+    )
+    assert getattr(with_methods(), "instance_method")() == "from_methods"  # noqa: B009
+
+    # A method overrides a `namespace` entry of the same name.
+    def overriding_method(self: object) -> str:  # noqa: ARG001
+        return "overridden"
+
+    overridden = generate_class(
+        name="Overridden",
+        bases=(Base,),
+        namespace={"overriding_method": "not_a_method"},
+        methods=[overriding_method],
+    )
+    assert getattr(overridden(), "overriding_method")() == "overridden"  # noqa: B009
+
+    # `__module__` is inferred from the calling context, not from `bases`
+    # or the caller of `generate_class`.
+    assert generated.__module__ != __name__
+
+    # Passing "__module__" in `namespace` sets it explicitly.
+    with_module = generate_class(
+        name="WithModule",
+        bases=(Base,),
+        namespace={"__module__": __name__},
+    )
+    assert with_module.__module__ == __name__
+
+    # Bases whose own orderings are mutually inconsistent cannot be
+    # combined into a single method resolution order.
+    class DiamondBase:
+        """Test class."""
+
+    class DiamondLeft(DiamondBase):
+        """Test class."""
+
+    class DiamondRight(DiamondBase):
+        """Test class."""
+
+    class DiamondJoin(DiamondLeft, DiamondRight):
+        """Test class."""
+
+    with pytest.raises(TypeError):
+        generate_class(name="Impossible", bases=(DiamondRight, DiamondJoin))
