@@ -14,8 +14,8 @@ from pyrig_runtime.core.dependencies.discovery import (
     subclasses_across_dependencies,
 )
 from pyrig_runtime.core.introspection.classes import (
-    discard_abstract_classes,
-    discard_parent_classes,
+    filter_concrete_classes,
+    filter_leaf_classes,
     generate_class,
 )
 from pyrig_runtime.core.strings import fully_qualified_name
@@ -106,7 +106,7 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
         Yields:
             Non-abstract leaf subclass types.
         """
-        return discard_abstract_classes(cls.subclasses())
+        return filter_concrete_classes(cls.subclasses())
 
     @classmethod
     def leaf(cls) -> type[Self]:
@@ -155,7 +155,7 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
         Yields:
             Leaf subclass types.
         """
-        return discard_parent_classes(
+        return filter_leaf_classes(
             cls.discovered_subclasses(),
         )
 

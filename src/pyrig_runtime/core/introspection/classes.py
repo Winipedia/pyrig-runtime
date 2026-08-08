@@ -7,7 +7,7 @@ from types import FunctionType
 from typing import Any, cast
 
 
-def discard_abstract_classes[T](classes: Iterable[type[T]]) -> Iterator[type[T]]:
+def filter_concrete_classes[T](classes: Iterable[type[T]]) -> Iterator[type[T]]:
     """Filter out abstract classes from a collection.
 
     A class is considered abstract when it has one or more unimplemented
@@ -22,7 +22,7 @@ def discard_abstract_classes[T](classes: Iterable[type[T]]) -> Iterator[type[T]]
     return filterfalse(inspect.isabstract, classes)
 
 
-def discard_parent_classes[T](
+def filter_leaf_classes[T](
     classes: Iterable[type[T]],
 ) -> Iterator[type[T]]:
     """Yield only leaf classes, removing any ancestors present in the collection.

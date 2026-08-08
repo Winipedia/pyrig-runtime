@@ -6,9 +6,9 @@ from typing import ClassVar
 import pytest
 
 from pyrig_runtime.core.introspection.classes import (
-    discard_abstract_classes,
-    discard_parent_classes,
     discover_subclasses,
+    filter_concrete_classes,
+    filter_leaf_classes,
     generate_class,
 )
 
@@ -152,20 +152,20 @@ def test_discover_subclasses_multiple_inheritance() -> None:
     assert discover_subclasses(DiamondJoin) == ()
 
 
-def test_discard_parent_classes() -> None:
+def test_filter_leaf_classes() -> None:
     """Test function."""
     # Direct parent-child: the parent is discarded.
-    assert set(discard_parent_classes([ParentClass, ChildTestClass])) == {
+    assert set(filter_leaf_classes([ParentClass, ChildTestClass])) == {
         ChildTestClass,
     }
 
     # Transitive ancestors are discarded too, not just the direct parent.
     assert set(
-        discard_parent_classes([ParentClass, ChildTestClass, GrandchildTestClass]),
+        filter_leaf_classes([ParentClass, ChildTestClass, GrandchildTestClass]),
     ) == {GrandchildTestClass}
 
     # Siblings: neither is an ancestor of the other, so both are kept.
-    assert set(discard_parent_classes([DiamondLeft, DiamondRight])) == {
+    assert set(filter_leaf_classes([DiamondLeft, DiamondRight])) == {
         DiamondLeft,
         DiamondRight,
     }
@@ -173,33 +173,33 @@ def test_discard_parent_classes() -> None:
     # Diamond inheritance: every ancestor of DiamondJoin is discarded, even
     # though DiamondBase is reachable through two different subclasses.
     assert set(
-        discard_parent_classes([DiamondBase, DiamondLeft, DiamondRight, DiamondJoin]),
+        filter_leaf_classes([DiamondBase, DiamondLeft, DiamondRight, DiamondJoin]),
     ) == {DiamondJoin}
 
     # A single class with no relatives in the collection is kept unchanged.
-    assert set(discard_parent_classes([Unrelated])) == {Unrelated}
+    assert set(filter_leaf_classes([Unrelated])) == {Unrelated}
 
     # An empty collection stays empty.
-    assert set(discard_parent_classes([])) == set()
+    assert set(filter_leaf_classes([])) == set()
 
     # Classes from unrelated hierarchies are all kept.
-    assert set(discard_parent_classes([Unrelated, GrandchildTestClass])) == {
+    assert set(filter_leaf_classes([Unrelated, GrandchildTestClass])) == {
         Unrelated,
         GrandchildTestClass,
     }
 
 
-def test_discard_abstract_classes() -> None:
+def test_filter_concrete_classes() -> None:
     """Test function."""
     assert set(
-        discard_abstract_classes([AbstractParent, ConcreteChild, AnotherAbstractChild]),
+        filter_concrete_classes([AbstractParent, ConcreteChild, AnotherAbstractChild]),
     ) == {ConcreteChild}
 
     # An ordinary, non-ABC class is never considered abstract.
-    assert set(discard_abstract_classes([Unrelated])) == {Unrelated}
+    assert set(filter_concrete_classes([Unrelated])) == {Unrelated}
 
     # An empty collection stays empty.
-    assert set(discard_abstract_classes([])) == set()
+    assert set(filter_concrete_classes([])) == set()
 
 
 def test_generate_class() -> None:
