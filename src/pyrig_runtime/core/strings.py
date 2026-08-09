@@ -1,4 +1,4 @@
-"""String related utilities."""
+"""Utilities for working with strings."""
 
 import re
 from types import FunctionType, MethodType

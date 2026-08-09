@@ -54,14 +54,12 @@ class DiGraph(ABC):
             self.reverse_edges[node] = set()
 
     def prune(self, root: str) -> None:
-        """Retain only the given root and its ancestors, removing all other nodes.
+        """Remove every node except `root` and its ancestors.
 
-        Keeps `root` and all its ancestors (nodes with a directed path to
-        `root`). All other nodes and their associated edges are removed.
+        Edges to or from a removed node are removed along with it.
 
         Args:
-            root: The node to keep, along with all nodes that have a directed
-                path to it.
+            root: Node whose ancestors are kept.
 
         Raises:
             KeyError: If `root` is not in the graph.
@@ -72,21 +70,19 @@ class DiGraph(ABC):
         self.reverse_edges = {n: self.reverse_edges[n] & keep for n in keep}
 
     def sorted_ancestors(self, target: str) -> Iterable[str]:
-        """Return all ancestors of the target node in topological order.
+        """Return the ancestors of `target` in topological order.
 
-        Ancestors are nodes that have a directed path to the target. The
-        result is ordered so that each ancestor appears after all ancestors
-        it has outgoing edges to.
+        Each ancestor appears after every ancestor it has an outgoing edge to.
 
         Args:
             target: Node to find ancestors of.
 
         Yields:
             Each ancestor of `target`, in topological order. Yields nothing
-            if the target has no ancestors.
+            if `target` has no ancestors.
 
         Raises:
-            KeyError: If the target node is not in the graph.
+            KeyError: If `target` is not in the graph.
             graphlib.CycleError: If the ancestor subgraph contains a cycle,
                 making topological sorting impossible.
         """

@@ -1,1 +1,1 @@
-"""Foundational utilities and cross-package discovery machinery."""
+"""Foundational utilities shared across the project."""

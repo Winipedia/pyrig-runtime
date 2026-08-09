@@ -1,4 +1,4 @@
-"""Utilities for introspecting and filtering Python classes."""
+"""Utilities for Python classes."""
 
 import inspect
 from collections.abc import Iterable, Iterator
@@ -17,7 +17,8 @@ def filter_concrete_classes[T](classes: Iterable[type[T]]) -> Iterator[type[T]]:
         classes: Iterable of class types to filter.
 
     Yields:
-        Concrete (non-abstract) classes from the input.
+        Concrete (non-abstract) classes from the input, in the same order
+        as `classes`.
     """
     return filterfalse(inspect.isabstract, classes)
 
@@ -45,8 +46,9 @@ def filter_leaf_classes[T](
 def discover_subclasses[T](cls: type[T]) -> tuple[type[T], ...]:
     """Discover all transitive subclasses of `cls` currently loaded in memory.
 
-    Does not trigger any imports, so only subclasses from already-imported
-    modules are included in the result.
+    Each subclass appears exactly once, even when reachable through multiple
+    inheritance paths. Does not trigger any imports, so only subclasses from
+    already-imported modules are included in the result.
 
     Args:
         cls: Base class to find subclasses of.

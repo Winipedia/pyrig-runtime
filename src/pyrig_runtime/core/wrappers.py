@@ -1,4 +1,4 @@
-"""Utilities for invoking callables with exception handling."""
+"""Utilities for wrapping callables."""
 
 from collections.abc import Callable
 from typing import Any, overload

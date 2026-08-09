@@ -25,7 +25,7 @@ def subclasses_across_dependencies[T](
     cls: type[T],
     module: ModuleType,
 ) -> Iterator[type[T]]:
-    """Yield subclasses of `cls` found in `module` and its dependents' equivalents.
+    """Yield subclasses of `cls` defined at the same sub-path as `module`.
 
     The search covers `module` itself, every sub-module if `module` is a
     package, and the equivalently-located module (and its own sub-modules,

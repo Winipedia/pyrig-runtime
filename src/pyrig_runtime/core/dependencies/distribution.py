@@ -89,7 +89,8 @@ def distribution_header(metadata: str) -> str:
 
     The header is the metadata content before the first blank line,
     containing the single-line RFC 822 header fields (e.g. `Name`,
-    `Requires-Dist`).
+    `Requires-Dist`). If no blank line is found, the entire metadata
+    text is returned.
 
     Args:
         metadata: The full metadata of an installed distribution.

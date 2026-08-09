@@ -1,4 +1,1 @@
-"""Runtime support library for pyrig.
-
-Contains code that a project needs at runtime.
-"""
+"""Runtime support library for projects built with pyrig."""

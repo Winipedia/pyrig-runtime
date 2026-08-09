@@ -1,4 +1,4 @@
-"""Python package utilities."""
+"""Utilities for Python packages."""
 
 from collections.abc import Iterator
 from functools import cache

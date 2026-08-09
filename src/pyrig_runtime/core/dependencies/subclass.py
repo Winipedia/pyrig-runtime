@@ -54,8 +54,7 @@ class DependencySubclassMeta(ABCMeta):
             The same value `leaf()` returns for this class.
 
         Raises:
-            TypeError: If `leaf()` cannot resolve a single type for this
-                class.
+            TypeError: If `leaf()` raises.
         """
         if "_leaf" not in cls.__dict__:
             cls._leaf = cls.leaf()
@@ -111,21 +110,22 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
 
     @classmethod
     def leaf(cls) -> type[Self]:
-        """Return the single leaf subclass.
+        """Return the leaf subclass for this class's discovery scope.
 
-        If no subclasses are found, the class itself is returned. If the
-        discovered leaves share a single merge key, they are combined
-        into one newly generated subclass and returned instead of any
-        individual leaf.
+        Returns the class itself if no subclasses are discovered. Otherwise
+        returns the first value `leaves()` yields for this class: if every
+        discovered leaf shares one merge key, that is this class's one
+        true leaf; if leaves span more than one merge key, every group but
+        the first encountered is silently discarded, so `leaf()` is only
+        meaningful for hierarchies that resolve to a single merge key.
 
         Returns:
-            The single leaf subclass type, the class itself if none are
-            found, or a generated subclass combining every leaf that
-            shares a merge key.
+            The first leaf subclass type `leaves()` yields, or the class
+            itself if none are found.
 
         Raises:
-            TypeError: If the discovered leaf subclasses cannot be
-                combined into a single class.
+            TypeError: If the leaves in the first merge-key group cannot
+                be combined into a single class.
 
         Note:
             Discovery runs fresh on every call, and merging generates a
@@ -188,6 +188,7 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
     def sort_key(cls) -> "SupportsRichComparison":
         """Return the sort key used to order this class relative to peer subclasses.
 
+        Used by `sorted_subclasses()` to order a collection of subclasses.
         Override to sort by priority, numeric position, or any other criterion.
         The default returns the class name, giving alphabetical ordering.
 

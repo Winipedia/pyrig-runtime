@@ -81,12 +81,6 @@ def replace_root_module(
     Returns:
         The imported module at the equivalent sub-path under `root`, or
         `default` if the import fails and `default` was provided.
-
-    Example:
-        >>> from some_package.subpackage import module
-        >>> replace_root_module(module, "other_package")
-        <module 'other_package.subpackage.module'
-         from '/path/to/other_package/subpackage/module.py'>
     """
     return safe_import_module(
         replace_root_module_name(module.__name__, root),
@@ -99,6 +93,8 @@ def replace_root_module_name(name: str, root: str) -> str:
 
     Replaces the first dotted segment of `name` with `root`. Later segments
     are left untouched even if they happen to share the old root's name.
+    For a top-level `name` with no dots, the entire string is replaced and
+    `root` alone is returned.
 
     Args:
         name: Dotted module name (e.g., `"package.subpackage.module"`).
@@ -138,20 +134,22 @@ def safe_import_module(
 ) -> ModuleType | Any:
     """Import a module by name, with an optional fallback on failure.
 
-    Any `Exception` raised during import — not just `ImportError` — is
-    handled, so errors at module level (e.g., `ValueError` raised on
-    import) are also covered.
+    By default, catches any `Exception` raised during import — not just
+    `ImportError` — so an error from the module's own top-level code (e.g.,
+    a stray `ValueError`) is caught too. Pass `exceptions` to narrow what
+    gets caught.
 
     Args:
         module_name: Dotted module name (e.g., `"package.subpackage.module"`).
-        package: Anchor package for relative imports, forwarded to `import_module`.
-        default: Value to return if the import raises. If not provided,
-            the exception propagates unchanged.
-        exceptions: Tuple of exception types to catch. Defaults to `(Exception,)`.
+        package: Anchor package for relative imports, forwarded to
+            `import_module`.
+        default: Value to return if the import raises a caught exception.
+            If not provided, the exception propagates unchanged.
+        exceptions: Exception types to catch. Defaults to `(Exception,)`.
 
     Returns:
-        The imported module, or `default` if an exception is raised and
-        `default` was provided.
+        The imported module, or `default` if a caught exception is raised
+        and `default` was provided.
     """
     return safe_call(
         import_module,
@@ -173,11 +171,6 @@ def root_module(module: ModuleType) -> ModuleType:
 
     Returns:
         The module corresponding to the first segment of the dotted name.
-
-    Example:
-        >>> from some_package.subpackage import module as mod
-        >>> root_module(mod)
-        <module 'some_package' from '/path/to/some_package/__init__.py'>
     """
     return import_module(root_module_name(module.__name__))
 
