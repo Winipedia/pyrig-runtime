@@ -148,6 +148,7 @@ class TestDependencySubclass:
     def test_merge_key(self) -> None:
         """Test method."""
         assert CLI.merge_key() == CLI.__name__
+        assert DependencySubclass.merge_key() == DependencySubclass.__name__
 
 
 class TestDependencySubclassMeta:

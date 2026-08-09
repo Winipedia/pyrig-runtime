@@ -2,6 +2,7 @@
 
 import logging
 import sys
+from collections.abc import Hashable
 from importlib.metadata import distribution
 from itertools import chain
 from pathlib import Path
@@ -41,6 +42,17 @@ class CLI(DependencySubclass):
     def discovery_module(cls) -> ModuleType:
         """Return this module, keeping subclass discovery scoped to it alone."""
         return sys.modules[__name__]
+
+    @classmethod
+    def merge_key(cls) -> Hashable:
+        """Return a constant merge key.
+
+        There is only one CLI so different subclasses should converge into
+        a single subclass
+        Returns:
+            The name of this class: `CLI`.
+        """
+        return CLI.__name__
 
     def run(self) -> None:
         """Build and invoke the Typer application."""

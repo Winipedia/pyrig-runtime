@@ -218,3 +218,7 @@ class TestCLI:
             return_value=None,
         )
         assert CLI.I.help_text() == ""
+
+    def test_merge_key(self) -> None:
+        """Test method."""
+        assert CLI.I.merge_key() == "CLI"
