@@ -2,6 +2,7 @@
   "repository": {
     "name": "pyrig-runtime",
     "description": "Runtime dependency and library for projects built with pyrig.",
+    "homepage": "https://Winipedia.github.io/pyrig-runtime",
     "default_branch": "main",
     "delete_branch_on_merge": true,
     "allow_update_branch": true,
