@@ -84,8 +84,3 @@ uv run otherproject version2
 When two packages define a shared command with the same name, the one registered
 last (in dependency order) wins, so a dependent package can override a built-in.
 This is simply Typer's default behavior.
-
-## See also
-
-- [Plugin discovery](plugins.md) — the mechanism the CLI is built on.
-- [API reference](api.md) — full signatures for the CLI builder and commands.

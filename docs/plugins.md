@@ -176,8 +176,3 @@ class GreetingResolved(GreetingOne, GreetingTwo):
 ```python
 Greeting.I.run()  # "hihey" — GreetingResolved combines both
 ```
-
-## See also
-
-- [Automatic CLI](cli.md) — built on this discovery mechanism.
-- [API reference](api.md) — full signatures for every accessor above.

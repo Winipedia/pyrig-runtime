@@ -46,14 +46,16 @@
 
 ## Overview
 
-`pyrig-runtime` is the runtime layer that projects built with
-[pyrig](https://github.com/Winipedia/pyrig) depend on. It bundles the
-capabilities those projects rely on while they run.
+Put simply, pyrig-runtime is a plugin system based on classes that declare
+functionality through code, and via subclassing these classes any state and
+functionality can be changed, removed or extended by overriding the methods
+of parent classes. For pyrig-runtime itself this applies to the CLI class it provides.
 
-It is a standalone library — its only dependency is
-[Typer](https://typer.tiangolo.com), and nothing here requires pyrig itself to
-be installed. pyrig is the build- and development-time toolkit; pyrig-runtime is
-the piece that ships with the projects pyrig creates.
+`pyrig-runtime` was originally built for [pyrig](https://github.com/Winipedia/pyrig) which
+uses it for its file generation and tool wrapping classes and its CLI.
+pyrig-runtime is a standalone library — its only dependency is Typer, and nothing
+here requires pyrig itself to be installed. pyrig is a development dependency and
+dev toolkit; pyrig-runtime is a plugin system and automatic CLI enabler.
 
 ## Installation
 
