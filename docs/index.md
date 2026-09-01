@@ -51,6 +51,20 @@ functionality through code, and via subclassing these classes any state and
 functionality can be changed, removed or extended by overriding the methods
 of parent classes. For pyrig-runtime itself this applies to the CLI class it provides.
 
+Specifically, pyrig-runtime defines one base class `DependencySubclass`
+at the root of this plugin system. All classes that inherit from it
+are automatically discoverable. The discovery is achieved as follows:
+pyrig-runtime builds a directed graph from all installed dependencies in
+the current Python environment, and finds all packages that have
+pyrig-runtime as their ancestor in the graph. Those packages are then
+imported and scanned for any classes that inherit from `DependencySubclass`.
+Through the `DependencySubclass` base class, every subclass has a `.leaf()`
+method that returns the leaf class of the inheritance tree. If several leaf
+classes are found by the discovery mechanism, they are dynamically merged
+into a single class with multiple inheritance. This is what lets
+independently installed packages cooperatively extend the same piece of
+behaviour. See [Plugin discovery](plugins.md) for more details.
+
 `pyrig-runtime` was originally built for [pyrig](https://github.com/Winipedia/pyrig) which
 uses it for its file generation and tool wrapping classes and its CLI.
 pyrig-runtime is a standalone library — its only dependency is Typer, and nothing
