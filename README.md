@@ -40,7 +40,7 @@
 
 ---
 
-> Runtime dependency and library for projects built with pyrig.
+> Plugin system and CLI engine for projects built with pyrig.
 
 ---
 

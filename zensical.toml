@@ -1,6 +1,6 @@
 [project]
 site_name = "pyrig-runtime"
-site_description = "Runtime dependency and library for projects built with pyrig."
+site_description = "Plugin system and CLI engine for projects built with pyrig."
 site_url = "https://Winipedia.github.io/pyrig-runtime"
 repo_url = "https://github.com/Winipedia/pyrig-runtime"
 edit_uri = "edit/main/docs"
