@@ -39,6 +39,35 @@ Return a **package** to widen discovery to its whole module hierarchy, which is
 imported and searched recursively. Return a **plain module** to keep discovery
 narrow, limiting it to that single file.
 
+## How discovery finds dependents
+
+Discovery is built entirely on ordinary Python packaging metadata — there is
+no custom registry to update or entry point to declare. It works in two
+steps:
+
+1. **Build a dependency graph.** Every installed distribution's metadata
+   (read via `importlib.metadata`, the same data `pip show` reads) is
+   scanned for its declared dependencies. This produces a directed graph of
+   installed packages, pruned down to the base class's own root package and
+   everything that depends on it, directly or transitively.
+2. **Look for an equivalent module in each dependent.** For every package in
+   that pruned graph, the module at the same sub-path as `discovery_module()`
+   is looked up in that package — root-swapped, e.g. `my_project.plugins` →
+   `otherpkg.plugins` — and imported if it exists. A dependent with no
+   matching module is silently skipped.
+
+One practical consequence follows from this: a package only counts as a
+dependent if it actually **declares** the base class's package as a
+dependency in its own packaging metadata (its `pyproject.toml`). Simply
+having both packages importable in the same environment, without one
+declaring a dependency on the other, is not enough for discovery to find it.
+
+In practice, this is how pyrig's own sibling packages (`pyrig-codecov`,
+`pyrig-executables`, `pyrig-pypi`, and others) each contribute their own
+`Tool`/`ConfigFile` subclasses without any of them registering with pyrig
+directly — installing one is enough, because it already declares pyrig as a
+dependency and mirrors pyrig's module layout at the sub-path it extends.
+
 ## Defining implementations
 
 Put concrete subclasses in any module covered by the declared scope:
