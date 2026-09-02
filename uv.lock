@@ -700,7 +700,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "18.60.7"
+version = "18.60.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "inquirerpy" },
@@ -712,9 +712,9 @@ dependencies = [
     { name = "tomli-w" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d7/5b/5821efdb51c77d2e3cc774a97d5a3726a5dfe58e2dea8c892e9f8c1dc1f7/pyrig-18.60.7.tar.gz", hash = "sha256:54c2908d356bca7c7e1e86c5ca48d9e1feda382fdf6c814de8e5da7202906c04", size = 99927, upload-time = "2026-09-01T20:33:07.137Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/65/38/d765ecd1900ac17127fcfc53917668c1871979284196b71a5c3c01a35317/pyrig-18.60.8.tar.gz", hash = "sha256:7ef2f92f59cb5062184c96b64ba7cf164215b5f55f29c037535b0984557980ab", size = 99964, upload-time = "2026-09-02T07:59:55.44Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/24/05/1a1d0182dfb27d510285c6d8f9e22ed833fa17773454b1116c0e3d8c3fdd/pyrig-18.60.7-py3-none-any.whl", hash = "sha256:bed1543c48a35ac2bc7be86bd8f4531033fc1598867874ff901e5264c78a9b39", size = 163476, upload-time = "2026-09-01T20:33:05.361Z" },
+    { url = "https://files.pythonhosted.org/packages/73/34/dc401dc3db173c9ad19751ab77924e829fcf46344873e83fe25ed975cfaa/pyrig-18.60.8-py3-none-any.whl", hash = "sha256:18ff9cae9748ac77e9a39aaf2e993c86286cea696fb2d549e6f3d1a23cc5f865", size = 163473, upload-time = "2026-09-02T07:59:53.194Z" },
 ]
 
 [[package]]
@@ -761,7 +761,7 @@ wheels = [
 
 [[package]]
 name = "pyrig-runtime"
-version = "3.23.15"
+version = "3.23.16"
 source = { editable = "." }
 dependencies = [
     { name = "typer" },
@@ -883,14 +883,14 @@ wheels = [
 
 [[package]]
 name = "pytest-randomly"
-version = "4.1.0"
+version = "5.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pytest" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/27/b3/36192dacc0f470ac2cc516f73e01739c9a48a8224f76beada4f85e1c8a89/pytest_randomly-4.1.0.tar.gz", hash = "sha256:47f1d9746c3bc3efabd53ae1ebfb8bb385cf3d4df4b505b6d58d9c97a3dfe70f", size = 14302, upload-time = "2026-04-20T13:01:51.831Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/01/3b/6a40e1b9d925651e601e056a97f60d8a1daeddeac03d5609be60cb4362ce/pytest_randomly-5.0.0.tar.gz", hash = "sha256:e9c575a5873ef168ddbe340ed9e97ce9edb4492ccc821e4b2ac6bb1f0ed515d2", size = 8542, upload-time = "2026-09-01T22:34:20.441Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9a/db/2df9a1fca597a273f957a559c20c2d95d629928384507b2afa43ba6909d1/pytest_randomly-4.1.0-py3-none-any.whl", hash = "sha256:f55e89e53367b090c0c053697d7f9d77595543d0e0516c93978b50c0f6b252f9", size = 8353, upload-time = "2026-04-20T13:01:50.382Z" },
+    { url = "https://files.pythonhosted.org/packages/10/b4/47e939285caad9a623d021512912ac08dc92a467ad075d179f43729d2934/pytest_randomly-5.0.0-py3-none-any.whl", hash = "sha256:8a0d4703115c0c25b38b6e129fc16b1947b9643ff26a41bc1d185d7e5a7689c1", size = 8920, upload-time = "2026-09-01T22:34:19.227Z" },
 ]
 
 [[package]]
