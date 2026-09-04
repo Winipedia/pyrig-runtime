@@ -6,15 +6,16 @@
       - "opened"
       - "synchronize"
       - "reopened"
-  "push":
-    "branches":
-      - "main"
   "schedule":
     -
       "cron": "0 1 * * *"
+  "workflow_call":
+    "secrets":
+      "CODECOV_TOKEN":
+        "required": true
 "permissions": {}
 "concurrency":
-  "group": "${{ github.workflow }}-${{ github.ref }}"
+  "group": "Health Check-${{ github.ref }}"
   "cancel-in-progress": true
 "defaults":
   "run":
