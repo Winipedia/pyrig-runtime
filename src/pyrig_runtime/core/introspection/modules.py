@@ -1,6 +1,5 @@
 """Utilities for Python modules."""
 
-import logging
 from collections.abc import Iterable, Iterator
 from importlib import import_module
 from pkgutil import iter_modules as pkgutil_iter_modules
@@ -9,8 +8,6 @@ from typing import Any, overload
 
 from pyrig_runtime.core.constants import MISSING
 from pyrig_runtime.core.wrappers import safe_call
-
-logger = logging.getLogger(__name__)
 
 
 def import_modules(module_names: Iterable[str]) -> Iterator[ModuleType]:
