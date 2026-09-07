@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-runtime"
-version = "3.23.29"
+version = "3.23.31"
 description = "Plugin system and CLI engine for projects built with pyrig."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -41,12 +41,14 @@ pyrig-runtime = "pyrig_runtime.rig.cli.main:main"
 
 [dependency-groups]
 dev = [
+  "actionlint-py>=1.7.12.24",
   "bandit>=1.9.4",
   "deptry>=0.25.1",
   "detect-secrets>=1.5.0",
   "mkdocstrings[python]>=1.0.5",
   "pre-commit-hooks",
   "prek>=0.4.8",
+  "pyflakes>=3.4.0",
   "pyrig>=18.3.4",
   "pyrig-codecov>=3.2.6",
   "pyrig-fixtures>=2.3.2",
@@ -65,6 +67,7 @@ dev = [
   "ty>=0.0.58",
   "typos>=1.48.0",
   "zensical>=0.0.52",
+  "zizmor>=1.30.0",
 ]
 
 [build-system]
