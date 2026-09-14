@@ -125,10 +125,10 @@ class TestDependencySubclass:
         )
         result = ConfigFile.sorted_subclasses(subclasses)
         assert result == [
-            ReadmeConfigFile,
+            DocsBuilderConfigFile,
             LicenseConfigFile,
             PyprojectConfigFile,
-            DocsBuilderConfigFile,
+            ReadmeConfigFile,
         ]
 
     def test_subclasses(self) -> None:
