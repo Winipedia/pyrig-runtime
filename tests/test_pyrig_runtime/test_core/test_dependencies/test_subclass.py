@@ -164,7 +164,7 @@ class TestDependencySubclassMeta:
     def test_I(self) -> None:  # noqa: N802
         """Test method."""
         with pytest.raises(TypeError):
-            _ = DependencySubclass()
+            _ = DependencySubclass()  # ty:ignore[call-non-callable]
 
         assert CLI.I is CLI.I
         assert isinstance(CLI.I, CLI)
