@@ -4,6 +4,7 @@ from graphlib import CycleError
 
 import pyrig
 import pyrig_codecov
+import pyrig_codeql
 import pyrig_fixtures
 import pyrig_pypi
 import pyrig_runtime_overrides
@@ -31,6 +32,7 @@ class TestDiGraph:
         assert set(deps) == {
             pyrig_runtime.__name__,
             pyrig.__name__,
+            pyrig_codeql.__name__,
             pyrig_codecov.__name__,
             pyrig_fixtures.__name__,
             pyrig_pypi.__name__,
