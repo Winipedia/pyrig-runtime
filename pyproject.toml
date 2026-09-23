@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-runtime"
-version = "3.23.47"
+version = "3.23.49"
 description = "Plugin system and CLI engine for projects built with pyrig."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -51,6 +51,7 @@ dev = [
   "pyflakes>=3.4.0",
   "pyrig>=18.85.1",
   "pyrig-codecov>=3.17.31",
+  "pyrig-codeql>=1.0.0",
   "pyrig-fixtures>=2.24.59",
   "pyrig-pypi>=3.20.28",
   "pyrig-runtime-overrides>=2.14.74",
