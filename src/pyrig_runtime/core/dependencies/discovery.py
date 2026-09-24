@@ -131,5 +131,6 @@ def dependency_graph() -> DependencyGraph:
         The returned instance is shared across all callers. Do not mutate it.
     """
     graph = DependencyGraph()
+    graph.build()
     graph.prune(root=pyrig_runtime.__name__)
     return graph

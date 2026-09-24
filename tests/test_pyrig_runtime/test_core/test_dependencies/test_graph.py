@@ -7,6 +7,7 @@ from pytest_mock import MockerFixture
 from pyrig_runtime.core.dependencies.graph import DependencyGraph
 
 DEP_GRAPH = DependencyGraph()
+DEP_GRAPH.build()
 
 
 class TestDependencyGraph:
@@ -42,6 +43,7 @@ class TestDependencyGraph:
             return_value=("", iter(())),
         )
         graph = DependencyGraph()
+        graph.build()
         assert graph.nodes == set()
 
     def test_build(self) -> None:

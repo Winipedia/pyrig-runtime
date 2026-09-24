@@ -18,18 +18,17 @@ class DiGraph(ABC):
     """
 
     def __init__(self) -> None:
-        """Initialize the directed graph by building it."""
+        """Initialize an empty directed graph."""
         self.nodes: set[str] = set()
         self.edges: dict[str, set[str]] = {}
         self.reverse_edges: dict[str, set[str]] = {}
-        self.build()
 
     @abstractmethod
     def build(self) -> None:
         """Populate the graph with nodes and edges.
 
-        Called during construction. Subclasses must add every node and edge
-        that belongs to the graph.
+        Call after construction to add every node and edge that belongs to
+        the graph.
         """
 
     def add_edge(self, source: str, target: str) -> None:

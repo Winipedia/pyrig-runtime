@@ -28,6 +28,7 @@ class TestDiGraph:
     def test_sorted_ancestors(self) -> None:
         """Test method."""
         graph = DependencyGraph()
+        graph.build()
         deps = graph.sorted_ancestors("typer")
         assert set(deps) == {
             pyrig_runtime.__name__,

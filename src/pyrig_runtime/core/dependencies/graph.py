@@ -21,8 +21,7 @@ class DependencyGraph(DiGraph):
 
     Nodes are package names normalized to their importable module form
     (hyphens become underscores); an edge A → B means "A depends on B".
-    The graph is built at instantiation by scanning every installed
-    distribution.
+    Call `build` to scan every installed distribution and populate the graph.
     """
 
     def build(self) -> None:
