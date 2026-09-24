@@ -3,7 +3,6 @@
 import pytest
 from pytest_mock import MockerFixture
 
-from pyrig_runtime.rig.cli.cli import CLI
 from pyrig_runtime.rig.cli.commands.version import project_version
 
 
@@ -13,13 +12,10 @@ def test_project_version(
 ) -> None:
     """Test function."""
     # mock project_name_from_argv to return "pyrig"
-    argv_mock = mocker.patch.object(
-        CLI,
-        attribute=CLI.project_name.__name__,
+    argv_mock = mocker.patch(
+        "pyrig_runtime.rig.cli.commands.version.project_name_from_argv",
         return_value="pyrig",
     )
-
-    assert CLI.I.project_name() == "pyrig"
 
     assert project_version() is None
 

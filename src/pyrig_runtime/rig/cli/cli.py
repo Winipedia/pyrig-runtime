@@ -5,7 +5,6 @@ import sys
 from collections.abc import Hashable
 from importlib.metadata import distribution
 from itertools import chain
-from pathlib import Path
 from types import ModuleType
 from typing import Annotated, Any
 
@@ -27,6 +26,7 @@ from pyrig_runtime.core.strings import (
     kebab_to_snake_case,
     snake_to_kebab_case,
 )
+from pyrig_runtime.rig.cli.project import project_name_from_argv
 from pyrig_runtime.rig.cli import shared_subcommands, subcommands
 
 
@@ -234,7 +234,7 @@ class CLI(DependencySubclass):
         (e.g. `uv run my-project`), `sys.argv[0]` is the path to that script, so
         its stem is the project name as it was registered.
         """
-        return Path(sys.argv[0]).stem
+        return project_name_from_argv()
 
     def register_shared_subcommands(self, app: typer.Typer) -> None:
         """Discover and register shared commands from pyrig-runtime and its dependents.

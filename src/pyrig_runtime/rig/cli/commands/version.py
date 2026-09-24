@@ -4,7 +4,7 @@ from importlib.metadata import version
 
 import typer
 
-from pyrig_runtime.rig.cli.cli import CLI
+from pyrig_runtime.rig.cli.project import project_name_from_argv
 
 
 def project_version() -> None:
@@ -13,5 +13,5 @@ def project_version() -> None:
     Reports the version of the project whose CLI is currently running.
     The project must be installed for its version to be available.
     """
-    project_name = CLI.I.project_name()
+    project_name = project_name_from_argv()
     typer.echo(f"{project_name} {version(project_name)}")
