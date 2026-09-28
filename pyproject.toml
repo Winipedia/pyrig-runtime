@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-runtime"
-version = "3.23.58"
+version = "3.23.60"
 description = "Plugin system and CLI engine for projects built with pyrig."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -15,14 +15,34 @@ maintainers = [
   { name = "Winipedia", email = "winipedia@gmx.de" },
 ]
 keywords = [
+  "automatic-plugin-discovery",
+  "class-based-plugins",
+  "cli",
+  "cli-framework",
+  "command-line-interface",
+  "cross-package-plugins",
+  "dependency-graph",
+  "plugin",
+  "plugin-architecture",
+  "plugin-discovery",
+  "plugin-framework",
+  "plugin-system",
   "pyrig",
+  "pyrig-runtime",
+  "python-cli",
+  "subclass-discovery",
 ]
 classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+  "Topic :: Software Development :: Libraries :: Python Modules",
   "Typing :: Typed",
 ]
 dependencies = [

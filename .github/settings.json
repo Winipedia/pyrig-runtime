@@ -108,6 +108,21 @@
     "approval_policy": "all_external_contributors"
   },
   "topics": [
-    "pyrig"
+    "automatic-plugin-discovery",
+    "class-based-plugins",
+    "cli",
+    "cli-framework",
+    "command-line-interface",
+    "cross-package-plugins",
+    "dependency-graph",
+    "plugin",
+    "plugin-architecture",
+    "plugin-discovery",
+    "plugin-framework",
+    "plugin-system",
+    "pyrig",
+    "pyrig-runtime",
+    "python-cli",
+    "subclass-discovery"
   ]
 }
