@@ -59,7 +59,7 @@ is defined by pyrig-runtime, so every dependent project has it:
 
 ```bash
 $ uv run my-project version
-my-project 1.2.3
+1.2.3
 ```
 
 You can add your own. Define shared commands in your project's

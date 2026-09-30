@@ -27,5 +27,7 @@ def test_project_version(
 
     captured = capsys.readouterr()
     out, err = captured.out, captured.err
-    assert out.startswith("pyrig ")
+    nums = out.strip().split(".")
+    assert len(nums) == 3  # noqa: PLR2004
+    assert all(n.isdigit() for n in nums)
     assert err == ""

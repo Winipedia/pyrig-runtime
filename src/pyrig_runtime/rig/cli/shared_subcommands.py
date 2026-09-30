@@ -8,7 +8,7 @@ form of the variable name.
 
 
 def version() -> None:
-    """Print the name and installed version.
+    """Print the installed version.
 
     Reports the version of whichever project's CLI entry point was used to
     invoke this command. The project must be installed.
@@ -16,7 +16,7 @@ def version() -> None:
     Example:
         ```
         $ uv run my-project version
-        my-project 0.4.1
+        0.1.0
         ```
     """
     from pyrig_runtime.rig.cli.commands.version import project_version  # noqa: PLC0415
