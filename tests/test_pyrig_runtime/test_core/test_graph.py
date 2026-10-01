@@ -6,6 +6,7 @@ import pyrig
 import pyrig_codecov
 import pyrig_codeql
 import pyrig_fixtures
+import pyrig_opensource
 import pyrig_public
 import pyrig_pypi
 import pyrig_runtime_overrides
@@ -40,6 +41,7 @@ class TestDiGraph:
             pyrig_pypi.__name__,
             pyrig_runtime_overrides.__name__,
             pyrig_public.__name__,
+            pyrig_opensource.__name__,
         }
 
         # every dependency must appear before its dependent
