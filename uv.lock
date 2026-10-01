@@ -715,7 +715,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "18.94.2"
+version = "18.95.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "inquirerpy" },
@@ -727,40 +727,40 @@ dependencies = [
     { name = "tomli-w" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ef/d1/1fdfb5f5ed860ede847e42425a07a6490980a188332d1487805952be689f/pyrig-18.94.2.tar.gz", hash = "sha256:adc7808e73c25fa9adcdf8bba7c824f9c129d4667911a99f641e5054bb879a57", size = 105954, upload-time = "2026-10-01T17:42:23.141Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f7/9a/0eb6712de745ef8712843712a56be34c38f5acc71c3021aa18173edf7feb/pyrig-18.95.1.tar.gz", hash = "sha256:60d19f63f611bd11e79058d26fa93a778cb35eb0d2fa83ce3628176c55ef8b70", size = 105800, upload-time = "2026-10-01T19:30:15.475Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/45/e0/df900f0b45b8d227bdf02236ab667f44b990603ecda6ac6d7142344933f5/pyrig-18.94.2-py3-none-any.whl", hash = "sha256:ebbaf415c7f638f858636c8255b1772f21f4542b06cdf0c5c887fccd7f94cc56", size = 170596, upload-time = "2026-10-01T17:42:21.317Z" },
+    { url = "https://files.pythonhosted.org/packages/ba/4f/fa38cbac67d9060e3dfce140ef024fb49d8e883afd0391fd155bddd1156e/pyrig-18.95.1-py3-none-any.whl", hash = "sha256:229195bde2a02e37cffad21acafbb983af803c999f247626752ff213ee322d1f", size = 169984, upload-time = "2026-10-01T19:30:13.742Z" },
 ]
 
 [[package]]
 name = "pyrig-codecov"
-version = "3.17.45"
+version = "3.17.46"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyrig" },
     { name = "pyrig-runtime" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/08/3d/ac7c64415136eacf1bd84773def2f4a388f0c20c7831b6aaf724cff7d60f/pyrig_codecov-3.17.45.tar.gz", hash = "sha256:7abf4ae39327197af99e3e20665b815bb522b68ba4e7e4f3dbe30fb1e87b1fc9", size = 6397, upload-time = "2026-09-30T14:37:36.332Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d1/a3/03ade7435577a87286bda48941224717cb3021fabafae0685a7389c03f34/pyrig_codecov-3.17.46.tar.gz", hash = "sha256:d6847360d4e3e8d7655cb17177fa8c1e26517327e19fd87d4a3a785beb7e9c86", size = 6412, upload-time = "2026-10-01T18:04:50.951Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fd/c0/7b9973936aab87741c483fcc6f3e3451a1c4a9f6958c3df336e83f8c0626/pyrig_codecov-3.17.45-py3-none-any.whl", hash = "sha256:91cb4c6bbc791442e1a5a3a4384b174b25d1507b88086168305bb8c33ed5bfbf", size = 10812, upload-time = "2026-09-30T14:37:35.191Z" },
+    { url = "https://files.pythonhosted.org/packages/85/77/1a6858f5b97e1c9250a6cf42dfd5ac9248fca5f9f691fe77a4031c81674c/pyrig_codecov-3.17.46-py3-none-any.whl", hash = "sha256:140e6722deea45330f6ec4ce7f9c1030f34c015c02b7757516c8b7961986f090", size = 10812, upload-time = "2026-10-01T18:04:49.736Z" },
 ]
 
 [[package]]
 name = "pyrig-codeql"
-version = "1.1.10"
+version = "1.1.11"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyrig" },
     { name = "pyrig-runtime" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/82/a7/1ba3a73639f423e033bd101fd48be09838344fc9962f389619a95c835280/pyrig_codeql-1.1.10.tar.gz", hash = "sha256:521073767ef088b0b3c4d5464153db017b3ee6afcf244096ddbbe1bccd81ae8d", size = 6276, upload-time = "2026-10-01T09:18:37.619Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/69/46/df9b614b6888fb6364ec6072cecd3cb9a8c551b0b52d2763d0463f70f3d0/pyrig_codeql-1.1.11.tar.gz", hash = "sha256:79ea6f85903e4da06695f38654931de6bcb8c3e0b49d667d323d0130fd0e6eca", size = 6302, upload-time = "2026-10-01T18:00:14.107Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a2/6a/46cab582c33af9010a25d560543b71badbc28e9cf0c1e3c0e3c49ab51cb0/pyrig_codeql-1.1.10-py3-none-any.whl", hash = "sha256:23a015a44bbb6fcc24b46539df4cf00db014626385d095c0beebf63defc95a00", size = 10123, upload-time = "2026-10-01T09:18:36.875Z" },
+    { url = "https://files.pythonhosted.org/packages/2d/58/1f3167225e1647d94a9a563cda2ad589b88da76bf1827724162fa8f7b1c6/pyrig_codeql-1.1.11-py3-none-any.whl", hash = "sha256:62382595124478b61e0870cc58e0a9250aa1e7b9da7caea034df6c86ad6cc8c8", size = 10121, upload-time = "2026-10-01T18:00:13.19Z" },
 ]
 
 [[package]]
 name = "pyrig-fixtures"
-version = "2.25.2"
+version = "2.25.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyrig" },
@@ -769,22 +769,40 @@ dependencies = [
     { name = "pytest-mock" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5b/77/2348adbc365e4d8dd94eb01ec7cb6ead3249756c250d07f7983729e17f8a/pyrig_fixtures-2.25.2.tar.gz", hash = "sha256:653e23878aaf6141fc8cf490804def9fdcea4b867128db17ed1a3ae92d6d8621", size = 14868, upload-time = "2026-09-30T14:47:41.42Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/85/d7/a268a20f82420e4d76a3abb1b87f261ceac81739f1936258b3bea6e9b75a/pyrig_fixtures-2.25.3.tar.gz", hash = "sha256:1c39a1fa777193188fd34d5b830151036043f6d2b8ebb627525c2ea510a008dc", size = 14888, upload-time = "2026-10-01T18:02:59.43Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b0/d1/80d89ba2e60945ab70317fe9e7ea055d3e13ea3aa7f330155126b56f8228/pyrig_fixtures-2.25.2-py3-none-any.whl", hash = "sha256:546c9e81efccf5634fa6ada3905a7eec9e94cecbb8db3b7c2d4b9f8a08d2d732", size = 21582, upload-time = "2026-09-30T14:47:40.499Z" },
+    { url = "https://files.pythonhosted.org/packages/a7/a8/7ca3142510d4dd2a88710152e5e0d88eaef2ebdf5c81dba2b2234fe04819/pyrig_fixtures-2.25.3-py3-none-any.whl", hash = "sha256:08996e3de24f7212869a01c6183325433b5e4baa84105fe858c5764468c9c151", size = 21582, upload-time = "2026-10-01T18:02:58.331Z" },
+]
+
+[[package]]
+name = "pyrig-opensource"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyrig" },
+    { name = "pyrig-codecov" },
+    { name = "pyrig-codeql" },
+    { name = "pyrig-fixtures" },
+    { name = "pyrig-public" },
+    { name = "pyrig-runtime" },
+    { name = "typer" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ce/42/88d31b8f2e4adc4ed66b502e5e44beb51422a69b977863eccfd5f82fa638/pyrig_opensource-1.0.0.tar.gz", hash = "sha256:47a3bd8c432b5dcbd769222ff3513e7640481fb3ffb083a1b155f36ef5ab5e9b", size = 5346, upload-time = "2026-10-01T22:25:06.52Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/70/9f/45105214db07c85b28a7eeea47641c4e21d22f2ead039c39e8b6bd1e44f0/pyrig_opensource-1.0.0-py3-none-any.whl", hash = "sha256:e0b0f7c5482a36d3a2c605e01a15052b77d2b4b405b36c6cf38b5e96d8c9dab4", size = 7483, upload-time = "2026-10-01T22:25:05.153Z" },
 ]
 
 [[package]]
 name = "pyrig-public"
-version = "1.0.2"
+version = "1.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyrig" },
     { name = "pyrig-runtime" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/29/8e/bf0fe629582b6dd56646bafb523df3a3bdd65b8ea78a1052383b9a0fc584/pyrig_public-1.0.2.tar.gz", hash = "sha256:87659bdeccd6e57516009e309c2f1faad94d3244630b1c5e9d84c1396400a271", size = 6252, upload-time = "2026-10-01T17:55:54.064Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e9/93/25b630cd2ab081affe1da1a38c4fa6f1fc6283b881b123c62ae02de5604e/pyrig_public-1.1.1.tar.gz", hash = "sha256:94b03f0174b4aea8915b2d768f06b6df9cfaff8d78b2f991bc31f256a56a73b0", size = 6781, upload-time = "2026-10-01T19:35:25.322Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3b/de/d81ca9130e3bec9714bcbf623ccb5aebb399ab74ce897fb3f397b341923a/pyrig_public-1.0.2-py3-none-any.whl", hash = "sha256:377c494ae8a3e1d83f343213f6761352594f2d05cbf8c57b0b2f0c70880e435b", size = 11011, upload-time = "2026-10-01T17:55:52.854Z" },
+    { url = "https://files.pythonhosted.org/packages/52/1b/c2b34ca98307edfd4c00ceb295bdb4697b7a494368d11b243f4fdc1b18a9/pyrig_public-1.1.1-py3-none-any.whl", hash = "sha256:c57752eff1f8529abb49a5a39f140d3c8b023b37f5c1b73b2353c40721b3ebd3", size = 12188, upload-time = "2026-10-01T19:35:24.49Z" },
 ]
 
 [[package]]
@@ -802,7 +820,7 @@ wheels = [
 
 [[package]]
 name = "pyrig-runtime"
-version = "3.24.3"
+version = "3.24.4"
 source = { editable = "." }
 dependencies = [
     { name = "typer" },
@@ -819,10 +837,7 @@ dev = [
     { name = "prek" },
     { name = "pyflakes" },
     { name = "pyrig" },
-    { name = "pyrig-codecov" },
-    { name = "pyrig-codeql" },
-    { name = "pyrig-fixtures" },
-    { name = "pyrig-public" },
+    { name = "pyrig-opensource" },
     { name = "pyrig-pypi" },
     { name = "pyrig-runtime-overrides" },
     { name = "pytest" },
@@ -854,11 +869,8 @@ dev = [
     { name = "pre-commit-hooks", specifier = ">=6.0.0" },
     { name = "prek", specifier = ">=0.5.3" },
     { name = "pyflakes", specifier = ">=3.4.0" },
-    { name = "pyrig", specifier = ">=18.85.1" },
-    { name = "pyrig-codecov", specifier = ">=3.17.31" },
-    { name = "pyrig-codeql", specifier = ">=1.0.0" },
-    { name = "pyrig-fixtures", specifier = ">=2.24.59" },
-    { name = "pyrig-public", specifier = ">=1.0.1" },
+    { name = "pyrig", specifier = ">=18.95.1" },
+    { name = "pyrig-opensource", specifier = ">=1.0.0" },
     { name = "pyrig-pypi", specifier = ">=3.20.28" },
     { name = "pyrig-runtime-overrides", specifier = ">=2.14.74" },
     { name = "pytest", specifier = ">=9.1.1" },
@@ -879,16 +891,16 @@ dev = [
 
 [[package]]
 name = "pyrig-runtime-overrides"
-version = "2.15.4"
+version = "2.15.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyrig" },
     { name = "pyrig-pypi" },
     { name = "pyrig-runtime" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b8/a4/2b84478f904b9fe0cd67392a7ce7c6a0e625c167600d0ee1dc10faedcd86/pyrig_runtime_overrides-2.15.4.tar.gz", hash = "sha256:918913153f5751945051082be083161b08be67462a0a688238f8980ab5d51469", size = 4998, upload-time = "2026-09-30T14:50:04.902Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3a/af/d741a6beeb88e8995659f3e143f185745b7441cab5906450e8f2122400eb/pyrig_runtime_overrides-2.15.5.tar.gz", hash = "sha256:978bd647078cd210444cfa56d9c29e17ffaf6e4a72ee85e359ad2cb4f246eae4", size = 5004, upload-time = "2026-10-01T17:59:14.504Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/30/f8/88e8efef8f5d1bf6275d77338712833cb05651c0b4f27926461bd0d31095/pyrig_runtime_overrides-2.15.4-py3-none-any.whl", hash = "sha256:d70114146a89ce5b278f1be34917b4075ca7bd5971c0f3fba2a0055d4a496ea9", size = 7320, upload-time = "2026-09-30T14:50:03.961Z" },
+    { url = "https://files.pythonhosted.org/packages/16/74/78a1e6d2adb32b49b6064cc2591b2a4b26089f5a026076c42c5dbf3dcc33/pyrig_runtime_overrides-2.15.5-py3-none-any.whl", hash = "sha256:bef454e1e792d21ee991486e5d98ce33a1bd3d84a897522c5efb05aa5a5e9c52", size = 7318, upload-time = "2026-10-01T17:59:13.521Z" },
 ]
 
 [[package]]
@@ -1117,27 +1129,27 @@ wheels = [
 
 [[package]]
 name = "ruff"
-version = "0.16.9"
+version = "0.16.10"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/96/bf/c935ca98e73fe8ce65b87ef08a280c0c1e85295d569228c15e87d8fdfaf1/ruff-0.16.9.tar.gz", hash = "sha256:12b625c6cfba78d285d9f48eda5f053374f1e53cb10ef17342a383750db99161", size = 4948764, upload-time = "2026-09-24T20:37:49.416Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c4/49/23802c45f093eb14bde54b141d2b2f058edfa63a06db7beed047308cc08f/ruff-0.16.10.tar.gz", hash = "sha256:eff4728c4eaae93f0955cd264d24b2ab348e74bf59986ccf282ba6dc16b3b017", size = 4958724, upload-time = "2026-10-01T18:03:21.697Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0d/26/df51322b52ee1ada7eff2d071ea09d11d5c2d1dcc9f02594f5785c4d1635/ruff-0.16.9-py3-none-linux_armv6l.whl", hash = "sha256:95e6f022090368ab3b824c36276839c53b2adf1a3f4c09fefc33dfc400f6da96", size = 10082922, upload-time = "2026-09-24T20:37:13.045Z" },
-    { url = "https://files.pythonhosted.org/packages/a5/27/7bf51f5a7aa375e9f339280a303aab44ca75dc1525f1cdc5991761685b0f/ruff-0.16.9-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:a5f27be168556594a86d2f415db0cf43f5291917849318f873c7e2791f7a8c67", size = 10236360, upload-time = "2026-09-24T20:37:16.049Z" },
-    { url = "https://files.pythonhosted.org/packages/b6/63/09659283f92f02dff45809da194a70da2f688d87c55d8875c4fae3536072/ruff-0.16.9-py3-none-macosx_11_0_arm64.whl", hash = "sha256:1632eb1d6197f33bd00b1acbc5b71009e89a8895c158e2d2b03a834fac964ab6", size = 9892940, upload-time = "2026-09-24T20:37:17.957Z" },
-    { url = "https://files.pythonhosted.org/packages/24/58/98de1b72ec172f5f8f1731236fe21585b3998bf7dfe9fcc44ae9ba626012/ruff-0.16.9-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b3f951b14d865d5952c89d40a5ca07e87abe24fa5453299878411e127748fb1c", size = 10032114, upload-time = "2026-09-24T20:37:19.942Z" },
-    { url = "https://files.pythonhosted.org/packages/c8/7d/f1e17c54ab59d4bad1dce8ee3e22a7a1d0ef4745240decacdcf3832b5bb2/ruff-0.16.9-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:447fc07e1573afff7cb02803462b12b6c8ece7cf10e2cd78565fa6d7a1c0bf8d", size = 9910227, upload-time = "2026-09-24T20:37:21.872Z" },
-    { url = "https://files.pythonhosted.org/packages/34/19/436f647a65075bbd3bab2668b3bdaa5120559b294694018cdcefabbbf30b/ruff-0.16.9-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:8a3e039a6a40ed976c491722b60e0ae4a4aa1a86057f540ee7a37a5d19ae9120", size = 10547484, upload-time = "2026-09-24T20:37:24.229Z" },
-    { url = "https://files.pythonhosted.org/packages/03/59/38430a6bc2f6d8095447ac39625cf8b6e9344a47e6c26225c8ba1bff3ffb/ruff-0.16.9-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:4684dded7db60aa57cb118fa158630f5feade4af5782903b6053484bdf9bd129", size = 11412367, upload-time = "2026-09-24T20:37:26.307Z" },
-    { url = "https://files.pythonhosted.org/packages/c8/bd/bbb6d7fc7f208c8b8c50dd5dc8206e4cfdb1e7a8fb852606a3adf370c880/ruff-0.16.9-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:d29c934357e45642fda2f34c0b1f4025b4a6c01e15e4bf0016879d60078a142c", size = 10869787, upload-time = "2026-09-24T20:37:28.35Z" },
-    { url = "https://files.pythonhosted.org/packages/bc/b8/9c543074918061abbefc3bd139bee22de35abedb00dde0f2d27288838962/ruff-0.16.9-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a21713e629d3e5bdb2f5c2def1cc7f04f47fa8e1a7eb0571b4a28e1da64bc728", size = 10406494, upload-time = "2026-09-24T20:37:30.624Z" },
-    { url = "https://files.pythonhosted.org/packages/35/7a/5a8851bd146e7ccf8fd4b003f6c75c11f8fbdb0e60673b45097986b6bf41/ruff-0.16.9-py3-none-manylinux_2_31_riscv64.whl", hash = "sha256:7baa24ef5fc8e77aa93879e1d3f43754a01ae488e869f1ae30cf431afd4d2452", size = 10590083, upload-time = "2026-09-24T20:37:32.439Z" },
-    { url = "https://files.pythonhosted.org/packages/87/f0/4c3467188f23f806960b46fa76575a7cd0514c9ba90562650b71efc96980/ruff-0.16.9-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:a41aac6230aadfaa133bdfa1614488531ffa3e0837567ae04c0da2058a9c0f9e", size = 10119151, upload-time = "2026-09-24T20:37:34.581Z" },
-    { url = "https://files.pythonhosted.org/packages/15/34/5a4def5adea572ce6aea0bb64f21f928ee317b80e0db747d7979b01d7261/ruff-0.16.9-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:c2529fb5896d49115b0e9aa8f887490b34bbe76baf879ec2264ac59406869ce7", size = 9911544, upload-time = "2026-09-24T20:37:36.796Z" },
-    { url = "https://files.pythonhosted.org/packages/62/5d/d15ebea7499eef9373318c0ee6ca127832927c6529731f6d48e18dce7ca9/ruff-0.16.9-py3-none-musllinux_1_2_i686.whl", hash = "sha256:41e3870277694177429b56406d65dfbdb2c2802c52b715edaf6a0b829c69d4ee", size = 10269884, upload-time = "2026-09-24T20:37:38.857Z" },
-    { url = "https://files.pythonhosted.org/packages/d1/56/c5d3cd119ded7a3c7aba0e961b69cb3df701c91662c98ad694467d060ce1/ruff-0.16.9-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:8adbe4e58af167f767d7b2ba5e83c42e878350796cf78c2f5e14ab9903a92588", size = 10749366, upload-time = "2026-09-24T20:37:41.042Z" },
-    { url = "https://files.pythonhosted.org/packages/ac/fe/734ec7527029ac757ecf821f143c9f3fcf69149c21f53a044a899b430f5a/ruff-0.16.9-py3-none-win32.whl", hash = "sha256:0e1dbc2073624dee6618d41d0098690a7244654af746704b64759e12b6b6b385", size = 10152355, upload-time = "2026-09-24T20:37:43.025Z" },
-    { url = "https://files.pythonhosted.org/packages/14/21/26e4643629b3ebb44f0a06f9c9a53058d63d989415f63a9a3c28e2ee7f22/ruff-0.16.9-py3-none-win_amd64.whl", hash = "sha256:6bd40fec8cd4c8a3d4dd589bd8ad4e6320c13c29234159bfd959a40d529d597b", size = 10592965, upload-time = "2026-09-24T20:37:44.944Z" },
-    { url = "https://files.pythonhosted.org/packages/51/60/5fb1a39dbb5ae314d5f59bc7348a63c1d5c20f3cd83914c4b5cb0be31d2d/ruff-0.16.9-py3-none-win_arm64.whl", hash = "sha256:ed1a252039200f57a59eebc063b54beabea67bfbaaca0eeaa7f54b5fbcda2284", size = 10458649, upload-time = "2026-09-24T20:37:46.882Z" },
+    { url = "https://files.pythonhosted.org/packages/2f/21/ebce22e1d90cdb2cd691026b9c6e9bec6499f0b396089481755b5d49efff/ruff-0.16.10-py3-none-linux_armv6l.whl", hash = "sha256:488b0fe3f3574210e5cf80d9f59b9e3ab17a127a8155de3f307b392589cfb511", size = 10095557, upload-time = "2026-10-01T18:02:36.072Z" },
+    { url = "https://files.pythonhosted.org/packages/cb/98/a54de85876a8b2612bfa0d84c7b9abfb39c6a3354aee7800b09c1649b9e3/ruff-0.16.10-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:e748ff95c934c4e978783b8e687bc174e7bd84e8ad24e3243e1ecfcda5e0282d", size = 10340577, upload-time = "2026-10-01T18:02:39.258Z" },
+    { url = "https://files.pythonhosted.org/packages/9f/16/1a5a4a2657effe4806110f2b907313802f1367fcdbb29e8122766e407fab/ruff-0.16.10-py3-none-macosx_11_0_arm64.whl", hash = "sha256:3031a4a2e8e7b8a46f70be45f198c35a11ece509a94b80334d8d397a33c67550", size = 9774282, upload-time = "2026-10-01T18:02:41.79Z" },
+    { url = "https://files.pythonhosted.org/packages/6e/fb/470085af734da396e68cd80fb0a3e7c109a459716ae59588c0f6fab8a17d/ruff-0.16.10-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:494401c86df4c4c25f69b9419605d944467ee98c42fb6ad405ef4fa40b8fb67d", size = 9920895, upload-time = "2026-10-01T18:02:44.458Z" },
+    { url = "https://files.pythonhosted.org/packages/57/de/f10cffe4f88a37ea6615ec460f01bf76f0bc1477737a35d9ee61a630a78b/ruff-0.16.10-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:d203abc0ff2b773ee33d00ab8df0bb67046fbc7c07b119332f08b9b345cf8221", size = 9902707, upload-time = "2026-10-01T18:02:47.041Z" },
+    { url = "https://files.pythonhosted.org/packages/ff/44/3fdcedf83ae60ef837dd239170e480dce606a9142cfa2db911afdf855fd9/ruff-0.16.10-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:bd83d1235a5258d318477bc5b576303974cbdef5df0c01a1bff14efcc23bd12a", size = 10619287, upload-time = "2026-10-01T18:02:49.485Z" },
+    { url = "https://files.pythonhosted.org/packages/c1/62/02e76a5574002153618eafbb70e159468addc72a5d2c488e65cbb4639d2d/ruff-0.16.10-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:bc2610fb269fa56dd8a68669ae470fa6272902668c0fc2ebc3aa112b2633d5b8", size = 11339942, upload-time = "2026-10-01T18:02:52.008Z" },
+    { url = "https://files.pythonhosted.org/packages/6b/c4/cde27d47ad8d4126c587e608c67c46e7feac11763f606d261a1bc8a489e6/ruff-0.16.10-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:3e70175e29cc94c26ea296c80e470180b744b7419026898e58f520c6ab32578e", size = 10934316, upload-time = "2026-10-01T18:02:54.811Z" },
+    { url = "https://files.pythonhosted.org/packages/e4/03/17234145f302a645a123e8c3bb2411ecf4669fbc350de3b0d803230a1729/ruff-0.16.10-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f33f43a864a8483eebd160e713336c8bab02c934feaff0a33cf5ccb41546d09a", size = 10387968, upload-time = "2026-10-01T18:02:57.497Z" },
+    { url = "https://files.pythonhosted.org/packages/71/29/2493af60240ee7644b38a4b821f5f9c3b5a4fa3178770fe1d0c685217395/ruff-0.16.10-py3-none-manylinux_2_31_riscv64.whl", hash = "sha256:1dfc6f0088149fb6a362c1c446bcbb3fd2157b3852fe2fa68409276eab9ad9b3", size = 10537906, upload-time = "2026-10-01T18:03:00.006Z" },
+    { url = "https://files.pythonhosted.org/packages/2e/9a/f56b28f3b143bb9e518c34fb89ab191b626bca8b70dbf8af0d2e2d473572/ruff-0.16.10-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:6553498afc35f580f036030795810b9e6bcea31604b0fd9e8d352795473042e3", size = 10012938, upload-time = "2026-10-01T18:03:03.006Z" },
+    { url = "https://files.pythonhosted.org/packages/c2/c4/fca37362848ea4d4d80712df13632e645e7c7cfb1bdedf140699ac7a090b/ruff-0.16.10-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:a3b8471dea115d37f123882be852bed13403746d3a76c11de4a19ec5f9ff5a03", size = 9897945, upload-time = "2026-10-01T18:03:05.818Z" },
+    { url = "https://files.pythonhosted.org/packages/7d/c7/e0bc57664d6e0c61fd22f620af260fe9662d7e1ddb320ea7f160e76ef165/ruff-0.16.10-py3-none-musllinux_1_2_i686.whl", hash = "sha256:92e59a70bcbd9d3a5483656da906ec28edfdacfce00afd99edb8b4e9d15644be", size = 10333134, upload-time = "2026-10-01T18:03:08.25Z" },
+    { url = "https://files.pythonhosted.org/packages/21/aa/5c9f3b68737c0e4a33a1db5dfab44f7b786d96ca91a7233112ddab1e6dc2/ruff-0.16.10-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:7ae7375f803b5520dc9f546bed7e3a0acb70b91812e9bb4b19927de22f25b77d", size = 10741702, upload-time = "2026-10-01T18:03:10.775Z" },
+    { url = "https://files.pythonhosted.org/packages/78/fa/0f9c2020dc316c53d983be011720b8157cc052b97e3f4dfa7db6d0f880a6/ruff-0.16.10-py3-none-win32.whl", hash = "sha256:2a12e01cb9156c10c466f63b46eaae5ecea28dfbd21b5836353ae498e7d1349a", size = 10139176, upload-time = "2026-10-01T18:03:13.267Z" },
+    { url = "https://files.pythonhosted.org/packages/99/29/cfb0df9448d4d4ad48c2de029ada9ebd71baa6da983a6c77ee6c6cd0fe82/ruff-0.16.10-py3-none-win_amd64.whl", hash = "sha256:97f2015c92aa97105b0eab19eb5d224884399281cfc5da86a92db4ab5e7fb2ca", size = 10584734, upload-time = "2026-10-01T18:03:16.006Z" },
+    { url = "https://files.pythonhosted.org/packages/fc/05/c16957eb287c3fc062e032619a25868d93d408a844b725bcf514f7a378ff/ruff-0.16.10-py3-none-win_arm64.whl", hash = "sha256:25a65fe998c4e6861ec079ada5826a2fc605e6cbccbe9dcd7fac1f54e791621b", size = 10366440, upload-time = "2026-10-01T18:03:19.04Z" },
 ]
 
 [[package]]
