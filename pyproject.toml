@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-runtime"
-version = "3.24.12"
+version = "3.24.16"
 description = "Plugin system and CLI engine for projects built with pyrig."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -99,7 +99,7 @@ root = "src"
 
 [tool.deptry.per_rule_ignores]
 DEP002 = [
-  "pyrig-runtime",
+  "typer",
 ]
 
 [tool.pytest]
