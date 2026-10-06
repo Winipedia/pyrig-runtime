@@ -121,7 +121,6 @@
     "plugin-discovery",
     "plugin-framework",
     "plugin-system",
-    "pyrig",
     "pyrig-runtime",
     "python-cli",
     "subclass-discovery"
