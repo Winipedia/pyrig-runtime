@@ -2,7 +2,9 @@
 
 import logging
 import sys
+from importlib.metadata import version
 
+import pytest
 import typer
 from pyrig.rig.cli import subcommands as pyrig_subcommands_module
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
@@ -12,7 +14,7 @@ from pyrig_runtime.core.dependencies.distribution import distribution_metadata
 from pyrig_runtime.core.introspection.modules import safe_import_module
 from pyrig_runtime.core.strings import kebab_to_snake_case
 from pyrig_runtime.rig.cli import cli
-from pyrig_runtime.rig.cli.cli import CLI
+from pyrig_runtime.rig.cli.cli import CLI, version_callback
 
 
 class TestCLI:
@@ -32,14 +34,14 @@ class TestCLI:
             "help": PyprojectConfigFile().project_description(),
         }
 
-    def test_register_direct_subcommands(self, mocker: MockerFixture) -> None:
+    def test_register_subcommand_functions(self, mocker: MockerFixture) -> None:
         """Test method."""
         mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
         # fetch the live module: other tests may re-import it into sys.modules,
         # which would make the module-level reference stale for identity checks
         module = safe_import_module(pyrig_subcommands_module.__name__)
         app = CLI.I.base_app()
-        CLI.I.register_direct_subcommands(app=app, module=module)
+        CLI.I.register_subcommand_functions(app=app, module=module)
         commands = {
             getattr(cmd.callback, "__name__")  # noqa: B009
             for cmd in app.registered_commands
@@ -186,23 +188,9 @@ class TestCLI:
         import_module_mock.assert_called_once()
         assert len(app.registered_commands) == 0
 
-    def test_register_shared_subcommands(self, mocker: MockerFixture) -> None:
+    def test_subcommand_groups(self) -> None:
         """Test method."""
-        mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
-
-        app = CLI.I.base_app()
-        CLI.I.register_shared_subcommands(app)
-        # check that version is in the app commands
-        commands = {
-            getattr(cmd.callback, "__name__")  # noqa: B009
-            for cmd in app.registered_commands
-            if cmd.callback is not None
-        }
-        assert {"version"}.issubset(commands)
-
-    def test_module_subcommand_groups(self) -> None:
-        """Test method."""
-        groups = CLI.I.module_subcommand_groups(pyrig_subcommands_module)
+        groups = CLI.I.subcommand_groups(pyrig_subcommands_module)
         assert "mk" in groups
         assert isinstance(groups["mk"], typer.Typer)
 
@@ -222,3 +210,41 @@ class TestCLI:
     def test_merge_key(self) -> None:
         """Test method."""
         assert CLI.I.merge_key() == "CLI"
+
+    def test_version_callback(
+        self,
+        capsys: pytest.CaptureFixture[str],
+        mocker: MockerFixture,
+    ) -> None:
+        """Test method."""
+        mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
+        assert CLI.I.version_callback(value=False) is False
+
+        with pytest.raises(typer.Exit):
+            CLI.I.version_callback(value=True)
+        assert capsys.readouterr().out == f"{version('pyrig-runtime')}\n"
+
+    def test_project_version(self, mocker: MockerFixture) -> None:
+        """Test method."""
+        mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
+        assert CLI.I.project_version() == version("pyrig-runtime")
+
+    def test_subcommand_functions(self) -> None:
+        """Test method."""
+        funcs = {
+            getattr(func, "__name__")  # noqa: B009
+            for func in CLI.I.subcommand_functions(pyrig_subcommands_module)
+        }
+        assert "sync" in funcs
+        assert {"subcls", "cmd", "fixture"}.isdisjoint(funcs)
+
+
+def test_version_callback(mocker: MockerFixture) -> None:
+    """Test function."""
+    mock_version_callback = mocker.patch.object(
+        CLI,
+        CLI.version_callback.__name__,
+        return_value=False,
+    )
+    assert version_callback(value=False) is False
+    mock_version_callback.assert_called_once_with(value=False)

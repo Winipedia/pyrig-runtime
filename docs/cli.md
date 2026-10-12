@@ -51,36 +51,17 @@ The application is built by a `CLI` class, which is itself a
 `my_project.rig.cli.cli` module to override any step of the build — the
 most-derived subclass is used automatically.
 
-## Shared commands
+## Version
 
-A shared command is available in **every** project that depends on pyrig-runtime,
-not just the package that defines it. The built-in `version` command is one: it
-is defined by pyrig-runtime, so every dependent project has it:
+Every project's CLI provides a root-level `--version` option that prints
+the invoking project's installed version and exits successfully:
 
 ```bash
-$ uv run my-project version
+$ uv run my-project --version
 1.2.3
 ```
 
-You can add your own. Define shared commands in your project's
-`my_project.rig.cli.shared_subcommands` module:
-
-```python
-# src/my_project/rig/cli/shared_subcommands.py
-def version2() -> None:
-    """Print the version a different way."""
-    ...
-```
-
-Once `my_project` is installed in an environment, `version2` is available from every
-project in that environment that depends on pyrig-runtime — including
-pyrig-runtime's own CLI and any other dependent project, not only `my_project`:
-
-```bash
-uv run pyrig-runtime version2
-uv run otherproject version2
-```
-
-When two packages define a shared command with the same name, the one registered
-last (in dependency order) wins, so a dependent package can override a built-in.
-This is simply Typer's default behavior.
+The project must be installed. The option is eager: it exits before the normal
+logging callback or command executes, and does not require a subcommand.
+Application construction and plugin discovery still happen before option parsing.
+Override `CLI.project_version()` to customize version lookup.

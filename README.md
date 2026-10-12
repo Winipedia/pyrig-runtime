@@ -66,8 +66,7 @@ dev toolkit; pyrig-runtime is a plugin system and automatic CLI enabler.
 - **Plugin discovery via classes** — define a base class and its subclasses are
   discovered automatically across every installed package that depends on it without
   the need for registration. [Learn more](https://Winipedia.github.io/pyrig-runtime/plugins).
-- **Automatic CLI** — every project gets a working command-line interface,
-  assembled from commands across its dependencies.
+- **Automatic CLI** — every project gets a working command-line interface.
   [Learn more](https://Winipedia.github.io/pyrig-runtime/cli).
 
 ## Documentation

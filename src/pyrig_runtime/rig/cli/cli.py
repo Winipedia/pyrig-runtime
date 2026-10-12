@@ -1,19 +1,15 @@
-"""Typer CLI application builder with cross-package command discovery."""
+"""Typer CLI application builder with extensible command discovery."""
 
 import logging
 import sys
-from collections.abc import Hashable
-from importlib.metadata import distribution
-from itertools import chain
+from collections.abc import Callable, Hashable, Iterator
+from importlib.metadata import distribution, version
 from pathlib import Path
 from types import ModuleType
 from typing import Annotated, Any
 
 import typer
 
-from pyrig_runtime.core.dependencies.discovery import (
-    equivalent_modules_across_dependencies,
-)
 from pyrig_runtime.core.dependencies.distribution import (
     distribution_metadata,
     distribution_summary,
@@ -27,7 +23,12 @@ from pyrig_runtime.core.strings import (
     kebab_to_snake_case,
     snake_to_kebab_case,
 )
-from pyrig_runtime.rig.cli import shared_subcommands, subcommands
+from pyrig_runtime.rig.cli import subcommands
+
+
+def version_callback(*, value: bool) -> bool:
+    """Print the invoking project's version and exit when requested."""
+    return CLI.I.version_callback(value=value)
 
 
 class CLI(DependencySubclass):
@@ -112,11 +113,10 @@ class CLI(DependencySubclass):
         """
         self.register_callback(app)
         self.register_subcommands(app)
-        self.register_shared_subcommands(app)
         return app
 
     def register_callback(self, app: typer.Typer) -> None:
-        """Attach the verbosity callback to the given app.
+        """Attach the version and verbosity options to the given app.
 
         Args:
             app: The Typer app to attach the callback to.
@@ -143,14 +143,46 @@ class CLI(DependencySubclass):
                 help="Decrease verbosity: -q (WARNING), -qq (ERROR), -qqq (CRITICAL)",
             ),
         ] = 0,
+        *,
+        _version: Annotated[
+            bool,
+            typer.Option(
+                "--version",
+                callback=version_callback,
+                is_eager=True,
+                help="Show the version and exit.",
+            ),
+        ] = False,
     ) -> None:
         """Apply the verbosity options for the current invocation.
 
         Args:
             verbose: Number of times verbosity was increased (e.g. via `-v`).
             quiet: Number of times verbosity was decreased (e.g. via `-q`).
+            version: Handled by the eager version option callback.
         """
         self.configure_logging(verbose, quiet)
+
+    def version_callback(self, *, value: bool) -> bool:
+        """Print the invoking project's version and exit when requested.
+
+        Args:
+            value: Whether the version flag was passed.
+
+        Returns:
+            The input value unchanged if version was not requested.
+
+        Raises:
+            typer.Exit: When `value` is `True`, after printing the project version.
+        """
+        if value:
+            typer.echo(self.project_version())
+            raise typer.Exit
+        return value
+
+    def project_version(self) -> str:
+        """Return the installed version of the invoking project."""
+        return version(self.project_name())
 
     def configure_logging(self, verbose: int, quiet: int) -> None:
         """Configure the logging level and format for the current invocation.
@@ -216,7 +248,7 @@ class CLI(DependencySubclass):
         if subcommands_module is None:
             return
 
-        self.register_direct_subcommands(app=app, module=subcommands_module)
+        self.register_subcommand_functions(app=app, module=subcommands_module)
         self.register_subcommand_groups(app=app, module=subcommands_module)
 
     def package_name(self) -> str:
@@ -236,28 +268,11 @@ class CLI(DependencySubclass):
         """
         return Path(sys.argv[0]).stem
 
-    def register_shared_subcommands(self, app: typer.Typer) -> None:
-        """Discover and register shared commands from pyrig-runtime and its dependents.
-
-        Args:
-            app: The Typer app to register the commands onto.
-
-        Note:
-            Commands are registered in dependency order (pyrig-runtime first,
-            then dependent packages in topological order). When two packages
-            define a command with the same name, the last registration takes
-            precedence.
-        """
-        for shared_subcommands_module in chain(
-            (shared_subcommands,),
-            equivalent_modules_across_dependencies(
-                shared_subcommands,
-            ),
-        ):
-            self.register_direct_subcommands(app=app, module=shared_subcommands_module)
-            self.register_subcommand_groups(app=app, module=shared_subcommands_module)
-
-    def register_direct_subcommands(self, app: typer.Typer, module: ModuleType) -> None:
+    def register_subcommand_functions(
+        self,
+        app: typer.Typer,
+        module: ModuleType,
+    ) -> None:
         """Register every function defined in a module as a top-level command.
 
         Adds each function found directly in `module` to `app` as a flat Typer
@@ -267,8 +282,21 @@ class CLI(DependencySubclass):
             app: The Typer app to register the commands onto.
             module: The subcommands module to scan for command functions.
         """
-        for func in module_functions(module):
+        for func in self.subcommand_functions(module):
             app.command()(func)
+
+    def subcommand_functions(self, module: ModuleType) -> Iterator[Callable[..., Any]]:
+        """Return the functions defined directly in a subcommands module.
+
+        Imported functions are excluded.
+
+        Args:
+            module: The subcommands module to scan.
+
+        Returns:
+            Iterator of functions defined directly in the module.
+        """
+        return module_functions(module)
 
     def register_subcommand_groups(self, app: typer.Typer, module: ModuleType) -> None:
         """Register every `typer.Typer` instance in a module as a named command group.
@@ -280,10 +308,10 @@ class CLI(DependencySubclass):
             app: The Typer app to register the command groups onto.
             module: The subcommands module to scan for group instances.
         """
-        for name, group in self.module_subcommand_groups(module).items():
+        for name, group in self.subcommand_groups(module).items():
             app.add_typer(group, name=name)
 
-    def module_subcommand_groups(self, module: ModuleType) -> dict[str, typer.Typer]:
+    def subcommand_groups(self, module: ModuleType) -> dict[str, typer.Typer]:
         """Return the Typer command groups found in a subcommands module.
 
         Scans the module's namespace for `typer.Typer` instances. Both natively

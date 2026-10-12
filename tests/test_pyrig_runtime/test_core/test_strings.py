@@ -11,7 +11,6 @@ from pyrig_runtime.core.strings import (
     regex_find,
     snake_to_kebab_case,
 )
-from pyrig_runtime.rig.cli import shared_subcommands
 
 
 def test_kebab_to_snake_case() -> None:
@@ -32,11 +31,6 @@ def test_snake_to_kebab_case() -> None:
 
 def test_fully_qualified_name() -> None:
     """Test function."""
-    assert (
-        fully_qualified_name(shared_subcommands.version)
-        == "pyrig_runtime.rig.cli.shared_subcommands.version"
-    )
-
     assert (
         fully_qualified_name(DependencySubclass)
         == "pyrig_runtime.core.dependencies.subclass.DependencySubclass"
