@@ -26,9 +26,22 @@ from pyrig_runtime.core.strings import (
 from pyrig_runtime.rig.cli import subcommands
 
 
-def version_callback(*, value: bool) -> bool:
-    """Print the invoking project's version and exit when requested."""
-    return CLI.I.version_callback(value=value)
+def version_callback(*, show: bool) -> bool:
+    """Print the invoking project's version and exit when requested.
+
+    Args:
+        show: Whether to display the project version and exit.
+
+    Returns:
+        The input value unchanged if version was not requested.
+
+    Raises:
+        typer.Exit: When `show` is `True`, after printing the project version.
+    """
+    if show:
+        typer.echo(CLI.I.version())
+        raise typer.Exit
+    return show
 
 
 class CLI(DependencySubclass):
@@ -163,24 +176,7 @@ class CLI(DependencySubclass):
         """
         self.configure_logging(verbose, quiet)
 
-    def version_callback(self, *, value: bool) -> bool:
-        """Print the invoking project's version and exit when requested.
-
-        Args:
-            value: Whether the version flag was passed.
-
-        Returns:
-            The input value unchanged if version was not requested.
-
-        Raises:
-            typer.Exit: When `value` is `True`, after printing the project version.
-        """
-        if value:
-            typer.echo(self.project_version())
-            raise typer.Exit
-        return value
-
-    def project_version(self) -> str:
+    def version(self) -> str:
         """Return the installed version of the invoking project."""
         return version(self.project_name())
 

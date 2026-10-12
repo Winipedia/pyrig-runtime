@@ -211,23 +211,10 @@ class TestCLI:
         """Test method."""
         assert CLI.I.merge_key() == "CLI"
 
-    def test_version_callback(
-        self,
-        capsys: pytest.CaptureFixture[str],
-        mocker: MockerFixture,
-    ) -> None:
+    def test_version(self, mocker: MockerFixture) -> None:
         """Test method."""
         mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
-        assert CLI.I.version_callback(value=False) is False
-
-        with pytest.raises(typer.Exit):
-            CLI.I.version_callback(value=True)
-        assert capsys.readouterr().out == f"{version('pyrig-runtime')}\n"
-
-    def test_project_version(self, mocker: MockerFixture) -> None:
-        """Test method."""
-        mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
-        assert CLI.I.project_version() == version("pyrig-runtime")
+        assert CLI.I.version() == version("pyrig-runtime")
 
     def test_subcommand_functions(self) -> None:
         """Test method."""
@@ -239,12 +226,15 @@ class TestCLI:
         assert {"subcls", "cmd", "fixture"}.isdisjoint(funcs)
 
 
-def test_version_callback(mocker: MockerFixture) -> None:
+def test_version_callback(
+    capsys: pytest.CaptureFixture[str],
+    mocker: MockerFixture,
+) -> None:
     """Test function."""
-    mock_version_callback = mocker.patch.object(
-        CLI,
-        CLI.version_callback.__name__,
-        return_value=False,
-    )
-    assert version_callback(value=False) is False
-    mock_version_callback.assert_called_once_with(value=False)
+    mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
+    assert version_callback(show=False) is False
+    assert capsys.readouterr().out == ""
+
+    with pytest.raises(typer.Exit):
+        version_callback(show=True)
+    assert capsys.readouterr().out == f"{version('pyrig-runtime')}\n"

@@ -64,4 +64,4 @@ $ uv run my-project --version
 The project must be installed. The option is eager: it exits before the normal
 logging callback or command executes, and does not require a subcommand.
 Application construction and plugin discovery still happen before option parsing.
-Override `CLI.project_version()` to customize version lookup.
+Override `CLI.version()` to customize version lookup.
