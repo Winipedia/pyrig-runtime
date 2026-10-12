@@ -159,7 +159,7 @@ class CLI(DependencySubclass):
         Args:
             verbose: Number of times verbosity was increased (e.g. via `-v`).
             quiet: Number of times verbosity was decreased (e.g. via `-q`).
-            version: Handled by the eager version option callback.
+            _version: Handled by the eager version option callback.
         """
         self.configure_logging(verbose, quiet)
 

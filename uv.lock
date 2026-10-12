@@ -878,7 +878,7 @@ wheels = [
 
 [[package]]
 name = "pyrig-runtime"
-version = "3.25.0"
+version = "3.25.3"
 source = { editable = "." }
 dependencies = [
     { name = "typer" },
@@ -916,7 +916,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "typer", specifier = ">=0.27.2" }]
+requires-dist = [{ name = "typer", specifier = ">=0.27.3" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -924,28 +924,28 @@ dev = [
     { name = "bandit", specifier = ">=1.9.4" },
     { name = "deptry", specifier = ">=0.25.1" },
     { name = "detect-secrets", specifier = ">=1.5.0" },
-    { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0.6" },
+    { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0.7" },
     { name = "pre-commit-hooks", specifier = ">=6.0.0" },
-    { name = "prek", specifier = ">=0.5.3" },
-    { name = "pyflakes", specifier = ">=3.4.0" },
-    { name = "pyrig-fixtures", specifier = ">=2.25.3" },
-    { name = "pyrig-opensource", specifier = ">=1.0.0" },
-    { name = "pyrig-pypi", specifier = ">=3.20.28" },
-    { name = "pyrig-runtime-overrides", specifier = ">=2.14.74" },
+    { name = "prek", specifier = ">=0.5.5" },
+    { name = "pyflakes", specifier = ">=4.0.3" },
+    { name = "pyrig-fixtures", specifier = ">=2.26.1" },
+    { name = "pyrig-opensource", specifier = ">=1.2.7" },
+    { name = "pyrig-pypi", specifier = ">=3.21.14" },
+    { name = "pyrig-runtime-overrides", specifier = ">=2.15.36" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
     { name = "pytest-randomly", specifier = ">=5.0.0" },
     { name = "pytest-xdist", specifier = ">=3.8.0" },
-    { name = "ruff", specifier = ">=0.16.8" },
-    { name = "rumdl", specifier = ">=0.2.75" },
-    { name = "ryl", specifier = ">=0.22.0" },
+    { name = "ruff", specifier = ">=0.17.0" },
+    { name = "rumdl", specifier = ">=0.2.79" },
+    { name = "ryl", specifier = ">=0.24.0" },
     { name = "shellcheck-py", specifier = ">=0.11.0.1" },
     { name = "shfmt-py", specifier = ">=4.2.0" },
-    { name = "tombi", specifier = ">=1.5.5" },
-    { name = "ty", specifier = ">=0.0.83" },
-    { name = "typos", specifier = ">=1.50.2" },
+    { name = "tombi", specifier = ">=1.8.4" },
+    { name = "ty", specifier = ">=0.0.86" },
+    { name = "typos", specifier = ">=1.51.1" },
     { name = "vulture", specifier = ">=2.16" },
-    { name = "zensical", specifier = ">=0.0.64" },
+    { name = "zensical", specifier = ">=0.0.70" },
     { name = "zizmor", specifier = ">=1.30.1" },
 ]
 
