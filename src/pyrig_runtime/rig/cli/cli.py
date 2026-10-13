@@ -138,6 +138,16 @@ class CLI(DependencySubclass):
 
     def callback(
         self,
+        *,
+        _version: Annotated[
+            bool,
+            typer.Option(
+                "--version",
+                callback=version_callback,
+                is_eager=True,
+                help="Show the version and exit.",
+            ),
+        ] = False,
         verbose: Annotated[
             int,
             typer.Option(
@@ -156,23 +166,13 @@ class CLI(DependencySubclass):
                 help="Decrease verbosity: -q (WARNING), -qq (ERROR), -qqq (CRITICAL)",
             ),
         ] = 0,
-        *,
-        _version: Annotated[
-            bool,
-            typer.Option(
-                "--version",
-                callback=version_callback,
-                is_eager=True,
-                help="Show the version and exit.",
-            ),
-        ] = False,
     ) -> None:
         """Apply the verbosity options for the current invocation.
 
         Args:
+            _version: Handled by the eager version option callback.
             verbose: Number of times verbosity was increased (e.g. via `-v`).
             quiet: Number of times verbosity was decreased (e.g. via `-q`).
-            _version: Handled by the eager version option callback.
         """
         self.configure_logging(verbose, quiet)
 
