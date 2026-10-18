@@ -4,43 +4,43 @@ import sys
 from functools import cache
 
 from pyrig_runtime.core.introspection.functions import (
-    filter_module_functions,
-    module_functions,
+    filter_module_funcs,
+    module_funcs,
 )
 from pyrig_runtime.core.introspection.inspection import obj_members
 
 
-def some_function() -> None:
+def some_func() -> None:
     """Test function."""
 
 
 @cache
-def some_wrapped_function() -> None:
+def some_wrapped_func() -> None:
     """Test function."""
 
 
-def test_module_functions() -> None:
+def test_module_funcs() -> None:
     """Test function."""
     module = sys.modules[__name__]
-    funcs = tuple(module_functions(module))
+    funcs = tuple(module_funcs(module))
 
     assert set(funcs) == {
-        some_function,
-        some_wrapped_function,
-        test_filter_module_functions,
-        test_module_functions,
+        some_func,
+        some_wrapped_func,
+        test_filter_module_funcs,
+        test_module_funcs,
     }
 
 
-def test_filter_module_functions() -> None:
+def test_filter_module_funcs() -> None:
     """Test function."""
     module = sys.modules[__name__]
     members = obj_members(module)
-    funcs = tuple(filter_module_functions(module, members))
+    funcs = tuple(filter_module_funcs(module, members))
 
     assert set(funcs) == {
-        some_function,
-        some_wrapped_function,
-        test_filter_module_functions,
-        test_module_functions,
+        some_func,
+        some_wrapped_func,
+        test_filter_module_funcs,
+        test_module_funcs,
     }

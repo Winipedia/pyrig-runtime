@@ -67,7 +67,7 @@ def discover_subclasses[T](cls: type[T]) -> tuple[type[T], ...]:
     return tuple(visited)
 
 
-def generate_class[T](
+def generate_cls[T](
     name: str,
     bases: tuple[type[T], ...],
     methods: Iterable[FunctionType] = (),

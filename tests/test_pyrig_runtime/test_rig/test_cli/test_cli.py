@@ -34,14 +34,14 @@ class TestCLI:
             "help": PyprojectConfigFile().project_description(),
         }
 
-    def test_register_subcommand_functions(self, mocker: MockerFixture) -> None:
+    def test_register_subcommand_funcs(self, mocker: MockerFixture) -> None:
         """Test method."""
         mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
         # fetch the live module: other tests may re-import it into sys.modules,
         # which would make the module-level reference stale for identity checks
         module = safe_import_module(pyrig_subcommands_module.__name__)
         app = CLI.I.base_app()
-        CLI.I.register_subcommand_functions(app=app, module=module)
+        CLI.I.register_subcommand_funcs(app=app, module=module)
         commands = {
             getattr(cmd.callback, "__name__")  # noqa: B009
             for cmd in app.registered_commands
@@ -216,11 +216,11 @@ class TestCLI:
         mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
         assert CLI.I.version() == version("pyrig-runtime")
 
-    def test_subcommand_functions(self) -> None:
+    def test_subcommand_funcs(self) -> None:
         """Test method."""
         funcs = {
             getattr(func, "__name__")  # noqa: B009
-            for func in CLI.I.subcommand_functions(pyrig_subcommands_module)
+            for func in CLI.I.subcommand_funcs(pyrig_subcommands_module)
         }
         assert "sync" in funcs
         assert {"subcls", "cmd", "fixture"}.isdisjoint(funcs)

@@ -15,7 +15,7 @@ from pyrig_runtime.core.dependencies.distribution import (
     distribution_summary,
 )
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
-from pyrig_runtime.core.introspection.functions import module_functions
+from pyrig_runtime.core.introspection.functions import module_funcs
 from pyrig_runtime.core.introspection.modules import (
     replace_root_module,
 )
@@ -244,7 +244,7 @@ class CLI(DependencySubclass):
         if subcommands_module is None:
             return
 
-        self.register_subcommand_functions(app=app, module=subcommands_module)
+        self.register_subcommand_funcs(app=app, module=subcommands_module)
         self.register_subcommand_groups(app=app, module=subcommands_module)
 
     def package_name(self) -> str:
@@ -264,7 +264,7 @@ class CLI(DependencySubclass):
         """
         return Path(sys.argv[0]).stem
 
-    def register_subcommand_functions(
+    def register_subcommand_funcs(
         self,
         app: typer.Typer,
         module: ModuleType,
@@ -278,10 +278,10 @@ class CLI(DependencySubclass):
             app: The Typer app to register the commands onto.
             module: The subcommands module to scan for command functions.
         """
-        for func in self.subcommand_functions(module):
+        for func in self.subcommand_funcs(module):
             app.command()(func)
 
-    def subcommand_functions(self, module: ModuleType) -> Iterator[Callable[..., Any]]:
+    def subcommand_funcs(self, module: ModuleType) -> Iterator[Callable[..., Any]]:
         """Return the functions defined directly in a subcommands module.
 
         Imported functions are excluded.
@@ -292,7 +292,7 @@ class CLI(DependencySubclass):
         Returns:
             Iterator of functions defined directly in the module.
         """
-        return module_functions(module)
+        return module_funcs(module)
 
     def register_subcommand_groups(self, app: typer.Typer, module: ModuleType) -> None:
         """Register every `typer.Typer` instance in a module as a named command group.

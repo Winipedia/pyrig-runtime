@@ -5,7 +5,7 @@ import typer
 from pyrig import core as pyrig_core
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
+from pyrig.rig.tests.mirror import MirrorTestConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pytest_mock import MockerFixture
 

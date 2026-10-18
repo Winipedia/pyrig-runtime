@@ -2,15 +2,12 @@
 
 import os
 import sys
-from contextlib import chdir
-from pathlib import Path
 
 import pyrig
 from pyrig import core as pyrig_core
-from pyrig.core.introspection.modules import import_module_with_file_fallback
 
 import pyrig_runtime
-from pyrig_runtime import core
+from pyrig_runtime import core, rig
 from pyrig_runtime.core.introspection.modules import (
     import_modules,
     iter_modules,
@@ -20,6 +17,7 @@ from pyrig_runtime.core.introspection.modules import (
     root_module_name,
     safe_import_module,
 )
+from pyrig_runtime.rig import cli
 from pyrig_runtime.rig.cli import subcommands
 
 
@@ -61,26 +59,13 @@ def test_import_modules() -> None:
     assert modules == (sys, os)
 
 
-def test_iter_modules(tmp_path: Path) -> None:
+def test_iter_modules() -> None:
     """Test function."""
-    # Create a temporary package with known content
-    with chdir(tmp_path):
-        package_dir = tmp_path / test_iter_modules.__name__
-        package_dir.mkdir()
-        init_file = package_dir / "__init__.py"
-        init_file.write_text('"""Test package."""\n')
-        module_file = package_dir / "test_module.py"
-        module_file.write_text('"""Test module."""\n')
-        package = import_module_with_file_fallback(
-            package_dir,
-            name=test_iter_modules.__name__,
-        )
+    modules = tuple(iter_modules(package=rig))
+    assert (cli, True) in modules
 
-        modules = iter_modules(package)
-        modules_names = [m.__name__ for m, _ in modules]
-        assert modules_names == [package.__name__ + ".test_module"], (
-            f"Expected [package.test_module], got {modules}"
-        )
+    cli_modules = tuple(iter_modules(package=cli))
+    assert (subcommands, False) in cli_modules
 
 
 def test_replace_root_module_name() -> None:

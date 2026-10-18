@@ -11,7 +11,7 @@ from pyrig_runtime.core.introspection.inspection import (
 )
 
 
-def module_functions(
+def module_funcs(
     module: ModuleType,
 ) -> Iterator[Callable[..., Any]]:
     """Yield all functions defined directly in a module.
@@ -24,10 +24,10 @@ def module_functions(
     Yields:
         Each function defined in `module`.
     """
-    yield from filter_module_functions(module, obj_members(module))
+    yield from filter_module_funcs(module, obj_members(module))
 
 
-def filter_module_functions(
+def filter_module_funcs(
     module: ModuleType,
     members: Iterable[Any],
 ) -> Iterator[Callable[..., Any]]:

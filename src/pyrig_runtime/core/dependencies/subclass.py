@@ -17,7 +17,7 @@ from pyrig_runtime.core.dependencies.discovery import (
 from pyrig_runtime.core.introspection.classes import (
     filter_concrete_classes,
     filter_leaf_classes,
-    generate_class,
+    generate_cls,
 )
 from pyrig_runtime.core.strings import fully_qualified_name
 
@@ -162,7 +162,7 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
             if len(subclasses) == 1:
                 yield subcls
             else:
-                yield generate_class(
+                yield generate_cls(
                     name=subcls.__name__,
                     bases=tuple(subclasses),
                 )

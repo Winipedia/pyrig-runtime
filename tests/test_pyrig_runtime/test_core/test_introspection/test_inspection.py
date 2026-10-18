@@ -54,7 +54,7 @@ class _TestDeeplyNestedClassMethod:
     @_dec_a
     @_dec_b
     @_dec_c
-    def deeply_nested_class_method(cls) -> str:
+    def deeply_nested_cls_method(cls) -> str:
         return "deeply_nested"
 
     @property
@@ -66,7 +66,7 @@ class _TestDeeplyNestedClassMethod:
         return "static_value"
 
     @classmethod
-    def some_class_method(cls) -> str:
+    def some_cls_method(cls) -> str:
         return "class_value"
 
     @cached_property
@@ -74,28 +74,28 @@ class _TestDeeplyNestedClassMethod:
         return "cached_value"
 
 
-def class_decorator(cls: type["DecoratedClass"]) -> type["DecoratedClass"]:
+def cls_decorator(cls: type["DecoratedClass"]) -> type["DecoratedClass"]:
     """A simple class decorator that adds an attribute to the class."""
 
     class DecoratedClassWrapper(cls):
-        some_class_attr = "decorated"
+        some_cls_attr = "decorated"
 
     return DecoratedClassWrapper
 
 
-@class_decorator
+@cls_decorator
 class DecoratedClass:
     """A class that has been decorated with a class decorator."""
 
-    some_class_attr = "class_value"
+    some_cls_attr = "class_value"
 
 
-def test_unwrap_decorated_class() -> None:
+def test_unwrap_decorated_cls() -> None:
     """Test function."""
     module = sys.modules[__name__]
     obj = inspect.getattr_static(module, "DecoratedClass")
     assert obj.__name__ == "DecoratedClassWrapper"
-    assert obj.some_class_attr == "decorated"
+    assert obj.some_cls_attr == "decorated"
 
     unwrapped_obj = unwrap_obj(obj)
     # unwrapping classes does not really work
@@ -116,22 +116,22 @@ class ClassDecorator:
 
 
 @ClassDecorator
-def class_decorated_function() -> str:
+def cls_decorated_func() -> str:
     """A function that has been decorated with a class decorator."""
     return "decorated_function"
 
 
-def test_unwrap_class_decorated_function() -> None:
+def test_unwrap_cls_decorated_func() -> None:
     """Test function."""
     module = sys.modules[__name__]
-    obj = inspect.getattr_static(module, "class_decorated_function")
+    obj = inspect.getattr_static(module, "cls_decorated_func")
     assert isinstance(obj, ClassDecorator)
     assert obj.__class__.__name__ == "ClassDecorator"
     assert getattr(obj.fget, "some_func_attr", None) == "decorated"
 
     assert obj() == "decorated_function"
     unwrapped_obj = unwrap_obj(obj)
-    assert unwrapped_obj.__name__ == "class_decorated_function"
+    assert unwrapped_obj.__name__ == "cls_decorated_func"
     assert unwrapped_obj() == "decorated_function"
 
 
@@ -143,10 +143,10 @@ def test_unwrap_obj() -> None:
     )
 
     unwrapped_method = unwrap_obj(
-        _TestDeeplyNestedClassMethod.deeply_nested_class_method,
+        _TestDeeplyNestedClassMethod.deeply_nested_cls_method,
     )
-    assert unwrapped_method.__name__ == "deeply_nested_class_method", (
-        f"Expected 'deeply_nested_class_method', got {unwrapped_method.__name__}"
+    assert unwrapped_method.__name__ == "deeply_nested_cls_method", (
+        f"Expected 'deeply_nested_cls_method', got {unwrapped_method.__name__}"
     )
 
     uncalled = inspect.getattr_static(_TestDeeplyNestedClassMethod, "some_property")
@@ -158,7 +158,7 @@ def test_unwrap_obj() -> None:
     )
     assert unwrapped_static_method.__name__ == "some_static_method"
 
-    unwrapped_class_method = unwrap_obj(
-        inspect.getattr_static(_TestDeeplyNestedClassMethod, "some_class_method"),
+    unwrapped_cls_method = unwrap_obj(
+        inspect.getattr_static(_TestDeeplyNestedClassMethod, "some_cls_method"),
     )
-    assert unwrapped_class_method.__name__ == "some_class_method"
+    assert unwrapped_cls_method.__name__ == "some_cls_method"

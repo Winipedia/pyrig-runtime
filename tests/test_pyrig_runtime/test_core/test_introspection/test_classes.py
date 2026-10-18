@@ -9,7 +9,7 @@ from pyrig_runtime.core.introspection.classes import (
     discover_subclasses,
     filter_concrete_classes,
     filter_leaf_classes,
-    generate_class,
+    generate_cls,
 )
 
 
@@ -17,7 +17,7 @@ from pyrig_runtime.core.introspection.classes import (
 class ParentClass:
     """Parent class for testing inheritance."""
 
-    class_var: ClassVar[str] = "parent_class_var"
+    cls_var: ClassVar[str] = "parent_class_var"
 
     def parent_method(self) -> str:
         """Parent method."""
@@ -29,7 +29,7 @@ class ParentClass:
         return "parent_static_method"
 
     @classmethod
-    def parent_class_method(cls) -> str:
+    def parent_cls_method(cls) -> str:
         """Parent class method."""
         return "parent_class_method"
 
@@ -42,7 +42,7 @@ class ParentClass:
 class ChildTestClass(ParentClass):
     """Test class."""
 
-    class_var: ClassVar[str] = "test_class_var"
+    cls_var: ClassVar[str] = "test_class_var"
 
     def instance_method(self) -> str:
         """Instance method."""
@@ -54,7 +54,7 @@ class ChildTestClass(ParentClass):
         return "static_method"
 
     @classmethod
-    def class_method(cls) -> str:
+    def cls_method(cls) -> str:
         """Class method."""
         return "class_method"
 
@@ -202,10 +202,10 @@ def test_filter_concrete_classes() -> None:
     assert set(filter_concrete_classes([])) == set()
 
 
-def test_generate_class() -> None:
+def test_generate_cls() -> None:
     """Test function."""
 
-    # Bases are local and used only in this test: `generate_class` creates
+    # Bases are local and used only in this test: `generate_cls` creates
     # real classes that outlive the test until Python's cyclic garbage
     # collector reclaims them (a class holds itself alive via `__mro__`), so
     # reusing a module-level fixture class here would risk it lingering as a
@@ -213,24 +213,24 @@ def test_generate_class() -> None:
     class Base:
         """Test class."""
 
-    generated = generate_class(name="Generated", bases=(Base,))
+    generated = generate_cls(name="Generated", bases=(Base,))
     assert generated.__name__ == "Generated"
     assert generated.__bases__ == (Base,)
     assert issubclass(generated, Base)
 
     # Attributes come from `namespace`.
-    with_namespace = generate_class(
+    with_namespace = generate_cls(
         name="WithNamespace",
         bases=(Base,),
-        namespace={"class_var": "namespace_value"},
+        namespace={"cls_var": "namespace_value"},
     )
-    assert getattr(with_namespace, "class_var") == "namespace_value"  # noqa: B009
+    assert getattr(with_namespace, "cls_var") == "namespace_value"  # noqa: B009
 
     # Functions passed as `methods` become methods, keyed by their `__name__`.
     def instance_method(self: object) -> str:  # noqa: ARG001
         return "from_methods"
 
-    with_methods = generate_class(
+    with_methods = generate_cls(
         name="WithMethods",
         bases=(Base,),
         methods=[instance_method],
@@ -241,7 +241,7 @@ def test_generate_class() -> None:
     def overriding_method(self: object) -> str:  # noqa: ARG001
         return "overridden"
 
-    overridden = generate_class(
+    overridden = generate_cls(
         name="Overridden",
         bases=(Base,),
         namespace={"overriding_method": "not_a_method"},
@@ -250,11 +250,11 @@ def test_generate_class() -> None:
     assert getattr(overridden(), "overriding_method")() == "overridden"  # noqa: B009
 
     # `__module__` is inferred from the calling context, not from `bases`
-    # or the caller of `generate_class`.
+    # or the caller of `generate_cls`.
     assert generated.__module__ != __name__
 
     # Passing "__module__" in `namespace` sets it explicitly.
-    with_module = generate_class(
+    with_module = generate_cls(
         name="WithModule",
         bases=(Base,),
         namespace={"__module__": __name__},
@@ -276,4 +276,4 @@ def test_generate_class() -> None:
         """Test class."""
 
     with pytest.raises(TypeError):
-        generate_class(name="Impossible", bases=(DiamondRight, DiamondJoin))
+        generate_cls(name="Impossible", bases=(DiamondRight, DiamondJoin))

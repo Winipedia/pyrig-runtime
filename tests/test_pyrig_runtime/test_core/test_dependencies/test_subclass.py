@@ -14,7 +14,7 @@ from pyrig.rig.configs.readme import ReadmeConfigFile
 from pyrig.rig.configs.version_control.remote.workflows.deploy import (
     DeployWorkflowConfigFile,
 )
-from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
+from pyrig.rig.tests.mirror import MirrorTestConfigFile
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig_pypi.rig.configs.version_control.remote.workflows.deploy import (
     DeployWorkflowConfigFile as PyPIDeployWorkflowConfigFile,
