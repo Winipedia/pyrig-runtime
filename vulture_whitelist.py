@@ -6,7 +6,6 @@ from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.rig.cli.main import main
 
 _ENTRY_POINTS = (main,)
-
 _LIBRARY_USAGES = (
     DependencySubclass.__str__,
     DependencySubclass.concrete_leaves,
