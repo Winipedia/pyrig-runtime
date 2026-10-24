@@ -25,44 +25,6 @@ from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.rig.cli.cli import CLI
 
 
-class A(DependencySubclass):
-    """Test class."""
-
-    @classmethod
-    def discovery_module(cls) -> ModuleType:
-        """Return the discovery module."""
-        return rig
-
-    @classmethod
-    def merge_key(cls) -> str:
-        """Return the merge key."""
-        return "merge_key"
-
-
-class B(A):
-    """Test class."""
-
-    __module__ = rig.__name__
-
-
-class C(B):
-    """Test class."""
-
-    __module__ = rig.__name__
-
-
-class D(A):
-    """Test class."""
-
-    __module__ = rig.__name__
-
-
-class E(A):
-    """Test class."""
-
-    __module__ = rig.__name__
-
-
 class TestDependencySubclass:
     """Test class."""
 
@@ -174,3 +136,41 @@ class TestDependencySubclassMeta:
         assert MirrorTestConfigFile.L.L.L is MirrorTestConfigFile.L
         assert DeployWorkflowConfigFile.L is PyPIDeployWorkflowConfigFile
         assert CLI.L is CLI
+
+
+class A(DependencySubclass):
+    """Test class."""
+
+    @classmethod
+    def discovery_module(cls) -> ModuleType:
+        """Return the discovery module."""
+        return rig
+
+    @classmethod
+    def merge_key(cls) -> str:
+        """Return the merge key."""
+        return "merge_key"
+
+
+class B(A):
+    """Test class."""
+
+    __module__ = rig.__name__
+
+
+class D(A):
+    """Test class."""
+
+    __module__ = rig.__name__
+
+
+class E(A):
+    """Test class."""
+
+    __module__ = rig.__name__
+
+
+class C(B):
+    """Test class."""
+
+    __module__ = rig.__name__

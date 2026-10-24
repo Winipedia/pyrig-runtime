@@ -26,11 +26,6 @@ def kebab_to_snake_case(value: str) -> str:
     return value.replace("-", "_")
 
 
-def snake_to_kebab_case(value: str) -> str:
-    """Convert a snake_case string to kebab-case, replacing underscores with hyphens."""
-    return value.replace("_", "-")
-
-
 def regex_find(pattern: re.Pattern[str], text: str) -> str:
     """Return the first captured group from a regex search on the given text.
 
@@ -49,3 +44,8 @@ def regex_find(pattern: re.Pattern[str], text: str) -> str:
         msg = f"No match found for pattern {pattern.pattern} in text."
         raise LookupError(msg)
     return match[1]
+
+
+def snake_to_kebab_case(value: str) -> str:
+    """Convert a snake_case string to kebab-case, replacing underscores with hyphens."""
+    return value.replace("_", "-")

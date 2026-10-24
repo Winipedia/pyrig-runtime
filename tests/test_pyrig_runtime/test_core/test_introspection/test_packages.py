@@ -16,6 +16,14 @@ from pyrig_runtime.core.introspection.packages import (
 from pyrig_runtime.rig.cli import cli
 
 
+def test_is_package() -> None:
+    """Test function."""
+    assert is_package(pyrig_runtime)
+    assert is_package(core)
+    assert not is_package(cli)
+    assert not is_package(packages)
+
+
 def test_register_package_modules(mocker: MockerFixture) -> None:
     """Test function."""
     package = ModuleType(test_register_package_modules.__name__)
@@ -42,11 +50,3 @@ def test_walk_package() -> None:
 
     assert packages in module_types
     assert graph in module_types
-
-
-def test_is_package() -> None:
-    """Test function."""
-    assert is_package(pyrig_runtime)
-    assert is_package(core)
-    assert not is_package(cli)
-    assert not is_package(packages)

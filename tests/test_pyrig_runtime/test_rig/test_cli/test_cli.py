@@ -17,6 +17,20 @@ from pyrig_runtime.rig.cli import cli
 from pyrig_runtime.rig.cli.cli import CLI, version_callback
 
 
+def test_version_callback(
+    capsys: pytest.CaptureFixture[str],
+    mocker: MockerFixture,
+) -> None:
+    """Test function."""
+    mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
+    assert version_callback(show=False) is False
+    assert capsys.readouterr().out == ""
+
+    with pytest.raises(typer.Exit):
+        version_callback(show=True)
+    assert capsys.readouterr().out == f"{version('pyrig-runtime')}\n"
+
+
 class TestCLI:
     """Test class."""
 
@@ -224,17 +238,3 @@ class TestCLI:
         }
         assert "sync" in funcs
         assert {"subcls", "cmd", "fixture"}.isdisjoint(funcs)
-
-
-def test_version_callback(
-    capsys: pytest.CaptureFixture[str],
-    mocker: MockerFixture,
-) -> None:
-    """Test function."""
-    mocker.patch.object(sys, "argv", ["/path/to/pyrig-runtime"])
-    assert version_callback(show=False) is False
-    assert capsys.readouterr().out == ""
-
-    with pytest.raises(typer.Exit):
-        version_callback(show=True)
-    assert capsys.readouterr().out == f"{version('pyrig-runtime')}\n"

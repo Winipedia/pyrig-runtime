@@ -7,6 +7,30 @@ from types import FunctionType
 from typing import Any, cast
 
 
+def discover_subclasses[T](cls: type[T]) -> tuple[type[T], ...]:
+    """Discover all transitive subclasses of `cls` currently loaded in memory.
+
+    Each subclass appears exactly once, even when reachable through multiple
+    inheritance paths. Does not trigger any imports, so only subclasses from
+    already-imported modules are included in the result.
+
+    Args:
+        cls: Base class to find subclasses of.
+
+    Returns:
+        Tuple of all transitive subclass types, excluding `cls` itself.
+    """
+    visited: dict[type[T], None] = {}
+    stack = cls.__subclasses__()
+    while stack:
+        subclass = stack.pop()
+        if subclass in visited:
+            continue
+        visited[subclass] = None
+        stack.extend(subclass.__subclasses__())
+    return tuple(visited)
+
+
 def filter_concrete_classes[T](classes: Iterable[type[T]]) -> Iterator[type[T]]:
     """Filter out abstract classes from a collection.
 
@@ -41,30 +65,6 @@ def filter_leaf_classes[T](
     classes = tuple(classes)
     parents = {parent for cls in classes for parent in cls.__mro__[1:]}
     return filterfalse(parents.__contains__, classes)
-
-
-def discover_subclasses[T](cls: type[T]) -> tuple[type[T], ...]:
-    """Discover all transitive subclasses of `cls` currently loaded in memory.
-
-    Each subclass appears exactly once, even when reachable through multiple
-    inheritance paths. Does not trigger any imports, so only subclasses from
-    already-imported modules are included in the result.
-
-    Args:
-        cls: Base class to find subclasses of.
-
-    Returns:
-        Tuple of all transitive subclass types, excluding `cls` itself.
-    """
-    visited: dict[type[T], None] = {}
-    stack = cls.__subclasses__()
-    while stack:
-        subclass = stack.pop()
-        if subclass in visited:
-            continue
-        visited[subclass] = None
-        stack.extend(subclass.__subclasses__())
-    return tuple(visited)
 
 
 def generate_cls[T](

@@ -85,6 +85,22 @@ def replace_root_module(
     )
 
 
+def root_module(module: ModuleType) -> ModuleType:
+    """Import and return the top-level package of the given module.
+
+    For a module named `"package.subpackage.module"`, the module corresponding
+    to `"package"` is returned. For a top-level module with no dots in its name,
+    the module for that same name is returned.
+
+    Args:
+        module: Module to resolve the root package for.
+
+    Returns:
+        The module corresponding to the first segment of the dotted name.
+    """
+    return import_module(root_module_name(module.__name__))
+
+
 def replace_root_module_name(name: str, root: str) -> str:
     """Return the equivalent module name under a different root package.
 
@@ -122,6 +138,8 @@ def safe_import_module[T](
     default: T,
     exceptions: tuple[type[BaseException], ...] = ...,
 ) -> ModuleType | T: ...
+
+
 def safe_import_module(
     module_name: str,
     package: str | None = None,
@@ -154,22 +172,6 @@ def safe_import_module(
         default=default,
         exceptions=exceptions,
     )
-
-
-def root_module(module: ModuleType) -> ModuleType:
-    """Import and return the top-level package of the given module.
-
-    For a module named `"package.subpackage.module"`, the module corresponding
-    to `"package"` is returned. For a top-level module with no dots in its name,
-    the module for that same name is returned.
-
-    Args:
-        module: Module to resolve the root package for.
-
-    Returns:
-        The module corresponding to the first segment of the dotted name.
-    """
-    return import_module(root_module_name(module.__name__))
 
 
 def root_module_name(name: str) -> str:

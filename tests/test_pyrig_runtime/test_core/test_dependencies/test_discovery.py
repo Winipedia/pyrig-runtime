@@ -22,6 +22,22 @@ from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.rig.cli.cli import CLI
 
 
+def test_dependency_graph() -> None:
+    """Test function."""
+    assert isinstance(dependency_graph(), DependencyGraph)
+    assert dependency_graph() is dependency_graph()
+    assert dependency_graph() is not DependencyGraph()
+    assert "typer" not in dependency_graph().nodes
+    assert pyrig.__name__ in dependency_graph().nodes
+
+
+def test_dependent_packages() -> None:
+    """Test function."""
+    packages = [*dependent_packages(pyrig_runtime), pyrig_runtime]
+    assert pyrig_runtime in packages
+    assert pyrig in packages
+
+
 def test_equivalent_modules_across_dependencies(mocker: MockerFixture) -> None:
     """Test function."""
     # Test getting the same module from all packages depending on pyrig
@@ -59,19 +75,3 @@ def test_subclasses_across_dependencies() -> None:
     AlsoADependencySubclass.__module__ = "not_a_real_dependency.rig"
     subclasses = set(subclasses_across_dependencies(DependencySubclass, rig))
     assert AlsoADependencySubclass in subclasses
-
-
-def test_dependent_packages() -> None:
-    """Test function."""
-    packages = [*dependent_packages(pyrig_runtime), pyrig_runtime]
-    assert pyrig_runtime in packages
-    assert pyrig in packages
-
-
-def test_dependency_graph() -> None:
-    """Test function."""
-    assert isinstance(dependency_graph(), DependencyGraph)
-    assert dependency_graph() is dependency_graph()
-    assert dependency_graph() is not DependencyGraph()
-    assert "typer" not in dependency_graph().nodes
-    assert pyrig.__name__ in dependency_graph().nodes

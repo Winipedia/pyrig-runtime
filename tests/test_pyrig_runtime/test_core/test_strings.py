@@ -13,22 +13,6 @@ from pyrig_runtime.core.strings import (
 )
 
 
-def test_kebab_to_snake_case() -> None:
-    """Test function."""
-    project_name = "test-project"
-    package_name = kebab_to_snake_case(project_name)
-    expected_package_name = "test_project"
-    assert package_name == expected_package_name
-
-
-def test_snake_to_kebab_case() -> None:
-    """Test function."""
-    package_name = "test_project"
-    project_name = snake_to_kebab_case(package_name)
-    expected_project_name = "test-project"
-    assert project_name == expected_project_name
-
-
 def test_fully_qualified_name() -> None:
     """Test function."""
     assert (
@@ -39,6 +23,14 @@ def test_fully_qualified_name() -> None:
     assert fully_qualified_name(DependencySubclass.discovery_module) == (
         "pyrig_runtime.core.dependencies.subclass.DependencySubclass.discovery_module"
     )
+
+
+def test_kebab_to_snake_case() -> None:
+    """Test function."""
+    project_name = "test-project"
+    package_name = kebab_to_snake_case(project_name)
+    expected_package_name = "test_project"
+    assert package_name == expected_package_name
 
 
 def test_regex_find() -> None:
@@ -54,3 +46,11 @@ def test_regex_find() -> None:
 
     with pytest.raises(LookupError):
         regex_find(pattern, "no matching field here")
+
+
+def test_snake_to_kebab_case() -> None:
+    """Test function."""
+    package_name = "test_project"
+    project_name = snake_to_kebab_case(package_name)
+    expected_project_name = "test-project"
+    assert project_name == expected_project_name

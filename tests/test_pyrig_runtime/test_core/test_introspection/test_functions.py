@@ -10,13 +10,18 @@ from pyrig_runtime.core.introspection.functions import (
 from pyrig_runtime.core.introspection.inspection import obj_members
 
 
-def some_func() -> None:
+def test_filter_module_funcs() -> None:
     """Test function."""
+    module = sys.modules[__name__]
+    members = obj_members(module)
+    funcs = tuple(filter_module_funcs(module, members))
 
-
-@cache
-def some_wrapped_func() -> None:
-    """Test function."""
+    assert set(funcs) == {
+        some_func,
+        some_wrapped_func,
+        test_filter_module_funcs,
+        test_module_funcs,
+    }
 
 
 def test_module_funcs() -> None:
@@ -32,15 +37,10 @@ def test_module_funcs() -> None:
     }
 
 
-def test_filter_module_funcs() -> None:
+def some_func() -> None:
     """Test function."""
-    module = sys.modules[__name__]
-    members = obj_members(module)
-    funcs = tuple(filter_module_funcs(module, members))
 
-    assert set(funcs) == {
-        some_func,
-        some_wrapped_func,
-        test_filter_module_funcs,
-        test_module_funcs,
-    }
+
+@cache
+def some_wrapped_func() -> None:
+    """Test function."""

@@ -2,6 +2,7 @@
 
 from graphlib import CycleError
 
+import pyorder
 import pyrig
 import pyrig_codecov
 import pyrig_codeql
@@ -18,13 +19,6 @@ from pyrig_runtime.core.dependencies.graph import DependencyGraph
 from pyrig_runtime.core.graph import DiGraph
 
 
-class MyTestDiGraph(DiGraph):
-    """Test DiGraph."""
-
-    def build(self) -> None:
-        """Simple build method for testing."""
-
-
 class TestDiGraph:
     """Test class."""
 
@@ -34,6 +28,7 @@ class TestDiGraph:
         graph.build()
         deps = graph.sorted_ancestors("typer")
         assert set(deps) == {
+            pyorder.__name__,
             pyrig_runtime.__name__,
             pyrig.__name__,
             pyrig_codeql.__name__,
@@ -272,3 +267,10 @@ class TestDiGraph:
         assert "b" in graph.edges["c"]
         assert "c" in graph.edges["d"]
         assert "unrelated" not in graph.nodes
+
+
+class MyTestDiGraph(DiGraph):
+    """Test DiGraph."""
+
+    def build(self) -> None:
+        """Simple build method for testing."""

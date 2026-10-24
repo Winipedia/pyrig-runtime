@@ -14,116 +14,6 @@ from pyrig_runtime.core.introspection.classes import (
 
 
 # Test classes for cls_methods
-class ParentClass:
-    """Parent class for testing inheritance."""
-
-    cls_var: ClassVar[str] = "parent_class_var"
-
-    def parent_method(self) -> str:
-        """Parent method."""
-        return "parent_method"
-
-    @staticmethod
-    def parent_static_method() -> str:
-        """Parent static method."""
-        return "parent_static_method"
-
-    @classmethod
-    def parent_cls_method(cls) -> str:
-        """Parent class method."""
-        return "parent_class_method"
-
-    @property
-    def parent_property(self) -> str:
-        """Parent property."""
-        return "parent_property"
-
-
-class ChildTestClass(ParentClass):
-    """Test class."""
-
-    cls_var: ClassVar[str] = "test_class_var"
-
-    def instance_method(self) -> str:
-        """Instance method."""
-        return "instance_method"
-
-    @staticmethod
-    def static_method() -> str:
-        """Return a static method value."""
-        return "static_method"
-
-    @classmethod
-    def cls_method(cls) -> str:
-        """Class method."""
-        return "class_method"
-
-    @property
-    def prop(self) -> str:
-        """Property method."""
-        return "property"
-
-    def _private_method(self) -> str:
-        """Private method."""
-        return "private_method"
-
-
-class GrandchildTestClass(ChildTestClass):
-    """Grandchild class for testing multiple levels of inheritance."""
-
-    def grandchild_method(self) -> str:
-        """Grandchild method."""
-        return "grandchild_method"
-
-
-class DiamondBase:
-    """Base of a diamond hierarchy, reachable through two separate branches."""
-
-
-class DiamondLeft(DiamondBase):
-    """Left branch of the diamond, a sibling of `DiamondRight`."""
-
-
-class DiamondRight(DiamondBase):
-    """Right branch of the diamond, a sibling of `DiamondLeft`."""
-
-
-class DiamondJoin(DiamondLeft, DiamondRight):
-    """Joins both diamond branches; reachable from `DiamondBase` twice over."""
-
-
-class AbstractParent(ABC):
-    """Abstract parent class for testing."""
-
-    @abstractmethod
-    def abstract_method(self) -> str:
-        """Abstract method that must be implemented."""
-
-
-class ConcreteChild(AbstractParent):
-    """Concrete implementation of AbstractParent."""
-
-    def __init__(self) -> None:
-        """Initialize ConcreteChild."""
-        super().__init__()
-
-    def abstract_method(self) -> str:
-        """Implement the abstract method."""
-        return "concrete_implementation"
-
-
-class AnotherAbstractChild(AbstractParent):
-    """Another abstract child that doesn't implement the method."""
-
-    @abstractmethod
-    def another_abstract_method(self) -> str:
-        """Another abstract method."""
-
-
-class Unrelated:
-    """A plain class with no relation to any other class in this module."""
-
-
 def test_discover_subclasses() -> None:
     """Test func."""
     # Test with ParentClass - should find TestClass as subclass
@@ -150,6 +40,19 @@ def test_discover_subclasses_multiple_inheritance() -> None:
     assert discover_subclasses(DiamondLeft) == (DiamondJoin,)
     assert discover_subclasses(DiamondRight) == (DiamondJoin,)
     assert discover_subclasses(DiamondJoin) == ()
+
+
+def test_filter_concrete_classes() -> None:
+    """Test function."""
+    assert set(
+        filter_concrete_classes([AbstractParent, ConcreteChild, AnotherAbstractChild]),
+    ) == {ConcreteChild}
+
+    # An ordinary, non-ABC class is never considered abstract.
+    assert set(filter_concrete_classes([Unrelated])) == {Unrelated}
+
+    # An empty collection stays empty.
+    assert set(filter_concrete_classes([])) == set()
 
 
 def test_filter_leaf_classes() -> None:
@@ -187,19 +90,6 @@ def test_filter_leaf_classes() -> None:
         Unrelated,
         GrandchildTestClass,
     }
-
-
-def test_filter_concrete_classes() -> None:
-    """Test function."""
-    assert set(
-        filter_concrete_classes([AbstractParent, ConcreteChild, AnotherAbstractChild]),
-    ) == {ConcreteChild}
-
-    # An ordinary, non-ABC class is never considered abstract.
-    assert set(filter_concrete_classes([Unrelated])) == {Unrelated}
-
-    # An empty collection stays empty.
-    assert set(filter_concrete_classes([])) == set()
 
 
 def test_generate_cls() -> None:
@@ -277,3 +167,113 @@ def test_generate_cls() -> None:
 
     with pytest.raises(TypeError):
         generate_cls(name="Impossible", bases=(DiamondRight, DiamondJoin))
+
+
+class AbstractParent(ABC):
+    """Abstract parent class for testing."""
+
+    @abstractmethod
+    def abstract_method(self) -> str:
+        """Abstract method that must be implemented."""
+
+
+class DiamondBase:
+    """Base of a diamond hierarchy, reachable through two separate branches."""
+
+
+class ParentClass:
+    """Parent class for testing inheritance."""
+
+    cls_var: ClassVar[str] = "parent_class_var"
+
+    def parent_method(self) -> str:
+        """Parent method."""
+        return "parent_method"
+
+    @staticmethod
+    def parent_static_method() -> str:
+        """Parent static method."""
+        return "parent_static_method"
+
+    @classmethod
+    def parent_cls_method(cls) -> str:
+        """Parent class method."""
+        return "parent_class_method"
+
+    @property
+    def parent_property(self) -> str:
+        """Parent property."""
+        return "parent_property"
+
+
+class Unrelated:
+    """A plain class with no relation to any other class in this module."""
+
+
+class AnotherAbstractChild(AbstractParent):
+    """Another abstract child that doesn't implement the method."""
+
+    @abstractmethod
+    def another_abstract_method(self) -> str:
+        """Another abstract method."""
+
+
+class ChildTestClass(ParentClass):
+    """Test class."""
+
+    cls_var: ClassVar[str] = "test_class_var"
+
+    def instance_method(self) -> str:
+        """Instance method."""
+        return "instance_method"
+
+    @staticmethod
+    def static_method() -> str:
+        """Return a static method value."""
+        return "static_method"
+
+    @classmethod
+    def cls_method(cls) -> str:
+        """Class method."""
+        return "class_method"
+
+    @property
+    def prop(self) -> str:
+        """Property method."""
+        return "property"
+
+    def _private_method(self) -> str:
+        """Private method."""
+        return "private_method"
+
+
+class ConcreteChild(AbstractParent):
+    """Concrete implementation of AbstractParent."""
+
+    def __init__(self) -> None:
+        """Initialize ConcreteChild."""
+        super().__init__()
+
+    def abstract_method(self) -> str:
+        """Implement the abstract method."""
+        return "concrete_implementation"
+
+
+class DiamondLeft(DiamondBase):
+    """Left branch of the diamond, a sibling of `DiamondRight`."""
+
+
+class DiamondRight(DiamondBase):
+    """Right branch of the diamond, a sibling of `DiamondLeft`."""
+
+
+class DiamondJoin(DiamondLeft, DiamondRight):
+    """Joins both diamond branches; reachable from `DiamondBase` twice over."""
+
+
+class GrandchildTestClass(ChildTestClass):
+    """Grandchild class for testing multiple levels of inheritance."""
+
+    def grandchild_method(self) -> str:
+        """Grandchild method."""
+        return "grandchild_method"
