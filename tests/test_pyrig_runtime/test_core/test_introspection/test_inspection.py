@@ -14,7 +14,7 @@ from pyrig_runtime.core.introspection.inspection import (
 def cls_decorator(cls: type["DecoratedClass"]) -> type["DecoratedClass"]:
     """A simple class decorator that adds an attribute to the class."""
 
-    class DecoratedClassWrapper(cls):
+    class DecoratedClassWrapper(cls):  # ty: ignore[unsupported-base]
         some_cls_attr = "decorated"
 
     return DecoratedClassWrapper
