@@ -2,6 +2,7 @@
 
 import importlib.metadata
 from collections.abc import Iterator
+from typing import override
 
 from pyrig_runtime.core.dependencies.distribution import (
     distribution_header,
@@ -24,6 +25,7 @@ class DependencyGraph(DiGraph):
     Call `build` to scan every installed distribution and populate the graph.
     """
 
+    @override
     def build(self) -> None:
         """Build the graph from installed Python distributions.
 

@@ -113,14 +113,6 @@ class _TestDeeplyNestedClassMethod:
     def deeply_nested_cls_method(cls) -> str:
         return "deeply_nested"
 
-    @property
-    def some_property(self) -> str:
-        return "property_value"
-
-    @staticmethod
-    def some_static_method() -> str:
-        return "static_value"
-
     @classmethod
     def some_cls_method(cls) -> str:
         return "class_value"
@@ -128,3 +120,11 @@ class _TestDeeplyNestedClassMethod:
     @cached_property
     def some_cached_property(self) -> str:
         return "cached_value"
+
+    @property
+    def some_property(self) -> str:
+        return "property_value"
+
+    @staticmethod
+    def some_static_method() -> str:
+        return "static_value"

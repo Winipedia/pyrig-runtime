@@ -6,7 +6,7 @@ from collections.abc import Callable, Hashable, Iterator
 from importlib.metadata import distribution, version
 from pathlib import Path
 from types import ModuleType
-from typing import Annotated, Any
+from typing import Annotated, Any, override
 
 import typer
 
@@ -53,11 +53,13 @@ class CLI(DependencySubclass):
     """
 
     @classmethod
+    @override
     def discovery_module(cls) -> ModuleType:
         """Return this module, keeping subclass discovery scoped to it alone."""
         return sys.modules[__name__]
 
     @classmethod
+    @override
     def merge_key(cls) -> Hashable:
         """Return a constant merge key.
 
@@ -72,6 +74,10 @@ class CLI(DependencySubclass):
         """Build and invoke the Typer application."""
         self.app()()
 
+    def version(self) -> str:
+        """Return the installed version of the invoking project."""
+        return version(self.project_name())
+
     def app(self) -> typer.Typer:
         """Build a fully configured Typer application."""
         app = self.base_app()
@@ -85,6 +91,19 @@ class CLI(DependencySubclass):
             arguments.
         """
         return typer.Typer(**self.base_app_kwargs())
+
+    def build_app(self, app: typer.Typer) -> typer.Typer:
+        """Register the callback and all commands onto the given app.
+
+        Args:
+            app: The Typer app to populate.
+
+        Returns:
+            The same app instance, now fully configured.
+        """
+        self.register_callback(app)
+        self.register_subcommands(app)
+        return app
 
     def base_app_kwargs(self) -> dict[str, Any]:
         """Return keyword arguments for creating the base Typer application.
@@ -101,33 +120,6 @@ class CLI(DependencySubclass):
             "help": self.help_text(),
         }
 
-    def help_text(self) -> str:
-        """Return the help text for the invoking project.
-
-        Returns:
-            The project's distribution summary, or an empty string if no
-            metadata is available for it.
-        """
-        metadata = distribution_metadata(
-            distribution(self.project_name()),
-        )
-        if metadata is None:
-            return ""
-        return distribution_summary(metadata)
-
-    def build_app(self, app: typer.Typer) -> typer.Typer:
-        """Register the callback and all commands onto the given app.
-
-        Args:
-            app: The Typer app to populate.
-
-        Returns:
-            The same app instance, now fully configured.
-        """
-        self.register_callback(app)
-        self.register_subcommands(app)
-        return app
-
     def register_callback(self, app: typer.Typer) -> None:
         """Attach the version and verbosity options to the given app.
 
@@ -135,6 +127,31 @@ class CLI(DependencySubclass):
             app: The Typer app to attach the callback to.
         """
         app.callback()(self.callback)
+
+    def register_subcommands(self, app: typer.Typer) -> None:
+        """Discover and register project-specific commands for the invoking project.
+
+        Any dependent project can define its own CLI commands by adding
+        functions or `typer.Typer` groups to `<package>.rig.cli.subcommands`.
+
+        Args:
+            app: The Typer app to register the commands onto.
+
+        Note:
+            If the invoking project's subcommands module cannot be imported,
+            registration is silently skipped.
+        """
+        subcommands_module = replace_root_module(
+            subcommands,
+            root=self.package_name(),
+            default=None,
+        )
+
+        if subcommands_module is None:
+            return
+
+        self.register_subcommand_funcs(app=app, module=subcommands_module)
+        self.register_subcommand_groups(app=app, module=subcommands_module)
 
     def callback(
         self,
@@ -176,9 +193,57 @@ class CLI(DependencySubclass):
         """
         self.configure_logging(verbose, quiet)
 
-    def version(self) -> str:
-        """Return the installed version of the invoking project."""
-        return version(self.project_name())
+    def help_text(self) -> str:
+        """Return the help text for the invoking project.
+
+        Returns:
+            The project's distribution summary, or an empty string if no
+            metadata is available for it.
+        """
+        metadata = distribution_metadata(
+            distribution(self.project_name()),
+        )
+        if metadata is None:
+            return ""
+        return distribution_summary(metadata)
+
+    def package_name(self) -> str:
+        """Return the snake_case package name of the invoking project.
+
+        For example, if the project is invoked as `uv run my-project`, the
+        package name is `my_project`.
+        """
+        return kebab_to_snake_case(self.project_name())
+
+    def register_subcommand_funcs(
+        self,
+        app: typer.Typer,
+        module: ModuleType,
+    ) -> None:
+        """Register every function defined in a module as a top-level command.
+
+        Adds each function found directly in `module` to `app` as a flat Typer
+        command. Imported functions are excluded.
+
+        Args:
+            app: The Typer app to register the commands onto.
+            module: The subcommands module to scan for command functions.
+        """
+        for func in self.subcommand_funcs(module):
+            app.command()(func)
+
+    def register_subcommand_groups(self, app: typer.Typer, module: ModuleType) -> None:
+        """Register every `typer.Typer` instance in a module as a named command group.
+
+        Attaches each `typer.Typer` found in the module's namespace to `app`,
+        using the kebab-case form of the attribute name as the group name.
+
+        Args:
+            app: The Typer app to register the command groups onto.
+            module: The subcommands module to scan for group instances.
+        """
+        for name, group in self.subcommand_groups(module).items():
+            app.add_typer(group, name=name)
 
     def configure_logging(self, verbose: int, quiet: int) -> None:
         """Configure the logging level and format for the current invocation.
@@ -222,39 +287,6 @@ class CLI(DependencySubclass):
 
         logging.basicConfig(level=level, format=fmt, force=True)
 
-    def register_subcommands(self, app: typer.Typer) -> None:
-        """Discover and register project-specific commands for the invoking project.
-
-        Any dependent project can define its own CLI commands by adding
-        functions or `typer.Typer` groups to `<package>.rig.cli.subcommands`.
-
-        Args:
-            app: The Typer app to register the commands onto.
-
-        Note:
-            If the invoking project's subcommands module cannot be imported,
-            registration is silently skipped.
-        """
-        subcommands_module = replace_root_module(
-            subcommands,
-            root=self.package_name(),
-            default=None,
-        )
-
-        if subcommands_module is None:
-            return
-
-        self.register_subcommand_funcs(app=app, module=subcommands_module)
-        self.register_subcommand_groups(app=app, module=subcommands_module)
-
-    def package_name(self) -> str:
-        """Return the snake_case package name of the invoking project.
-
-        For example, if the project is invoked as `uv run my-project`, the
-        package name is `my_project`.
-        """
-        return kebab_to_snake_case(self.project_name())
-
     def project_name(self) -> str:
         """Return the stem of `sys.argv[0]` as the invoking project name.
 
@@ -263,23 +295,6 @@ class CLI(DependencySubclass):
         its stem is the project name as it was registered.
         """
         return Path(sys.argv[0]).stem
-
-    def register_subcommand_funcs(
-        self,
-        app: typer.Typer,
-        module: ModuleType,
-    ) -> None:
-        """Register every function defined in a module as a top-level command.
-
-        Adds each function found directly in `module` to `app` as a flat Typer
-        command. Imported functions are excluded.
-
-        Args:
-            app: The Typer app to register the commands onto.
-            module: The subcommands module to scan for command functions.
-        """
-        for func in self.subcommand_funcs(module):
-            app.command()(func)
 
     def subcommand_funcs(self, module: ModuleType) -> Iterator[Callable[..., Any]]:
         """Return the functions defined directly in a subcommands module.
@@ -293,19 +308,6 @@ class CLI(DependencySubclass):
             Iterator of functions defined directly in the module.
         """
         return module_funcs(module)
-
-    def register_subcommand_groups(self, app: typer.Typer, module: ModuleType) -> None:
-        """Register every `typer.Typer` instance in a module as a named command group.
-
-        Attaches each `typer.Typer` found in the module's namespace to `app`,
-        using the kebab-case form of the attribute name as the group name.
-
-        Args:
-            app: The Typer app to register the command groups onto.
-            module: The subcommands module to scan for group instances.
-        """
-        for name, group in self.subcommand_groups(module).items():
-            app.add_typer(group, name=name)
 
     def subcommand_groups(self, module: ModuleType) -> dict[str, typer.Typer]:
         """Return the Typer command groups found in a subcommands module.

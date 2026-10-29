@@ -1,6 +1,7 @@
 """tests module."""
 
 from graphlib import CycleError
+from typing import override
 
 import pyorder
 import pyrig
@@ -22,41 +23,23 @@ from pyrig_runtime.core.graph import DiGraph
 class TestDiGraph:
     """Test class."""
 
-    def test_sorted_ancestors(self) -> None:
-        """Test method."""
-        graph = DependencyGraph()
-        graph.build()
-        deps = graph.sorted_ancestors("typer")
-        assert set(deps) == {
-            pyorder.__name__,
-            pyrig_runtime.__name__,
-            pyrig.__name__,
-            pyrig_codeql.__name__,
-            pyrig_codecov.__name__,
-            pyrig_fixtures.__name__,
-            pyrig_pypi.__name__,
-            pyrig_runtime_overrides.__name__,
-            pyrig_public.__name__,
-            pyrig_opensource.__name__,
-            pyrig_openssf.__name__,
-        }
-
-        # every dependency must appear before its dependent
-        position = {node: index for index, node in enumerate(deps)}
-        for node in deps:
-            for dependency in graph.edges[node] & set(deps):
-                assert position[dependency] < position[node]
-
-    def test_build(self) -> None:
-        """Test method."""
-        graph = MyTestDiGraph()
-        # assert all empty
-        assert len(graph.nodes) == 0
-
     def test___init__(self) -> None:
         """Test DiGraph initialization creates empty graph."""
         graph = MyTestDiGraph()
         assert len(graph.nodes) == 0
+
+    def test_add_edge(self) -> None:
+        """Test adding edges to the graph."""
+        graph = MyTestDiGraph()
+        graph.add_edge("a", "b")
+
+        # Nodes should be created automatically
+        assert "a" in graph.nodes
+        assert "b" in graph.nodes
+
+        # Edge should exist
+        assert "b" in graph.edges["a"]
+        assert "a" not in graph.edges["b"]
 
     def test_add_node(self) -> None:
         """Test adding nodes to the graph."""
@@ -71,19 +54,6 @@ class TestDiGraph:
         # Adding same node twice should not duplicate
         graph.add_node("a")
         assert len(graph.nodes) == 2  # noqa: PLR2004
-
-    def test_add_edge(self) -> None:
-        """Test adding edges to the graph."""
-        graph = MyTestDiGraph()
-        graph.add_edge("a", "b")
-
-        # Nodes should be created automatically
-        assert "a" in graph.nodes
-        assert "b" in graph.nodes
-
-        # Edge should exist
-        assert "b" in graph.edges["a"]
-        assert "a" not in graph.edges["b"]  # directed graph
 
     def test_ancestors(self) -> None:
         """Test finding all ancestors of a node."""
@@ -108,6 +78,19 @@ class TestDiGraph:
         with pytest.raises(KeyError):
             graph.ancestors("x")
 
+    def test_ancestors_with_already_visited_neighbor(self) -> None:
+        """Test ancestors when a neighbor is encountered after being visited."""
+        graph = MyTestDiGraph()
+        # c -> a -> b -> target and c -> target.
+        # When traversing from a's reverse edges we hit c, which is already
+        # visited via the direct edge from target.
+        graph.add_edge("b", "target")
+        graph.add_edge("c", "target")
+        graph.add_edge("a", "b")
+        graph.add_edge("c", "a")
+
+        assert graph.ancestors("target") == {"a", "b", "c"}  # directed graph
+
     def test_ancestors_with_diamond_dependency(self) -> None:
         """Test ancestors when a common ancestor is reachable via two paths."""
         graph = MyTestDiGraph()
@@ -121,89 +104,11 @@ class TestDiGraph:
 
         assert graph.ancestors("target") == {"a", "b", "c"}
 
-    def test_ancestors_with_already_visited_neighbor(self) -> None:
-        """Test ancestors when a neighbor is encountered after being visited."""
+    def test_build(self) -> None:
+        """Test method."""
         graph = MyTestDiGraph()
-        # c -> a -> b -> target and c -> target.
-        # When traversing from a's reverse edges we hit c, which is already
-        # visited via the direct edge from target.
-        graph.add_edge("b", "target")
-        graph.add_edge("c", "target")
-        graph.add_edge("a", "b")
-        graph.add_edge("c", "a")
-
-        assert graph.ancestors("target") == {"a", "b", "c"}
-
-    def test_topological_sort_subgraph(self) -> None:
-        """Test topological sorting of a subgraph."""
-        graph = MyTestDiGraph()
-        # Build graph: pyrig <- package1 <- package2
-        # (package2 depends on package1, package1 depends on pyrig)
-        graph.add_edge("package2", "package1")
-        graph.add_edge("package1", "pyrig")
-
-        # Sort should give: pyrig, package1, package2 (dependencies first)
-        result = list(
-            graph.topological_sort_subgraph({"pyrig", "package1", "package2"}),
-        )
-        assert result == ["pyrig", "package1", "package2"]
-
-        # Test with more complex graph
-        graph2 = MyTestDiGraph()
-        # a <- b <- d
-        # a <- c <- d
-        # (d depends on both b and c, both depend on a)
-        graph2.add_edge("b", "a")
-        graph2.add_edge("c", "a")
-        graph2.add_edge("d", "b")
-        graph2.add_edge("d", "c")
-
-        result2 = list(graph2.topological_sort_subgraph({"a", "b", "c", "d"}))
-        # a must come first, d must come last
-        assert result2[0] == "a"
-        assert result2[-1] == "d"
-        # b and c can be in any order, but both before d
-        assert result2.index("b") < result2.index("d")
-        assert result2.index("c") < result2.index("d")
-
-    def test_topological_sort_subgraph_with_cycle(self) -> None:
-        """Test that topological sort raises error on cycles."""
-        graph = MyTestDiGraph()
-        # Create a cycle: a -> b -> c -> a
-        graph.add_edge("a", "b")
-        graph.add_edge("b", "c")
-        graph.add_edge("c", "a")
-
-        with pytest.raises(CycleError):
-            list(graph.topological_sort_subgraph({"a", "b", "c"}))
-
-    def test_topological_sort_subgraph_empty(self) -> None:
-        """Test topological sort with empty set."""
-        graph = MyTestDiGraph()
-        graph.add_edge("a", "b")
-
-        result = list(graph.topological_sort_subgraph(set()))
-        assert result == []
-
-    def test_topological_sort_subgraph_single_node(self) -> None:
-        """Test topological sort with single node."""
-        graph = MyTestDiGraph()
-        graph.add_node("a")
-
-        result = list(graph.topological_sort_subgraph({"a"}))
-        assert result == ["a"]
-
-    def test_topological_sort_subgraph_ignores_dependents_outside_subset(
-        self,
-    ) -> None:
-        """Test that reverse edges to nodes outside the subset are ignored."""
-        graph = MyTestDiGraph()
-        # outsider depends on b (outsider -> b). When sorting just {b}, the
-        # reverse-edge iteration finds outsider but it is not in the subset.
-        graph.add_edge("outsider", "b")
-
-        result = list(graph.topological_sort_subgraph({"b"}))
-        assert result == ["b"]
+        # assert all empty
+        assert len(graph.nodes) == 0
 
     def test_prune(self) -> None:
         """Test that prune keeps only root and its ancestors."""
@@ -268,9 +173,106 @@ class TestDiGraph:
         assert "c" in graph.edges["d"]
         assert "unrelated" not in graph.nodes
 
+    def test_sorted_ancestors(self) -> None:
+        """Test method."""
+        graph = DependencyGraph()
+        graph.build()
+        deps = graph.sorted_ancestors("typer")
+        assert set(deps) == {
+            pyorder.__name__,
+            pyrig_runtime.__name__,
+            pyrig.__name__,
+            pyrig_codeql.__name__,
+            pyrig_codecov.__name__,
+            pyrig_fixtures.__name__,
+            pyrig_pypi.__name__,
+            pyrig_runtime_overrides.__name__,
+            pyrig_public.__name__,
+            pyrig_opensource.__name__,
+            pyrig_openssf.__name__,
+        }
+
+        # every dependency must appear before its dependent
+        position = {node: index for index, node in enumerate(deps)}
+        for node in deps:
+            for dependency in graph.edges[node] & set(deps):
+                assert position[dependency] < position[node]
+
+    def test_topological_sort_subgraph(self) -> None:
+        """Test topological sorting of a subgraph."""
+        graph = MyTestDiGraph()
+        # Build graph: pyrig <- package1 <- package2
+        # (package2 depends on package1, package1 depends on pyrig)
+        graph.add_edge("package2", "package1")
+        graph.add_edge("package1", "pyrig")
+
+        # Sort should give: pyrig, package1, package2 (dependencies first)
+        result = list(
+            graph.topological_sort_subgraph({"pyrig", "package1", "package2"}),
+        )
+        assert result == ["pyrig", "package1", "package2"]
+
+        # Test with more complex graph
+        graph2 = MyTestDiGraph()
+        # a <- b <- d
+        # a <- c <- d
+        # (d depends on both b and c, both depend on a)
+        graph2.add_edge("b", "a")
+        graph2.add_edge("c", "a")
+        graph2.add_edge("d", "b")
+        graph2.add_edge("d", "c")
+
+        result2 = list(graph2.topological_sort_subgraph({"a", "b", "c", "d"}))
+        # a must come first, d must come last
+        assert result2[0] == "a"
+        assert result2[-1] == "d"
+        # b and c can be in any order, but both before d
+        assert result2.index("b") < result2.index("d")
+        assert result2.index("c") < result2.index("d")
+
+    def test_topological_sort_subgraph_empty(self) -> None:
+        """Test topological sort with empty set."""
+        graph = MyTestDiGraph()
+        graph.add_edge("a", "b")
+
+        result = list(graph.topological_sort_subgraph(set()))
+        assert result == []
+
+    def test_topological_sort_subgraph_ignores_dependents_outside_subset(
+        self,
+    ) -> None:
+        """Test that reverse edges to nodes outside the subset are ignored."""
+        graph = MyTestDiGraph()
+        # outsider depends on b (outsider -> b). When sorting just {b}, the
+        # reverse-edge iteration finds outsider but it is not in the subset.
+        graph.add_edge("outsider", "b")
+
+        result = list(graph.topological_sort_subgraph({"b"}))
+        assert result == ["b"]
+
+    def test_topological_sort_subgraph_single_node(self) -> None:
+        """Test topological sort with single node."""
+        graph = MyTestDiGraph()
+        graph.add_node("a")
+
+        result = list(graph.topological_sort_subgraph({"a"}))
+        assert result == ["a"]
+
+    def test_topological_sort_subgraph_with_cycle(self) -> None:
+        """Test that topological sort raises error on cycles."""
+        graph = MyTestDiGraph()
+        # Create a cycle: a -> b -> c -> a
+        graph.add_edge("a", "b")
+        graph.add_edge("b", "c")
+        graph.add_edge("c", "a")
+
+        with pytest.raises(CycleError):
+            list(graph.topological_sort_subgraph({"a", "b", "c"}))
+
 
 class MyTestDiGraph(DiGraph):
     """Test DiGraph."""
 
+    @override
     def build(self) -> None:
         """Simple build method for testing."""

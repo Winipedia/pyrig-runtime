@@ -25,6 +25,10 @@ from pyrig_runtime.core.strings import fully_qualified_name
 class DependencySubclassMeta(ABCMeta):
     """Metaclass backing `DependencySubclass` with the cached `I`/`L` properties."""
 
+    def __str__(cls) -> str:
+        """Return the fully qualified name of this class."""
+        return fully_qualified_name(cls)
+
     @property
     def I[C: DependencySubclass](cls: type[C]) -> C:  # noqa: E743, N802
         """Return a cached instance of `L`.
@@ -60,10 +64,6 @@ class DependencySubclassMeta(ABCMeta):
             cls._leaf = cls.leaf()
         return cls._leaf
 
-    def __str__(cls) -> str:
-        """Return the fully qualified name of this class."""
-        return fully_qualified_name(cls)
-
 
 class DependencySubclass(metaclass=DependencySubclassMeta):
     """Abstract base enabling plugin-style subclass discovery across installed packages.
@@ -98,6 +98,10 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
             or one of its installed dependents; otherwise discovery fails.
         """
         return rig
+
+    def __str__(self) -> str:
+        """Return the fully qualified name of this instance's class."""
+        return str(self.__class__)
 
     @classmethod
     def concrete_leaves(cls) -> Iterator[type[Self]]:
@@ -137,68 +141,6 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
         return next(cls.leaves(), cls)
 
     @classmethod
-    def leaves(cls) -> Iterator[type[Self]]:
-        """Yield leaf subclasses discovered within the declared discovery scope.
-
-        Only leaf-level subclasses are considered; any intermediate parent
-        classes that also appear in the result are omitted. The remaining leaves
-        are grouped by `merge_key()`: a group with a single leaf is yielded as-is,
-        while a group with several leaves is combined into one newly generated subclass
-        inheriting from every leaf in that group, letting independently-installed
-        packages cooperatively extend the same class by sharing a merge key.
-
-        Yields:
-            Leaf subclass types, one per distinct `merge_key()` value.
-
-        Raises:
-            TypeError: If the leaves within a merge key group cannot be
-                combined into a single class.
-        """
-        by_merge_key: dict[Hashable, list[type[Self]]] = defaultdict(list)
-        for subclass in filter_leaf_classes(cls.subclasses()):
-            by_merge_key[subclass.merge_key()].append(subclass)
-        for subclasses in by_merge_key.values():
-            subcls = subclasses[0]
-            if len(subclasses) == 1:
-                yield subcls
-            else:
-                yield generate_cls(
-                    name=subcls.__name__,
-                    bases=tuple(subclasses),
-                )
-
-    @classmethod
-    def subclasses(cls) -> Iterator[type[Self]]:
-        """Yield every subclass discovered within the declared discovery scope.
-
-        Includes intermediate parent classes; unlike `leaves()`, the
-        result is not filtered down to leaves.
-
-        Yields:
-            Subclass types found anywhere in the discovery scope. The
-            order is stable across calls but reflects discovery order,
-            not any deliberate priority.
-        """
-        return subclasses_across_dependencies(
-            cls,
-            module=cls.discovery_module(),
-        )
-
-    @classmethod
-    def sort_key(cls) -> "SupportsRichComparison":
-        """Return the sort key used to order this class relative to peer subclasses.
-
-        Used by `sorted_subclasses()` to order a collection of subclasses.
-        Override to sort by priority, numeric position, or any other criterion.
-        The default returns the class name, giving alphabetical ordering.
-
-        Returns:
-            A value comparable with `<` against the sort keys of other
-            subclasses.
-        """
-        return cls.__name__
-
-    @classmethod
     def merge_key(cls) -> Hashable:
         """Return the key that decides which leaf subclasses get merged together.
 
@@ -234,6 +176,64 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
             key=methodcaller(cls.sort_key.__name__),
         )
 
-    def __str__(self) -> str:
-        """Return the fully qualified name of this instance's class."""
-        return str(self.__class__)
+    @classmethod
+    def leaves(cls) -> Iterator[type[Self]]:
+        """Yield leaf subclasses discovered within the declared discovery scope.
+
+        Only leaf-level subclasses are considered; any intermediate parent
+        classes that also appear in the result are omitted. The remaining leaves
+        are grouped by `merge_key()`: a group with a single leaf is yielded as-is,
+        while a group with several leaves is combined into one newly generated subclass
+        inheriting from every leaf in that group, letting independently-installed
+        packages cooperatively extend the same class by sharing a merge key.
+
+        Yields:
+            Leaf subclass types, one per distinct `merge_key()` value.
+
+        Raises:
+            TypeError: If the leaves within a merge key group cannot be
+                combined into a single class.
+        """
+        by_merge_key: dict[Hashable, list[type[Self]]] = defaultdict(list)
+        for subclass in filter_leaf_classes(cls.subclasses()):
+            by_merge_key[subclass.merge_key()].append(subclass)
+        for subclasses in by_merge_key.values():
+            subcls = subclasses[0]
+            if len(subclasses) == 1:
+                yield subcls
+            else:
+                yield generate_cls(
+                    name=subcls.__name__,
+                    bases=tuple(subclasses),
+                )
+
+    @classmethod
+    def sort_key(cls) -> "SupportsRichComparison":
+        """Return the sort key used to order this class relative to peer subclasses.
+
+        Used by `sorted_subclasses()` to order a collection of subclasses.
+        Override to sort by priority, numeric position, or any other criterion.
+        The default returns the class name, giving alphabetical ordering.
+
+        Returns:
+            A value comparable with `<` against the sort keys of other
+            subclasses.
+        """
+        return cls.__name__
+
+    @classmethod
+    def subclasses(cls) -> Iterator[type[Self]]:
+        """Yield every subclass discovered within the declared discovery scope.
+
+        Includes intermediate parent classes; unlike `leaves()`, the
+        result is not filtered down to leaves.
+
+        Yields:
+            Subclass types found anywhere in the discovery scope. The
+            order is stable across calls but reflects discovery order,
+            not any deliberate priority.
+        """
+        return subclasses_across_dependencies(
+            cls,
+            module=cls.discovery_module(),
+        )

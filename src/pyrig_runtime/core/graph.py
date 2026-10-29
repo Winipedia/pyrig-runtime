@@ -45,13 +45,6 @@ class DiGraph(ABC):
         self.edges[source].add(target)
         self.reverse_edges[target].add(source)
 
-    def add_node(self, node: str) -> None:
-        """Add a node to the graph. No-op if the node already exists."""
-        if node not in self.nodes:
-            self.nodes.add(node)
-            self.edges[node] = set()
-            self.reverse_edges[node] = set()
-
     def prune(self, root: str) -> None:
         """Remove every node except `root` and its ancestors.
 
@@ -87,30 +80,12 @@ class DiGraph(ABC):
         """
         return self.topological_sort_subgraph(self.ancestors(target))
 
-    def topological_sort_subgraph(self, nodes: set[str]) -> Iterable[str]:
-        """Sort a subset of nodes in topological order.
-
-        If there is an edge from A to B, B appears before A in the result.
-        Nodes with no dependency relationship between them may appear in
-        any relative order.
-
-        Only edges whose both endpoints are in `nodes` are considered; edges
-        to or from nodes outside the subset are ignored.
-
-        Args:
-            nodes: The subset of nodes to sort.
-
-        Yields:
-            Each node in `nodes`, in topological order.
-
-        Raises:
-            KeyError: If any node in `nodes` is not part of the graph.
-            graphlib.CycleError: If the subgraph contains a cycle, making
-                topological sorting impossible.
-        """
-        return TopologicalSorter(
-            {node: self.edges[node] & nodes for node in nodes},
-        ).static_order()
+    def add_node(self, node: str) -> None:
+        """Add a node to the graph. No-op if the node already exists."""
+        if node not in self.nodes:
+            self.nodes.add(node)
+            self.edges[node] = set()
+            self.reverse_edges[node] = set()
 
     def ancestors(self, target: str) -> set[str]:
         """Find all nodes that have a directed path to the target node.
@@ -136,3 +111,28 @@ class DiGraph(ABC):
                     queue.append(neighbor)
 
         return visited
+
+    def topological_sort_subgraph(self, nodes: set[str]) -> Iterable[str]:
+        """Sort a subset of nodes in topological order.
+
+        If there is an edge from A to B, B appears before A in the result.
+        Nodes with no dependency relationship between them may appear in
+        any relative order.
+
+        Only edges whose both endpoints are in `nodes` are considered; edges
+        to or from nodes outside the subset are ignored.
+
+        Args:
+            nodes: The subset of nodes to sort.
+
+        Yields:
+            Each node in `nodes`, in topological order.
+
+        Raises:
+            KeyError: If any node in `nodes` is not part of the graph.
+            graphlib.CycleError: If the subgraph contains a cycle, making
+                topological sorting impossible.
+        """
+        return TopologicalSorter(
+            {node: self.edges[node] & nodes for node in nodes},
+        ).static_order()

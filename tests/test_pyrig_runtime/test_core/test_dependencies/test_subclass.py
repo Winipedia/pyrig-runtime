@@ -2,6 +2,7 @@
 
 import inspect
 from types import ModuleType
+from typing import override
 
 import pytest
 from pyrig.rig import configs
@@ -33,15 +34,18 @@ class TestDependencySubclass:
         assert isinstance(str(CLI.I), str)
         assert str(CLI.I) == str(CLI) == str(CLI.L)
 
+    def test_concrete_leaves(self) -> None:
+        """Test method."""
+        result = tuple(ConfigFile.concrete_leaves())
+        assert len(result) > 0
+        assert all(issubclass(subclass, ConfigFile) for subclass in result)
+        assert all(not inspect.isabstract(subclass) for subclass in result)
+
     def test_discovery_module(self) -> None:
         """Test method."""
         assert issubclass(ConfigFile, DependencySubclass)
         assert ConfigFile.discovery_module() == configs
         assert DependencySubclass.discovery_module() is rig
-
-    def test_sort_key(self) -> None:
-        """Test method."""
-        assert DependencySubclass.sort_key() == DependencySubclass.__name__
 
     def test_leaf(self) -> None:
         """Test method."""
@@ -58,13 +62,6 @@ class TestDependencySubclass:
 
         assert leaf not in (A, B, C, D, E)
 
-    def test_concrete_leaves(self) -> None:
-        """Test method."""
-        result = tuple(ConfigFile.concrete_leaves())
-        assert len(result) > 0
-        assert all(issubclass(subclass, ConfigFile) for subclass in result)
-        assert all(not inspect.isabstract(subclass) for subclass in result)
-
     def test_leaves(self) -> None:
         """Test method."""
         leaves = tuple(A.leaves())
@@ -76,6 +73,15 @@ class TestDependencySubclass:
         assert issubclass(leaf, D)
         assert issubclass(leaf, E)
         assert leaf not in (A, B, C, D, E)
+
+    def test_merge_key(self) -> None:
+        """Test method."""
+        assert CLI.merge_key() == CLI.__name__
+        assert DependencySubclass.merge_key() == DependencySubclass.__name__
+
+    def test_sort_key(self) -> None:
+        """Test method."""
+        assert DependencySubclass.sort_key() == DependencySubclass.__name__
 
     def test_sorted_subclasses(self) -> None:
         """Test method."""
@@ -107,21 +113,9 @@ class TestDependencySubclass:
         assert PyPIDeployWorkflowConfigFile in subclasses
         assert PyPIDeployWorkflowConfigFile.L in subclasses
 
-    def test_merge_key(self) -> None:
-        """Test method."""
-        assert CLI.merge_key() == CLI.__name__
-        assert DependencySubclass.merge_key() == DependencySubclass.__name__
-
 
 class TestDependencySubclassMeta:
     """Test class."""
-
-    def test___str__(self) -> None:
-        """Test method."""
-        assert (
-            str(DependencySubclass)
-            == DependencySubclass.__module__ + "." + DependencySubclass.__name__
-        )
 
     def test_I(self) -> None:  # noqa: N802
         """Test method."""
@@ -137,16 +131,25 @@ class TestDependencySubclassMeta:
         assert DeployWorkflowConfigFile.L is PyPIDeployWorkflowConfigFile
         assert CLI.L is CLI
 
+    def test___str__(self) -> None:
+        """Test method."""
+        assert (
+            str(DependencySubclass)
+            == DependencySubclass.__module__ + "." + DependencySubclass.__name__
+        )
+
 
 class A(DependencySubclass):
     """Test class."""
 
     @classmethod
+    @override
     def discovery_module(cls) -> ModuleType:
         """Return the discovery module."""
         return rig
 
     @classmethod
+    @override
     def merge_key(cls) -> str:
         """Return the merge key."""
         return "merge_key"

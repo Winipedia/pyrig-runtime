@@ -1,7 +1,7 @@
 """Test module."""
 
 from abc import ABC, abstractmethod
-from typing import ClassVar
+from typing import ClassVar, override
 
 import pytest
 
@@ -186,24 +186,24 @@ class ParentClass:
 
     cls_var: ClassVar[str] = "parent_class_var"
 
-    def parent_method(self) -> str:
-        """Parent method."""
-        return "parent_method"
-
-    @staticmethod
-    def parent_static_method() -> str:
-        """Parent static method."""
-        return "parent_static_method"
-
     @classmethod
     def parent_cls_method(cls) -> str:
         """Parent class method."""
         return "parent_class_method"
 
+    def parent_method(self) -> str:
+        """Parent method."""
+        return "parent_method"
+
     @property
     def parent_property(self) -> str:
         """Parent property."""
         return "parent_property"
+
+    @staticmethod
+    def parent_static_method() -> str:
+        """Parent static method."""
+        return "parent_static_method"
 
 
 class Unrelated:
@@ -223,24 +223,24 @@ class ChildTestClass(ParentClass):
 
     cls_var: ClassVar[str] = "test_class_var"
 
-    def instance_method(self) -> str:
-        """Instance method."""
-        return "instance_method"
-
-    @staticmethod
-    def static_method() -> str:
-        """Return a static method value."""
-        return "static_method"
-
     @classmethod
     def cls_method(cls) -> str:
         """Class method."""
         return "class_method"
 
+    def instance_method(self) -> str:
+        """Instance method."""
+        return "instance_method"
+
     @property
     def prop(self) -> str:
         """Property method."""
         return "property"
+
+    @staticmethod
+    def static_method() -> str:
+        """Return a static method value."""
+        return "static_method"
 
     def _private_method(self) -> str:
         """Private method."""
@@ -254,6 +254,7 @@ class ConcreteChild(AbstractParent):
         """Initialize ConcreteChild."""
         super().__init__()
 
+    @override
     def abstract_method(self) -> str:
         """Implement the abstract method."""
         return "concrete_implementation"
