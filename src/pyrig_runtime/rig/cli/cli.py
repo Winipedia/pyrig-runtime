@@ -63,12 +63,13 @@ class CLI(DependencySubclass):
     def merge_key(cls) -> Hashable:
         """Return a constant merge key.
 
-        There is only one CLI so different subclasses should converge into
-        a single subclass
+        There is only one CLI so different subclasses should converge into a single
+        subclass.
+
         Returns:
-            The name of this class: `CLI`.
+            The fully qualified name of this class: `"pyrig_runtime.rig.cli.cli.CLI"`.
         """
-        return CLI.__name__
+        return str(CLI)
 
     def run(self) -> None:
         """Build and invoke the Typer application."""

@@ -117,7 +117,7 @@ class TestCLI:
 
     def test_merge_key(self) -> None:
         """Test method."""
-        assert CLI.I.merge_key() == "CLI"
+        assert CLI.I.merge_key() == "pyrig_runtime.rig.cli.cli.CLI"
 
     def test_package_name(self) -> None:
         """Test method."""

@@ -76,7 +76,7 @@ class TestDependencySubclass:
 
     def test_merge_key(self) -> None:
         """Test method."""
-        assert CLI.merge_key() == CLI.__name__
+        assert CLI.merge_key() == "pyrig_runtime.rig.cli.cli.CLI"
         assert DependencySubclass.merge_key() == DependencySubclass.__name__
 
     def test_sort_key(self) -> None:
