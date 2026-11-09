@@ -1036,7 +1036,7 @@ wheels = [
 
 [[package]]
 name = "pyrig-runtime"
-version = "3.27.72"
+version = "3.27.74"
 source = { editable = "." }
 dependencies = [
     { name = "typer" },
