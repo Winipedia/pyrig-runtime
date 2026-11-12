@@ -14,10 +14,85 @@ import pyrig_public
 import pyrig_pypi
 import pyrig_runtime_overrides
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 
 import pyrig_runtime
 from pyrig_runtime.core.dependencies.graph import DependencyGraph
 from pyrig_runtime.core.graph import DiGraph
+
+
+@given(
+    edges=st.sets(
+        st.tuples(st.integers(0, 5), st.integers(0, 5)),
+        max_size=36,
+    ),
+    subset=st.sets(st.integers(0, 5), max_size=6),
+)
+def test_generated_dag_topological_subgraph(
+    edges: set[tuple[int, int]],
+    subset: set[int],
+) -> None:
+    """Every selected dependency precedes its dependent in a generated DAG."""
+    graph = MyTestDiGraph()
+    for node in range(6):
+        graph.add_node(str(node))
+    for source, destination in edges:
+        if source > destination:
+            graph.add_edge(str(source), str(destination))
+
+    selected = {str(node) for node in subset}
+    result = list(graph.topological_sort_subgraph(selected))
+    assert len(result) == len(selected)
+    assert set(result) == selected
+    positions = {node: index for index, node in enumerate(result)}
+    for source in selected:
+        for destination in graph.edges[source] & selected:
+            assert positions[destination] < positions[source]
+
+
+@given(
+    edges=st.sets(
+        st.tuples(st.integers(0, 5), st.integers(0, 5)),
+        max_size=36,
+    ),
+    target=st.integers(0, 5),
+)
+def test_generated_graph_ancestors_and_prune(
+    edges: set[tuple[int, int]],
+    target: int,
+) -> None:
+    """Reachability and pruning agree for arbitrary graphs, including cycles."""
+    graph = MyTestDiGraph()
+    nodes = {str(node) for node in range(6)}
+    for node in nodes:
+        graph.add_node(node)
+    for source, destination in edges:
+        graph.add_edge(str(source), str(destination))
+
+    target_node = str(target)
+    expected = set()
+    for node in nodes:
+        pending = list(graph.edges[node])
+        seen: set[str] = set()
+        while pending:
+            current = pending.pop()
+            if current not in seen:
+                seen.add(current)
+                pending.extend(graph.edges[current] - seen)
+        if target_node in seen:
+            expected.add(node)
+
+    assert graph.ancestors(target_node) == expected
+    original_edges = {node: neighbors.copy() for node, neighbors in graph.edges.items()}
+    graph.prune(target_node)
+    kept = expected | {target_node}
+    assert graph.nodes == kept
+    assert graph.edges == {node: original_edges[node] & kept for node in kept}
+    assert graph.reverse_edges == {
+        node: {source for source in kept if node in original_edges[source]}
+        for node in kept
+    }
 
 
 class TestDiGraph:
