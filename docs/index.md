@@ -73,7 +73,7 @@ method that returns the leaf class of the inheritance tree. If several leaf
 classes are found by the discovery mechanism, they are dynamically merged
 into a single class with multiple inheritance. This is what lets
 independently installed packages cooperatively extend the same piece of
-behaviour. See [Plugin discovery](plugins.md) for more details.
+behavior. See [Plugin discovery](plugins.md) for more details.
 
 `pyrig-runtime` was originally built for [pyrig](https://github.com/Winipedia/pyrig) which
 uses it for its file generation and tool wrapping classes and its CLI.
