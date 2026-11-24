@@ -17,7 +17,7 @@ def cls_decorator(cls: type["DecoratedClass"]) -> type["DecoratedClass"]:
     class DecoratedClassWrapper(cls):  # ty: ignore[unsupported-base]
         some_cls_attr = "decorated"
 
-    return DecoratedClassWrapper
+    return DecoratedClassWrapper  # ty: ignore[unsound-return]
 
 
 def test_obj_members() -> None:

@@ -2,6 +2,7 @@
 
 import re
 from importlib.metadata import Distribution
+from typing import cast
 
 from pyrig_runtime.core.strings import kebab_to_snake_case, regex_find
 
@@ -79,7 +80,7 @@ def distribution_requirement_as_module_name(req: str) -> str:
 
 def distribution_requirements(metadata: str) -> list[str]:
     """Return the list of dependency requirements from a distribution's metadata."""
-    return DISTRIBUTION_REQUIRES_DIST_PATTERN.findall(metadata)
+    return cast("list[str]", DISTRIBUTION_REQUIRES_DIST_PATTERN.findall(metadata))
 
 
 def distribution_summary(metadata: str) -> str:

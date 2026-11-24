@@ -2,6 +2,7 @@
 
 import re
 from types import FunctionType, MethodType
+from typing import cast
 
 
 def fully_qualified_name(obj: MethodType | FunctionType | type) -> str:
@@ -43,7 +44,7 @@ def regex_find(pattern: re.Pattern[str], text: str) -> str:
     if match is None:
         msg = f"No match found for pattern {pattern.pattern} in text."
         raise LookupError(msg)
-    return match[1]
+    return cast("str", match[1])
 
 
 def snake_to_kebab_case(value: str) -> str:

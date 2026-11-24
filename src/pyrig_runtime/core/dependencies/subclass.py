@@ -5,7 +5,7 @@ from collections import defaultdict
 from collections.abc import Hashable, Iterable, Iterator
 from operator import methodcaller
 from types import ModuleType
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Self, override
 
 if TYPE_CHECKING:
     from _typeshed import SupportsRichComparison
@@ -25,6 +25,7 @@ from pyrig_runtime.core.strings import fully_qualified_name
 class DependencySubclassMeta(ABCMeta):
     """Metaclass backing `DependencySubclass` with the cached `I`/`L` properties."""
 
+    @override
     def __str__(cls) -> str:
         """Return the fully qualified name of this class."""
         return fully_qualified_name(cls)
@@ -99,6 +100,7 @@ class DependencySubclass(metaclass=DependencySubclassMeta):
         """
         return rig
 
+    @override
     def __str__(self) -> str:
         """Return the fully qualified name of this instance's class."""
         return str(self.__class__)
